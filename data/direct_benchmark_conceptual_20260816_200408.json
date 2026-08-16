@@ -1,0 +1,325 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The tank **T4750** has a cylinder length of **4.0 m**【T4750】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2625,
+      "completion_tokens": 79,
+      "total_tokens": 2704
+    },
+    "cost_usd": 0.000138,
+    "latency_seconds": 0.76
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m²",
+    "agent_answer": "The design heat transfer area of heat exchanger **H1007** is **46.8 m²**【H1007】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2628,
+      "completion_tokens": 89,
+      "total_tokens": 2717
+    },
+    "cost_usd": 0.000139,
+    "latency_seconds": 10.68
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The pump **P4711** has a design pressure head of **10.0 m**【P4711】. No explicit design pressure value is provided in the graph.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2625,
+      "completion_tokens": 186,
+      "total_tokens": 2811
+    },
+    "cost_usd": 0.000146,
+    "latency_seconds": 17.5
+  },
+  {
+    "id": 4,
+    "category": "graph_query_single",
+    "question": "What is the design shaft power of pump P4711?",
+    "reference_answer": "60.0 kW",
+    "agent_answer": "The design shaft power of pump **P4711** is **60.0 kW**【P4711】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2626,
+      "completion_tokens": 82,
+      "total_tokens": 2708
+    },
+    "cost_usd": 0.000138,
+    "latency_seconds": 18.02
+  },
+  {
+    "id": 5,
+    "category": "graph_query_single",
+    "question": "What is the design volume flow rate of pump P4712?",
+    "reference_answer": "420.0 m³/h",
+    "agent_answer": "The design volume flow rate of pump **P4712** is **420.0 m³/h**【P4712】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2627,
+      "completion_tokens": 90,
+      "total_tokens": 2717
+    },
+    "cost_usd": 0.000139,
+    "latency_seconds": 17.76
+  },
+  {
+    "id": 6,
+    "category": "graph_query_single",
+    "question": "What is the nominal diameter of valve 66KL21?",
+    "reference_answer": "DN 80",
+    "agent_answer": "The valve with component name **66KL21** is a Butterfly Valve (tag C1) and has a nominal diameter of **DN 80**【C1】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2626,
+      "completion_tokens": 166,
+      "total_tokens": 2792
+    },
+    "cost_usd": 0.000145,
+    "latency_seconds": 17.54
+  },
+  {
+    "id": 7,
+    "category": "graph_query_single",
+    "question": "What is the set pressure of safety valve SV 104.01?",
+    "reference_answer": "6.0 bar",
+    "agent_answer": "The safety valve **SV 104.01** is set to a high‑set pressure of **6.0 bar**【SV 104.01】.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2628,
+      "completion_tokens": 91,
+      "total_tokens": 2719
+    },
+    "cost_usd": 0.000139,
+    "latency_seconds": 18.35
+  },
+  {
+    "id": 8,
+    "category": "graph_query_single",
+    "question": "What is the upper design temperature of tank T4750?",
+    "reference_answer": "100.0 °C",
+    "agent_answer": "I’m sorry, but the provided graph context does not include any temperature information for tank T4750.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2626,
+      "completion_tokens": 145,
+      "total_tokens": 2771
+    },
+    "cost_usd": 0.000143,
+    "latency_seconds": 15.62
+  },
+  {
+    "id": 9,
+    "category": "graph_query_multi",
+    "question": "List all valves in the P&ID along with their specification.",
+    "reference_answer": "11 valves total: 3 Globe Valves (C1, actuated by HV4750.01/PV4712.02/TV4750.03), 1 Butterfly Valve (66KL21), 1 Swing Check Valve (75SA21/C2), 5 Ball Valves (73KH12, C4/C2/C5/C7/C10), 1 Spring Loaded Globe Safety Valve (SV 104.01). Key specs: nominal diameters DN 25-80, piping classes 73HG12/75HB13, fluid codes MNb/MNc/QSb.",
+    "agent_answer": "",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2627,
+      "completion_tokens": 2048,
+      "total_tokens": 4675
+    },
+    "cost_usd": 0.000295,
+    "latency_seconds": 3.03
+  },
+  {
+    "id": 10,
+    "category": "graph_query_multi",
+    "question": "List all pipe fittings in the P&ID along with their specification.",
+    "reference_answer": "Pipe Reducers (C3, DN50, 73HG12), Pipe Tees (C3/C1/C4/C8/C9, DN25-50, 75HB13), Blind Flanges (C6/C11, DN25, 75HB13). All fluid code MNc, line 47124/47126.",
+    "agent_answer": "**Pipe fittings and their specifications**\n\n| Tag | Label | Fluid Code | Nominal Diameter | Piping Class | Segment | Additional details |\n|-----|-------|------------|------------------|--------------|---------|--------------------|\n| FlowInPipeOffPageConnector | FlowInPipeOffPageConnector | MNb | DN 80 | 75HB13 | S1 | – |\n| C1 | GlobeValve | MNb | DN 80 | 75HB13 | S1 | – |\n| C1 | ButterflyValve | MNc | DN 80 | 75HB13 | S1 | pipingComponentName = 66KL21 |\n| C2 | SwingCheckValve | MNc | DN 80 | 75HB13 | S1 | pipingComponentName = 75SA21 |\n| C3 | PipeReducer | MNc | DN 80 | 73HG12 | S2 | – |\n| C4 | BallValve | MNc | DN 50 | 73HG12 | S3 | pipingComponentName = 73KH12 |\n| SV 104.01 | SpringLoadedGlobeSafetyValve | MN",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2628,
+      "completion_tokens": 2048,
+      "total_tokens": 4676
+    },
+    "cost_usd": 0.000295,
+    "latency_seconds": 35.74
+  },
+  {
+    "id": 11,
+    "category": "path_exploration",
+    "question": "If heat exchanger H1007 needs maintenance, can flow still reach tank T4750? Describe the alternative path.",
+    "reference_answer": "If H1007 is bypassed, flow can potentially reach T4750 via H1008 (tubular heat exchanger) if a tie-in point exists on line MNb47123 or via N3 of T4750. However, H1008 controls tank temperature, so using it as an alternative path is not recommended. Currently no bypass tie-in exists.",
+    "agent_answer": "No.  \nThe only route from the inlet to the tank is  \n\n```\nFlowInPipeOffPageConnector → P4711 → H1007 → C1 → T4750\n```\n\n(FlowInPipeOffPageConnector --PIPE--> P4711, P4711 --PIPE--> H1007, H1007 --PIPE--> C1, C1 --PIPE--> T4750).  \nThere is no alternative piping connection in the graph that bypasses H1007, so if H1007 is taken out for maintenance the flow cannot reach T4750.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2637,
+      "completion_tokens": 1124,
+      "total_tokens": 3761
+    },
+    "cost_usd": 0.000222,
+    "latency_seconds": 30.87
+  },
+  {
+    "id": 12,
+    "category": "path_exploration",
+    "question": "If you need to isolate tank T4750 from all upstream equipment, which valves would you need to close?",
+    "reference_answer": "Shut the main DN80 feed globe valve (HV4750.01). Close the DN50 globe valve on the recirculation line (PV4712.02).",
+    "agent_answer": "To isolate tank **T4750** from all upstream equipment you would need to shut the valves that are directly upstream of the tank:\n\n- **GlobeValve C1** – the valve that feeds the tank from the upstream line (H1007 → C1 → T4750)【C1】  \n- **Spring‑Loaded Globe Safety Valve SV 104.01** – the safety valve that is connected to the tank inlet (SV 104.01 → T4750)【SV 104.01】\n\nClosing these two valves will isolate T4750 from the upstream piping.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2636,
+      "completion_tokens": 1894,
+      "total_tokens": 4530
+    },
+    "cost_usd": 0.000283,
+    "latency_seconds": 25.62
+  },
+  {
+    "id": 13,
+    "category": "path_exploration",
+    "question": "Trace the flow path from tank T4750 to pump P4712.",
+    "reference_answer": "T4750 (Tank) → 66KL21 (Butterfly valve) → 75SA21 (Swing check valve) → Pipe reducer (DN80 to DN50) → 73KH12 (Ball valve) → P4712 (Reciprocating pump)",
+    "agent_answer": "The flow path from the tank **T4750** to the pump **P4712** is:\n\n1. **T4750** → **C1**  \n2. **C1** → **C2**  \n3. **C2** → **C3**  \n4. **C3** → **C4**  \n5. **C4** → **P4712**  \n\n(Edges: `T4750 --PIPE--> C1`, `C1 --PIPE--> C2`, `C2 --PIPE--> C3`, `C3 --PIPE--> C4`, `C4 --PIPE--> P4712`).",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2629,
+      "completion_tokens": 792,
+      "total_tokens": 3421
+    },
+    "cost_usd": 0.000195,
+    "latency_seconds": 30.36
+  },
+  {
+    "id": 14,
+    "category": "path_exploration",
+    "question": "Working backwards from tank T4750, what are the two possible inlet paths and their source equipment?",
+    "reference_answer": "Path 1: T4750 ← Globe Valve (HV4750.01) ← H1007 (Plate Heat Exchanger) ← P4711 (Centrifugal Pump). Path 2: T4750 ← Globe Valve (TV4712.02/PV4712.02) ← H1008 (Tubular Heat Exchanger).",
+    "agent_answer": "**Inlet paths to tank T4750**\n\n| Path | Inlet component | Upstream source equipment |\n|------|-----------------|---------------------------|\n| 1 | GlobeValve **C1** (label GlobeValve) | CentrifugalPump **P4711** (label CentrifugalPump) |\n| 2 | Spring‑Loaded Globe Safety Valve **SV 104.01** (label SpringLoadedGlobeSafetyValve) | CentrifugalPump **P4711** (label CentrifugalPump) |\n\n*Graph links used:*  \n- `C1 --PIPE--> T4750` (C1 → T4750)  \n- `SV 104.01 --PIPE--> T4750` (SV 104.01 → T4750)  \n- `FlowInPipeOffPageConnector --PIPE--> P4711` (connector → P4711)  \n- `P4711 --PIPE--> H1007` and `H1007 --PIPE--> C1` (P4711 → H1007 → C1)  \n- `C1 --PIPE--> C2 --PIPE--> C3 --PIPE--> SV 104.01` (C1 → C2 → C3 → SV 104.01)  \n\nThus, the tank can receive fluid either directly through GlobeValve C1 or via the safety valve SV 104.01, both ultimately originating from the CentrifugalPump P4711.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2634,
+      "completion_tokens": 1719,
+      "total_tokens": 4353
+    },
+    "cost_usd": 0.000269,
+    "latency_seconds": 23.4
+  },
+  {
+    "id": 15,
+    "category": "path_exploration",
+    "question": "What is the flow path from pump P4711 to tank T4750?",
+    "reference_answer": "P4711 (Centrifugal Pump) → H1007 (Plate Heat Exchanger) → HV4750.01 (Globe Valve) → T4750 (Tank)",
+    "agent_answer": "The pump **P4711** feeds the tank **T4750** via the following sequence of pipe‑components:\n\n1. **P4711** → **H1007** (Plate Heat Exchanger)  \n2. **H1007** → **C1** (Globe Valve)  \n3. **C1** → **T4750** (Tank)\n\nThus the flow path is: **P4711 → H1007 → C1 → T4750**.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2630,
+      "completion_tokens": 1272,
+      "total_tokens": 3902
+    },
+    "cost_usd": 0.000233,
+    "latency_seconds": 28.82
+  },
+  {
+    "id": 16,
+    "category": "knowledge_inference",
+    "question": "Analyze the flowsheet and give recommendations regarding process safety.",
+    "reference_answer": "Key findings: (1) Safety valve SV104.01 set at 6.0 bar but T4750 design pressure is only 0.1/0.05 bar — PSV provides no effective protection. (2) Missing pressure relief for P4711/P4712/H1007/H1008 (design pressure up to 60 bar). (3) Fluid codes MNb/MNc/QSb not defined. (4) Blind flanges without clear isolation points. (5) TV4750.03 fail-open may be unsafe if fluid is heating.",
+    "agent_answer": "**Process‑Safety Recommendations (based on the provided P&ID context)**  \n\n| # | Issue | Recommendation | Evidence |\n|---|-------|----------------|----------|\n| 1 | **Multiple actuating signals on the same valve (C1)** | • Verify that the fail‑mode logic for PV4712.02 (fail‑close), HV4750.01 (fail‑close) and TV4750.03 (fail‑open) is coordinated to avoid conflicting commands.<br>• Implement a priority or interlock scheme so that only one signal can actuate C1 at a time. | C1 – valve controlled by PV4712.02, HV4750.01, TV4750.03 (see “PV4712.02 --OPERATEDVALVEREFERENCE--> C1”, “HV4750.01 --OPERATEDVALVEREFERENCE--> C1”, “TV4750.03 --OPERATEDVALVEREFERENCE--> C1”). |\n| 2 | **Pressure relief capability** | • Confirm that SV 104.01 (set‑pressure 6 bar) is sized for the maximum expected pressure in T4750 and that it is located upstream of the tank to relieve excess pressure before it reaches the tank. <br>• Install a pressure gauge upstream of SV 104.01 to verify that the relief pressure is not exceeded during normal operation. | SV 104.01 – “setPressureHigh = 6.0 bar” (line 47125). |\n| 3 | **Instrumentation redundancy** | • The process instrumentation loops (4712.01, 4712.02, 4750.01, 4750.03) all reference blind flanges (C6, C11). Ensure that these reference points are isolated and that the instrumentation is calibrated for the correct pressure/temperature ranges. <br>• Consider adding a secondary pressure sensor on the tank side of SV 104.01 to provide an independent check. | PT4712.01 --REFERENCE--> C6, PT4712.02 --REFERENCE--> C11, TT4750.03 --REFERENCE--> T4750. |\n| 4 | **Valve isolation for maintenance** | • Provide isolation valves (e.g., C2, C4, C5, C7) that can be closed without affecting the main flow path. Verify that each isolation valve is correctly sized and that the piping class (75HB13 or 73HG12) matches the pressure rating. | C2 – SwingCheckValve, C4 – BallValve, C5 – BallValve, C7 – BallValve (all “pipingClassCode = 75HB13” or “73HG12”). |\n| 5 | **Heat‑exchanger pressure drop** | • Verify that the pressure drop across H1007 (PlateHeatExchanger) and H1008 (TubularHeatExchanger) does not exceed the design limits of the pumps (P4711, P4712). <br>• Perform a pressure‑drop analysis to ensure that the pumps can maintain the required flow rate (200 m³/h for P4711, 420 m³/h for P4712). | H1007 – “designHeatFlowRate = 313 kW”, H1008 – “designHeatFlowRate = 313 kW”; P4711 – “designVolumeFlowRate = 200 m³/h”, P4712 – “designVolumeFlowRate = 420 m³/h”. |\n| 6 | **Piping class and material** | • Confirm that all piping segments (DN 80, DN 50, DN 25) are constructed from materials compatible with the process fluid (fluidCode = MNc or MNb) and that the piping class (75HB13, 73HG12) meets the maximum operating pressure. | FlowInPipeOffPageConnector – “nominalDiameterRepresentation = DN 80”, “pipingClassCode = 75HB13”; C4 – “nominalDiameterRepresentation = DN 50”, “pipingClassCode = 73HG12”. |\n| 7 | **Isolation of the tank (T4750)** | • Ensure that T4750 has an inlet and outlet isolation valve (e.g., C1 or C2) that can be closed quickly in case of over‑pressure or leak. <br>• Verify that the tank’s design pressure is compatible with the safety valve set‑pressure. | T4750 – “designPressureHead = 10 m” (≈ 0.1 bar), SV 104.01 set‑pressure = 6 bar. |\n\n**Summary**  \n- Coordinate the fail‑mode logic of the multiple actuating functions on C1.  \n- Verify sizing and placement of SV 104.01 and install upstream pressure monitoring.  \n- Ensure instrumentation references are isolated and calibrated.  \n- Provide proper isolation valves for maintenance and verify piping class compliance.  \n- Confirm that heat‑exchanger pressure drops are within pump capabilities.  \n\nThese actions will help maintain safe operation of the process flow described in the P&ID.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2625,
+      "completion_tokens": 1628,
+      "total_tokens": 4253
+    },
+    "cost_usd": 0.000261,
+    "latency_seconds": 7.25
+  },
+  {
+    "id": 17,
+    "category": "knowledge_inference",
+    "question": "List all control valves along with its control philosophy, why and what ifs fail.",
+    "reference_answer": "3 control valves: HV4750.01 (flow control, fail-close — prevents uncontrolled flow into T4750); PV4712.02 (pressure control via PICSA 4712.02, fail-close — prevents return to T4750, may increase downstream pressure); TV4750.03 (temperature control via TICSA 4750.03 for H1008, fail-open — ensures continuous cooling/heating medium flow, may cause overcooling/overheating).",
+    "agent_answer": "**Control valve(s) in the diagram**\n\n| Valve tag | Valve type | Actuated by | Control loop(s) |\n|-----------|------------|-------------|-----------------|\n| **C1** | GlobeValve (DN 50, 75HB13) | PV4712.02, HV4750.01, TV4750.03 | 4712.02, 4750.01, 4750.03 |\n\n*Only the GlobeValve C1 is referenced by actuating functions in the graph, so it is the sole control valve in this P&ID.*\n\n**Control philosophy, purpose, and failure consequences**\n\nThe graph does **not** provide explicit information on the control philosophy (e.g., positioner‑controlled, direct‑acting, etc.), the reason for its use, or the specific failure modes and their consequences. The only available data are the valve type (GlobeValve) and the fact that it is actuated by three control loops (process, high‑pressure, and temperature).",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2631,
+      "completion_tokens": 768,
+      "total_tokens": 3399
+    },
+    "cost_usd": 0.000193,
+    "latency_seconds": 28.35
+  },
+  {
+    "id": 18,
+    "category": "knowledge_inference",
+    "question": "What would be the effect if the heating fluid temperature in Heat Exchanger H1007 increased from the design temperature to 120°C?",
+    "reference_answer": "H1007 design: 313 kW, 46.8 m², chamber design temp 100°C. Effects: (1) Increased heat transfer rate, potentially exceeding 313 kW design. (2) Exceeds chamber design temperature by 20°C — thermal stress and equipment damage risk. (3) Downstream T4750 affected, TV4750.03 control loop would need to compensate. (4) TV4750.03 might need to throttle more.",
+    "agent_answer": "Increasing the heating‑fluid temperature above the design value will raise the heat‑transfer rate in **H1007** (PlateHeatExchanger, tag H1007). Because the exchanger is sized for a design heat flow of 313 kW, a higher inlet temperature will push the actual heat transfer beyond that rating, leading to:\n\n* **Higher outlet temperature** of the process fluid that enters **C1** (GlobeValve, tag C1) and then flows into **T4750** (Tank, tag T4750).  \n* **Elevated pressure** in the tank, since the temperature rise will increase vapor pressure and the pressure‑sensing loop (e.g., **SV 104.01** set at 6 bar, tag SV 104.01) may be triggered or operate closer to its limit.  \n* **Increased pressure drop** across the downstream piping and valves (C1, C2, C3, etc.), potentially stressing the piping class 75HB13 and 73HG12 components.  \n* **Risk of exceeding the design heat‑flow capacity** (313 kW) and of overheating the exchanger plates, which can lead to material degradation or failure.\n\nThus, raising the heating fluid temperature to 120 °C would likely over‑stress the heat exchanger, raise the process temperature and pressure in the tank, and could compromise the safe operation of the downstream valves and instrumentation.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2641,
+      "completion_tokens": 648,
+      "total_tokens": 3289
+    },
+    "cost_usd": 0.000184,
+    "latency_seconds": 22.1
+  },
+  {
+    "id": 19,
+    "category": "graph_summarization",
+    "question": "Based on the P&ID, make a narrative to describe the process flow from the inlet to the final outlet, identifying all major equipment, intermediate streams, and control points in sequence.",
+    "reference_answer": "Inlet → P4711 (centrifugal pump) → H1007 (plate heat exchanger) → HV4750.01 (globe valve, flow control) → T4750 (tank, temp monitored by TICSA4750.03) → 66KL21 (butterfly valve) → 75SA21 (check valve) → pipe reducer DN80→DN50 → 73KH12 (ball valve) → P4712 (reciprocating pump) → tee with SV104.01 (safety valve, 6 bar) → H1008 (tubular heat exchanger, temp control via TV4750.03) → PV4712.02 (return to T4750, pressure control via PICSA 4712.02) → outlet. Three control loops: flow (HV4750.01), pressure (PV4712.02), temperature (TV4750.03).",
+    "agent_answer": "**Process Flow Narrative (Inlet → Outlet)**  \n\n1. **Inlet** – The process stream enters the system through the **FlowInPipeOffPageConnector**.  \n2. **P4711 – Centrifugal Pump** – The stream is first pumped by **P4711** (design pressure head 10 m, 600 rpm, 60 kW, 200 m³ h⁻¹).  \n3. **H1007 – Plate Heat Exchanger** – The pumped fluid flows into the **H1007** plate heat exchanger (design heat flow 313 kW, 46.8 m² area).  \n4. **C1 – Globe Valve** – From the heat exchanger the fluid passes through **C1** (GlobeValve, DN 50).  \n5. **T4750 – Tank** – **C1** delivers the fluid to the **T4750** tank (design pressure head 10 m).  \n   * **SV 104.01 – Spring‑Loaded Globe Safety Valve** is connected to the tank to relieve over‑pressure.  \n6. **C2 – Swing Check Valve** – The stream exits the tank via **C2** (SwingCheckValve, DN 80).  \n7. **C3 – Pipe Reducer** – **C2** feeds into **C3** (PipeReducer, DN 80 → DN 50).  \n8. **C4 – Ball Valve** – The reduced‑diameter line goes through **C4** (BallValve, DN 50).  \n9. **P4712 – Reciprocating Pump** – **C4** supplies the fluid to **P4712** (design pressure head 40 m, 1400 rpm, 84 kW, 420 m³ h⁻¹).  \n10. **C7 – Ball Valve** – After the pump, the stream passes through **C7** (BallValve, DN 50).  \n11. **C8 – Pipe Tee** – **C7** feeds into **C8** (PipeTee, DN 50).  \n12. **H1008 – Tubular Heat Exchanger** – One branch of **C8** leads to **H1008** (TubularHeatExchanger).  \n13. **C9 – Pipe Tee** – The other branch of **C8** continues to **C9** (PipeTee, DN 50).  \n14. **C10 – Ball Valve** – From **C9** a line goes to **C10** (BallValve, DN 25).  \n15. **C11 – Blind Flange** – **C10** connects directly to **C11** (BlindFlange, DN 25).  \n16. **Outlet** – The final product stream exits the system through the **FlowOutPipeOffPageConnector** from **C9**.\n\n**Control Points & Instrumentation (in sequence)**  \n\n| Function | Instrument | Reference |\n|----------|------------|-----------|\n| 4712.01 – Process Instrumentation (field) | PT4712.01 – Process Signal Generating | References **C6** (BlindFlange) |\n| 4712.02 – Process Instrumentation (central) | PT4712.02 – Process Signal Generating | References **C11** (BlindFlange) |\n| 4712.02 – Signal Conveying | PV4712.02 – Actuating Function | Operates **C1** (GlobeValve) |\n| 4750.01 – Process Instrumentation (central) | HV4750.01 – Actuating Function | Operates **C1** (GlobeValve) |\n| 4750.03 – Process Instrumentation (central) | TV4750.03 – Actuating Function | Operates **C1** (GlobeValve) |\n| 4750.03 – Signal Conveying | TT4750.03 – Process Signal Generating | References **T4750** (Tank) |\n\nThese instrumentation loops monitor and control key points—particularly the valve **C1** that regulates flow to the tank and downstream equipment, and the safety valve **SV 104.01** that protects the tank. The narrative above follows the fluid path from the inlet connector, through pumps, heat exchangers, valves, and the tank, to the final outlet connector, while highlighting the major equipment and control points encountered along the way.",
+    "model": "openai/gpt-oss-20b",
+    "level": "conceptual",
+    "mode": "direct",
+    "tokens": {
+      "prompt_tokens": 2651,
+      "completion_tokens": 1352,
+      "total_tokens": 4003
+    },
+    "cost_usd": 0.000241,
+    "latency_seconds": 23.23
+  }
+]
