@@ -12,19 +12,33 @@ from chatpid.benchmark import BENCHMARK_QUESTIONS
 from chatpid.config import get_settings
 from chatpid.ingest import get_driver
 
-# Groq pricing (per 1M tokens, as of 2025-2026).
-# See https://groq.com/pricing/ for current rates.
+# Pricing tables (per 1M tokens). Used for cost estimation.
+# Groq: https://groq.com/pricing/
 GROQ_PRICING = {
     "llama-3.3-70b-versatile": {"input": 0.59, "output": 0.79},
     "llama-3.1-8b-instant": {"input": 0.05, "output": 0.08},
     "llama-3.1-70b-versatile": {"input": 0.59, "output": 0.79},
     "mixtral-8x7b-32768": {"input": 0.24, "output": 0.24},
     "gemma2-9b-it": {"input": 0.20, "output": 0.20},
+    "openai/gpt-oss-20b": {"input": 0.05, "output": 0.08},
+    "openai/gpt-oss-120b": {"input": 0.59, "output": 0.79},
 }
+
+# Gemini: https://ai.google.dev/pricing
+GEMINI_PRICING = {
+    "gemini-2.5-flash": {"input": 0.30, "output": 2.50},
+    "gemini-2.5-pro": {"input": 1.25, "output": 10.00},
+    "gemini-2.0-flash": {"input": 0.10, "output": 0.40},
+    "gemini-1.5-flash": {"input": 0.075, "output": 0.30},
+    "gemini-1.5-pro": {"input": 1.25, "output": 5.00},
+}
+
+# Merge all pricing into one lookup
+ALL_PRICING = {**GROQ_PRICING, **GEMINI_PRICING}
 
 
 def estimate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> float:
-    pricing = GROQ_PRICING.get(model, {"input": 0.59, "output": 0.79})
+    pricing = ALL_PRICING.get(model, {"input": 0.59, "output": 0.79})
     return (prompt_tokens / 1_000_000 * pricing["input"]) + (
         completion_tokens / 1_000_000 * pricing["output"]
     )

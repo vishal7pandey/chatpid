@@ -19,23 +19,15 @@ import time
 from pathlib import Path
 
 from langchain_core.messages import HumanMessage, SystemMessage
-from langchain_openai import ChatOpenAI
-from neo4j import Driver
 
 from chatpid.benchmark import BENCHMARK_QUESTIONS
 from chatpid.config import get_settings
 from chatpid.context_rag import context_rag
+from chatpid.eval import estimate_cost
 from chatpid.ingest import get_driver
+from chatpid.llm import get_llm
 
 RESULTS_DIR = Path(__file__).resolve().parent.parent / "data"
-
-# Groq pricing (per 1M tokens)
-GROQ_PRICING = {
-    "llama-3.3-70b-versatile": {"input": 0.59, "output": 0.79},
-    "llama-3.1-8b-instant": {"input": 0.05, "output": 0.08},
-    "openai/gpt-oss-120b": {"input": 0.59, "output": 0.79},
-    "openai/gpt-oss-20b": {"input": 0.05, "output": 0.08},
-}
 
 DIRECT_SYSTEM_PROMPT = """\
 You are ChatP&ID, an assistant that answers questions about a Piping and \
@@ -69,12 +61,7 @@ def run_direct_benchmark(
     graph_context = context_rag(driver, level=level, mode="graph")
     print(f"ContextRAG output: {len(graph_context)} chars (~{len(graph_context)//4} tokens)")
 
-    llm = ChatOpenAI(
-        model=chat_model,
-        temperature=0,
-        base_url=settings.llm_base_url,
-        api_key=settings.llm_api_key,
-    )
+    llm = get_llm(temperature=0)
 
     try:
         for q in questions:
@@ -101,10 +88,7 @@ def run_direct_benchmark(
                 completion_tokens = usage_meta.get("output_tokens", 0)
                 total_tokens = usage_meta.get("total_tokens", 0)
 
-                pricing = GROQ_PRICING.get(chat_model, {"input": 0.59, "output": 0.79})
-                cost = (prompt_tokens / 1_000_000 * pricing["input"]) + (
-                    completion_tokens / 1_000_000 * pricing["output"]
-                )
+                cost = estimate_cost(chat_model, prompt_tokens, completion_tokens)
 
                 entry = {
                     "id": q["id"],

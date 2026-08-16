@@ -9,18 +9,17 @@ rather than baked into the graph).
 Only ContextRAG is wired in for now (the only fully implemented tool).
 Uncomment the others in tools=[...] below as you implement them.
 
-Uses Groq for LLM inference via the OpenAI-compatible API.
+LLM provider is selected by the LLM_PROVIDER env var (groq|gemini).
 """
 
 from __future__ import annotations
 
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from neo4j import Driver
 
-from chatpid.config import get_settings
 from chatpid.context_rag import context_rag
+from chatpid.llm import get_llm
 
 # from chatpid.tools_todo import vector_rag, path_rag, cypher_rag
 
@@ -42,8 +41,6 @@ answer is grounded in.
 
 def build_agent(driver: Driver):
     """Build the ChatP&ID LangGraph ReAct agent bound to a live Neo4j driver."""
-    settings = get_settings()
-
     @tool
     def ContextRAG(level: str = "conceptual", mode: str = "graph") -> str:
         """Retrieve a condensed, noise-filtered graph context for the P&ID.
@@ -59,10 +56,5 @@ def build_agent(driver: Driver):
         """
         return context_rag(driver, level=level, mode=mode)
 
-    llm = ChatOpenAI(
-        model=settings.chat_model,
-        temperature=0,
-        base_url=settings.llm_base_url,
-        api_key=settings.llm_api_key,
-    )
+    llm = get_llm(temperature=0)
     return create_react_agent(llm, tools=[ContextRAG], prompt=SYSTEM_PROMPT)

@@ -20,10 +20,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from langchain_openai import ChatOpenAI
 from neo4j import Driver
 
-from chatpid.config import get_settings
+from chatpid.llm import get_llm
 
 
 # === Semantic enrichment (Algorithm 1, Section 3.2.2) ======================
@@ -87,14 +86,10 @@ class NodeSemantics:
     local_semantic: str
 
 
-def _get_llm(model: str) -> ChatOpenAI:
-    settings = get_settings()
-    return ChatOpenAI(
-        model=model,
-        temperature=0,
-        base_url=settings.llm_base_url,
-        api_key=settings.llm_api_key,
-    )
+def _get_llm(model: str):
+    """Get an LLM instance. The model param is ignored when using the factory
+    (model comes from .env). Kept for API compatibility."""
+    return get_llm(temperature=0)
 
 
 def generate_global_semantic(
