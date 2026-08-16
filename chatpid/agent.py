@@ -8,12 +8,14 @@ rather than baked into the graph).
 
 Only ContextRAG is wired in for now (the only fully implemented tool).
 Uncomment the others in tools=[...] below as you implement them.
+
+Uses Groq for LLM inference via the OpenAI-compatible API.
 """
 
 from __future__ import annotations
 
 from langchain_core.tools import tool
-from langchain_google_genai import ChatGoogleGenerativeAI
+from langchain_openai import ChatOpenAI
 from langgraph.prebuilt import create_react_agent
 from neo4j import Driver
 
@@ -57,5 +59,10 @@ def build_agent(driver: Driver):
         """
         return context_rag(driver, level=level, mode=mode)
 
-    llm = ChatGoogleGenerativeAI(model=settings.chat_model, temperature=0)
+    llm = ChatOpenAI(
+        model=settings.chat_model,
+        temperature=0,
+        base_url=settings.llm_base_url,
+        api_key=settings.llm_api_key,
+    )
     return create_react_agent(llm, tools=[ContextRAG], prompt=SYSTEM_PROMPT)

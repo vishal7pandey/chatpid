@@ -20,7 +20,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
+from langchain_openai import ChatOpenAI
 from neo4j import Driver
 
 from chatpid.config import get_settings
@@ -87,14 +87,23 @@ class NodeSemantics:
     local_semantic: str
 
 
+def _get_llm(model: str) -> ChatOpenAI:
+    settings = get_settings()
+    return ChatOpenAI(
+        model=model,
+        temperature=0,
+        base_url=settings.llm_base_url,
+        api_key=settings.llm_api_key,
+    )
+
+
 def generate_global_semantic(
     model: str, labels: list[str], properties: dict, flowsheet_repr: str
 ) -> str:
     prompt = GLOBAL_SEMANTIC_PROMPT.format(
         labels=labels, properties=properties, flowsheet_representation=flowsheet_repr
     )
-    llm = ChatGoogleGenerativeAI(model=model, temperature=0)
-    return llm.invoke(prompt).content
+    return _get_llm(model).invoke(prompt).content
 
 
 def generate_local_semantic(
@@ -110,8 +119,7 @@ def generate_local_semantic(
         incoming_connections=incoming,
         outgoing_connections=outgoing,
     )
-    llm = ChatGoogleGenerativeAI(model=model, temperature=0)
-    return llm.invoke(prompt).content
+    return _get_llm(model).invoke(prompt).content
 
 
 def enrich_all_nodes(driver: Driver, level: str = "conceptual") -> list[NodeSemantics]:
@@ -128,17 +136,20 @@ def enrich_all_nodes(driver: Driver, level: str = "conceptual") -> list[NodeSema
 
 # === Embeddings (Section 3.2.2) ============================================
 #
-# The paper uses Voyage-3.5-lite (1024-dim); this defaults to Google's
-# text-embedding-004 (768-dim) so the project only needs one API key.
+# The paper uses Voyage-3.5-lite (1024-dim). Groq doesn't offer an embeddings
+# endpoint, so we use a local HuggingFace sentence-transformers model
+# (all-MiniLM-L6-v2, 384-dim) — no API key needed, runs on CPU.
 # Swap via CHATPID_EMBEDDING_MODEL in .env if you want a different model.
 
 
 def embed_text(model: str, text: str) -> list[float]:
-    embedder = GoogleGenerativeAIEmbeddings(model=model)
+    from langchain_huggingface import HuggingFaceEmbeddings
+
+    embedder = HuggingFaceEmbeddings(model_name=model)
     return embedder.embed_query(text)
 
 
-def ensure_vector_indexes(driver: Driver, dimensions: int = 768) -> None:
+def ensure_vector_indexes(driver: Driver, dimensions: int = 384) -> None:
     """Create Neo4j vector indexes for global/local semantic embeddings."""
     with driver.session() as session:
         for index_name, prop in (
