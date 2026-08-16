@@ -103,26 +103,50 @@ def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str) -> None:
     so ingestion is idempotent. Each node/relationship is tagged with a `level`
     property so all three abstractions coexist in one database.
 
-    NOTE: defensive, generic NetworkX -> Neo4j mapper. Has not yet been run
-    against real pyDEXPI output — the attribute-name fallbacks (`labels`,
-    `type`, `tag`) may need adjusting once you inspect
-    graph.nodes(data=True) / graph.edges(data=True) for the actual schema
-    GraphAbstractor produces. First thing to verify (SCRUM-356).
+    NOTE: pyDEXPI's `labels` attribute is a colon-separated STRING (e.g.
+    "GlobeValve:OperatedValve:PipingComponent:..."), not a list — so we split
+    on ":". pyDEXPI also doesn't have a single `tag` attribute; the tag
+    identifier lives in different fields depending on node type (tagName for
+    major equipment, positionNumber for valves, pipingComponentNumber for
+    piping components, etc.). We compute a `tag` property from the first
+    available identifier so ContextRAG's `n.tag` query works.
     """
     clear_level(driver, level)
 
+    # pyDEXPI identifier fields, in priority order — first non-empty wins.
+    TAG_FIELDS = (
+        "tagName",
+        "positionNumber",
+        "pipingComponentNumber",
+        "actuatingSystemNumber",
+        "processInstrumentationFunctionNumber",
+        "processSignalGeneratingFunctionNumber",
+        "instrumentationLoopFunctionNumber",
+        "subTagName",
+    )
+
     with driver.session() as session:
         for node_id, data in graph.nodes(data=True):
-            raw_labels = data.get("labels") or [data.get("type", "Node")]
+            raw_labels = data.get("labels")
+            if isinstance(raw_labels, str):
+                label_list = [l for l in raw_labels.split(":") if l]
+            elif raw_labels:
+                label_list = list(raw_labels)
+            else:
+                label_list = [data.get("label") or data.get("type") or "Node"]
             # Every node also gets the generic `Node` label so tools (vector
             # indexes, ContextRAG, etc.) can query across all pyDEXPI classes
             # without enumerating them.
             label_str = ":".join(
-                dict.fromkeys(["Node", *(_safe_label(l) for l in raw_labels)])
+                dict.fromkeys(["Node", *(_safe_label(l) for l in label_list)])
             )
             props = {k: _serialize_value(v) for k, v in data.items() if k != "labels"}
             props["element_id"] = str(node_id)
             props["level"] = level
+            # Compute a human-readable tag from the first available identifier
+            props["tag"] = next(
+                (str(data[f]) for f in TAG_FIELDS if data.get(f)), data.get("label") or "Node"
+            )
             session.run(
                 f"MERGE (n:{label_str} {{element_id: $element_id, level: $level}}) "
                 f"SET n += $props",
