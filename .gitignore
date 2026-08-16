@@ -1,0 +1,21 @@
+.venv/
+__pycache__/
+*.pyc
+.env
+.ruff_cache/
+.pytest_cache/
+uv.lock
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# IDE
+.idea/
+.vscode/
+
+# DEXPI reference sample is (c) DEXPI e.V. - fetched on demand, not committed
+data/raw/*.xml
+!data/raw/.gitkeep
