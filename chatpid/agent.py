@@ -13,7 +13,7 @@ Uncomment the others in tools=[...] below as you implement them.
 from __future__ import annotations
 
 from langchain_core.tools import tool
-from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langgraph.prebuilt import create_react_agent
 from neo4j import Driver
 
@@ -57,5 +57,5 @@ def build_agent(driver: Driver):
         """
         return context_rag(driver, level=level, mode=mode)
 
-    llm = ChatOpenAI(model=settings.chat_model, temperature=0)
+    llm = ChatGoogleGenerativeAI(model=settings.chat_model, temperature=0)
     return create_react_agent(llm, tools=[ContextRAG], prompt=SYSTEM_PROMPT)

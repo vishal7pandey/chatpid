@@ -10,8 +10,7 @@ dependencies = [
     "neo4j>=5.22",
     "langgraph>=0.2",
     "langchain-core>=0.3",
-    "langchain-openai>=0.2",
-    "openai>=1.40",
+    "langchain-google-genai>=2.0",
     "python-dotenv>=1.0",
     "pydantic>=2.8",
 ]

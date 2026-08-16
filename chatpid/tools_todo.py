@@ -20,8 +20,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from neo4j import Driver
-from openai import OpenAI
 
 from chatpid.config import get_settings
 
@@ -88,17 +88,16 @@ class NodeSemantics:
 
 
 def generate_global_semantic(
-    client: OpenAI, model: str, labels: list[str], properties: dict, flowsheet_repr: str
+    model: str, labels: list[str], properties: dict, flowsheet_repr: str
 ) -> str:
     prompt = GLOBAL_SEMANTIC_PROMPT.format(
         labels=labels, properties=properties, flowsheet_representation=flowsheet_repr
     )
-    response = client.responses.create(model=model, input=prompt)
-    return response.output_text
+    llm = ChatGoogleGenerativeAI(model=model, temperature=0)
+    return llm.invoke(prompt).content
 
 
 def generate_local_semantic(
-    client: OpenAI,
     model: str,
     node_labels: list[str],
     node_properties: dict,
@@ -111,8 +110,8 @@ def generate_local_semantic(
         incoming_connections=incoming,
         outgoing_connections=outgoing,
     )
-    response = client.responses.create(model=model, input=prompt)
-    return response.output_text
+    llm = ChatGoogleGenerativeAI(model=model, temperature=0)
+    return llm.invoke(prompt).content
 
 
 def enrich_all_nodes(driver: Driver, level: str = "conceptual") -> list[NodeSemantics]:
@@ -129,17 +128,17 @@ def enrich_all_nodes(driver: Driver, level: str = "conceptual") -> list[NodeSema
 
 # === Embeddings (Section 3.2.2) ============================================
 #
-# The paper uses Voyage-3.5-lite (1024-dim); this defaults to OpenAI's
-# text-embedding-3-small (1536-dim) so the project only needs one API key.
-# Swap via CHATPID_EMBEDDING_MODEL in .env if you add a Voyage key later.
+# The paper uses Voyage-3.5-lite (1024-dim); this defaults to Google's
+# text-embedding-004 (768-dim) so the project only needs one API key.
+# Swap via CHATPID_EMBEDDING_MODEL in .env if you want a different model.
 
 
-def embed_text(client: OpenAI, model: str, text: str) -> list[float]:
-    response = client.embeddings.create(model=model, input=text)
-    return response.data[0].embedding
+def embed_text(model: str, text: str) -> list[float]:
+    embedder = GoogleGenerativeAIEmbeddings(model=model)
+    return embedder.embed_query(text)
 
 
-def ensure_vector_indexes(driver: Driver, dimensions: int = 1536) -> None:
+def ensure_vector_indexes(driver: Driver, dimensions: int = 768) -> None:
     """Create Neo4j vector indexes for global/local semantic embeddings."""
     with driver.session() as session:
         for index_name, prop in (
@@ -189,8 +188,7 @@ def vector_rag(
         raise ValueError(f"index must be one of {VALID_INDEXES}, got {index!r}")
 
     settings = get_settings()
-    client = OpenAI()
-    query_vector = embed_text(client, settings.embedding_model, query)
+    query_vector = embed_text(settings.embedding_model, query)
     embedding_prop = (
         "global_semantic_embedding"
         if index == "global_semantic_index"
