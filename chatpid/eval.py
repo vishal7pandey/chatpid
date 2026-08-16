@@ -48,47 +48,92 @@ def extract_token_usage(result: dict) -> dict:
     return usage
 
 
-def run_benchmark(level: str = "conceptual", limit: int | None = None) -> list[dict]:
-    """Run the benchmark and return per-question results."""
+def run_benchmark(
+    level: str = "conceptual",
+    limit: int | None = None,
+    delay: float = 5.0,
+    skip_ids: list[int] | None = None,
+) -> list[dict]:
+    """Run the benchmark and return per-question results.
+
+    Args:
+        level: graph abstraction level to test.
+        limit: run only the first N questions.
+        delay: seconds to wait between questions (rate-limit protection).
+        skip_ids: question IDs to skip (for resuming after a partial run).
+    """
     settings = get_settings()
     driver = get_driver()
     results = []
+    skip = set(skip_ids or [])
 
     questions = BENCHMARK_QUESTIONS[:limit] if limit else BENCHMARK_QUESTIONS
 
     try:
         agent = build_agent(driver)
         for q in questions:
+            if q["id"] in skip:
+                print(f"\n[{q['id']}/19] SKIP (already completed)")
+                continue
+
             print(f"\n[{q['id']}/19] ({q['category']}) {q['question'][:80]}...")
 
-            start = time.time()
-            result = agent.invoke(
-                {"messages": [{"role": "user", "content": q["question"]}]},
-                config={"recursion_limit": 10},
-            )
-            elapsed = time.time() - start
+            try:
+                start = time.time()
+                result = agent.invoke(
+                    {"messages": [{"role": "user", "content": q["question"]}]},
+                    config={"recursion_limit": 10},
+                )
+                elapsed = time.time() - start
 
-            answer = result["messages"][-1].content
-            usage = extract_token_usage(result)
-            cost = estimate_cost(
-                settings.chat_model, usage["prompt_tokens"], usage["completion_tokens"]
-            )
+                answer = result["messages"][-1].content
+                usage = extract_token_usage(result)
+                cost = estimate_cost(
+                    settings.chat_model,
+                    usage["prompt_tokens"],
+                    usage["completion_tokens"],
+                )
 
-            entry = {
-                "id": q["id"],
-                "category": q["category"],
-                "question": q["question"],
-                "reference_answer": q["reference_answer"],
-                "agent_answer": answer,
-                "model": settings.chat_model,
-                "level": level,
-                "tokens": usage,
-                "cost_usd": round(cost, 6),
-                "latency_seconds": round(elapsed, 2),
-            }
-            results.append(entry)
-            print(f"  Answer: {answer[:120]}...")
-            print(f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
+                entry = {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": answer,
+                    "model": settings.chat_model,
+                    "level": level,
+                    "tokens": usage,
+                    "cost_usd": round(cost, 6),
+                    "latency_seconds": round(elapsed, 2),
+                }
+                results.append(entry)
+                print(f"  Answer: {answer[:120]}...")
+                print(f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
+            except Exception as exc:
+                # Save partial result with error info so we can resume later
+                entry = {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": f"ERROR: {type(exc).__name__}: {exc!s:.200}",
+                    "model": settings.chat_model,
+                    "level": level,
+                    "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+                    "cost_usd": 0.0,
+                    "latency_seconds": 0.0,
+                    "error": str(exc),
+                }
+                results.append(entry)
+                print(f"  ERROR: {exc!s:.200}")
+                # If it's a rate limit error, stop trying more questions
+                if "rate_limit" in str(exc).lower() or "429" in str(exc):
+                    print("  Rate limit hit — stopping. Partial results saved.")
+                    break
+
+            # Rate-limit protection: wait between questions
+            if delay > 0:
+                time.sleep(delay)
     finally:
         driver.close()
 

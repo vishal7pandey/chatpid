@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The cylinder length of tank T4750 is 4.0 m, as indicated by the tag 'T4750' and attribute 'cylinderLength'.",
+    "model": "llama-3.3-70b-versatile",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 11160,
+      "completion_tokens": 55,
+      "total_tokens": 11215
+    },
+    "cost_usd": 0.006628,
+    "latency_seconds": 3.42
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m²",
+    "agent_answer": "The design heat transfer area of heat exchanger H1007 is 46.8 m2.",
+    "model": "llama-3.3-70b-versatile",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 11168,
+      "completion_tokens": 43,
+      "total_tokens": 11211
+    },
+    "cost_usd": 0.006623,
+    "latency_seconds": 50.39
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The design pressure of pump P4711 is 60.0 bar.",
+    "model": "llama-3.3-70b-versatile",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 5038,
+      "completion_tokens": 38,
+      "total_tokens": 5076
+    },
+    "cost_usd": 0.003002,
+    "latency_seconds": 25.05
+  }
+]

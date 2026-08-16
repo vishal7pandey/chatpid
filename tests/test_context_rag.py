@@ -11,27 +11,26 @@ from unittest.mock import MagicMock
 from chatpid.context_rag import context_rag
 
 
-def _fake_record(source_labels, source_tag, source_props, relationship, target_labels, target_tag):
-    return {
-        "source_labels": source_labels,
-        "source_tag": source_tag,
-        "source_props": source_props,
-        "relationship": relationship,
-        "target_labels": target_labels,
-        "target_tag": target_tag,
-    }
-
-
-def test_context_rag_topology_mode_formats_edges():
+def test_context_rag_topology_mode_formats_nodes_and_edges():
     driver = MagicMock()
     session = driver.session.return_value.__enter__.return_value
-    session.run.return_value = [
-        _fake_record(["Node", "Pump"], "P1", {"level": "conceptual", "element_id": "1"}, "CONNECTED_TO", ["Node", "Tank"], "T1"),
+
+    # Mock: first run returns nodes, second run returns edges
+    session.run.side_effect = [
+        # Nodes
+        [
+            {"tag": "P1", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "element_id": "1"}},
+        ],
+        # Edges
+        [
+            {"source": "P1", "rel": "CONNECTED_TO", "target": "T1"},
+        ],
     ]
 
     result = context_rag(driver, level="conceptual", mode="topology")
 
-    assert result == "P1 --CONNECTED_TO--> T1"
+    assert "[P1]" in result
+    assert "P1 --CONNECTED_TO--> T1" in result
 
 
 def test_context_rag_rejects_unknown_level():

@@ -13,7 +13,24 @@ from neo4j import Driver
 VALID_MODES = ("graph", "topology")
 VALID_LEVELS = ("complete", "process", "conceptual")
 
-_NON_CONTENT_PROPS = {"level", "element_id"}
+# Properties that are internal metadata, not engineering content.
+_NON_CONTENT_PROPS = {
+    "level",
+    "element_id",
+    "proteusId",
+    "tagNamePrefix",
+    "tagNameSequenceNumber",
+    "tagNameSuffix",
+    "nominalDiameterTypeRepresentation",
+    "nominalDiameterNumericalValueRepresentation",
+    "nominalDiameterStandard",
+    "primarySecondaryPipingNetworkSegment",
+    "collapsed_from",
+    "collapsed_node_id",
+    "stitched_from",
+    "labels",
+    "label_description",
+}
 
 
 def context_rag(driver: Driver, level: str = "conceptual", mode: str = "graph") -> str:
@@ -31,39 +48,40 @@ def context_rag(driver: Driver, level: str = "conceptual", mode: str = "graph") 
     if mode not in VALID_MODES:
         raise ValueError(f"mode must be one of {VALID_MODES}, got {mode!r}")
 
-    query = """
-    MATCH (n {level: $level})
-    OPTIONAL MATCH (n)-[r {level: $level}]->(m {level: $level})
-    RETURN labels(n) AS source_labels, n.tag AS source_tag, n AS source_props,
-           type(r) AS relationship,
-           labels(m) AS target_labels, m.tag AS target_tag
-    """
-
     lines: list[str] = []
-    with driver.session() as session:
-        for record in session.run(query, level=level):
-            source_labels = [
-                l for l in (record["source_labels"] or []) if l != "Node"
-            ]
-            source = record["source_tag"] or "/".join(source_labels) or "Node"
 
+    with driver.session() as session:
+        # --- Nodes: output each node once with its properties ---
+        node_query = """
+        MATCH (n {level: $level})
+        RETURN n.tag AS tag, labels(n) AS labels, n AS props
+        """
+        for record in session.run(node_query, level=level):
+            tag = record["tag"] or "Node"
             if mode == "graph":
                 props = {
                     k: v
-                    for k, v in dict(record["source_props"]).items()
+                    for k, v in dict(record["props"]).items()
                     if k not in _NON_CONTENT_PROPS and v is not None
                 }
-                source_repr = f"{source} {props}" if props else source
+                if props:
+                    # Compact property formatting: key=value pairs
+                    prop_str = ", ".join(f"{k}={v}" for k, v in sorted(props.items()))
+                    lines.append(f"[{tag}] {prop_str}")
+                else:
+                    lines.append(f"[{tag}]")
             else:
-                source_repr = source
+                lines.append(f"[{tag}]")
 
-            if record["relationship"]:
-                target_labels = [
-                    l for l in (record["target_labels"] or []) if l != "Node"
-                ]
-                target = record["target_tag"] or "/".join(target_labels) or "Node"
-                lines.append(f"{source_repr} --{record['relationship']}--> {target}")
-            else:
-                lines.append(source_repr)
+        # --- Edges: output each edge once ---
+        edge_query = """
+        MATCH (a {level: $level})-[r {level: $level}]->(b {level: $level})
+        RETURN a.tag AS source, type(r) AS rel, b.tag AS target
+        """
+        for record in session.run(edge_query, level=level):
+            source = record["source"] or "Node"
+            target = record["target"] or "Node"
+            rel = record["rel"] or "RELATED_TO"
+            lines.append(f"{source} --{rel}--> {target}")
 
-    return "\n".join(dict.fromkeys(lines))  # de-dupe while preserving order
+    return "\n".join(lines)
