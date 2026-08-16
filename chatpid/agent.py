@@ -8,13 +8,11 @@ rather than baked into the graph).
 
 Tools wired in:
   - ContextRAG: condensed graph text (Section 3.3.1)
+  - VectorRAG: semantic similarity search (Section 3.3.2)
   - PathRAG: locate-and-trace path exploration (Section 3.3.3)
   - CypherRAG: LLM-translated Cypher queries (Section 3.3.4)
 
-Not yet wired (needs semantic enrichment + embeddings):
-  - VectorRAG: semantic similarity search (Section 3.3.2)
-
-LLM provider is selected by the LLM_PROVIDER env var (groq|gemini).
+LLM provider is selected by the LLM_PROVIDER env var (openai|groq|gemini).
 """
 
 from __future__ import annotations
@@ -27,6 +25,7 @@ from chatpid.context_rag import context_rag
 from chatpid.cypher_rag import cypher_rag_text
 from chatpid.llm import get_llm
 from chatpid.path_rag import path_rag_text
+from chatpid.vector_rag import vector_rag_text
 
 SYSTEM_PROMPT = """\
 You are ChatP&ID, an assistant that answers questions about a Piping and \
@@ -42,6 +41,9 @@ number of tool calls that gets you a correct, well-grounded answer.
 Tool selection guide:
   - ContextRAG: best for broad/summarization questions or when you need the
     general shape of the process. Returns the full graph as text.
+  - VectorRAG: best for finding specific components by semantic similarity
+    ("which equipment controls temperature", "find all pumps"). Returns the
+    top-k most relevant nodes with their semantic descriptions.
   - PathRAG: best for path/flow tracing questions ("trace the flow from X to
     Y", "how to isolate Z", "what's upstream of W"). Traces paths through
     the graph starting from relevant nodes.
@@ -101,5 +103,22 @@ def build_agent(driver: Driver):
         """
         return cypher_rag_text(driver, query, level=level)
 
+    @tool
+    def VectorRAG(query: str, index: str = "global_semantic_index", top_k: int = 5, level: str = "conceptual") -> str:
+        """Find nodes by semantic similarity to the query.
+
+        Use for finding relevant components when you don't know the exact tag
+        ("which equipment controls temperature", "find all pumps"). Returns
+        the top-k most relevant nodes with their semantic descriptions.
+
+        Args:
+            query: natural language search query.
+            index: "global_semantic_index" (whole-flowsheet role) or
+                "local_semantic_index" (immediate neighborhood role).
+            top_k: number of results (default: 5).
+            level: graph abstraction level (default: conceptual).
+        """
+        return vector_rag_text(driver, query, index=index, top_k=top_k, level=level)
+
     llm = get_llm(temperature=0)
-    return create_react_agent(llm, tools=[ContextRAG, PathRAG, CypherRAG], prompt=SYSTEM_PROMPT)
+    return create_react_agent(llm, tools=[ContextRAG, VectorRAG, PathRAG, CypherRAG], prompt=SYSTEM_PROMPT)

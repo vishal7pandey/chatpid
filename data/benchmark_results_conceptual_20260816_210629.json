@@ -1,0 +1,307 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The cylinder length of tank T4750 is 4.0 m.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1879,
+      "completion_tokens": 42,
+      "total_tokens": 1921
+    },
+    "cost_usd": 0.000307,
+    "latency_seconds": 6.97
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m²",
+    "agent_answer": "The design heat transfer area of heat exchanger H1007 is 46.8 m².",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1892,
+      "completion_tokens": 49,
+      "total_tokens": 1941
+    },
+    "cost_usd": 0.000313,
+    "latency_seconds": 4.0
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The design pressure of pump P4711 is 10.0 m.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1896,
+      "completion_tokens": 42,
+      "total_tokens": 1938
+    },
+    "cost_usd": 0.00031,
+    "latency_seconds": 3.76
+  },
+  {
+    "id": 4,
+    "category": "graph_query_single",
+    "question": "What is the design shaft power of pump P4711?",
+    "reference_answer": "60.0 kW",
+    "agent_answer": "The design shaft power of pump P4711 is 60.0 kW.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1884,
+      "completion_tokens": 45,
+      "total_tokens": 1929
+    },
+    "cost_usd": 0.00031,
+    "latency_seconds": 3.84
+  },
+  {
+    "id": 5,
+    "category": "graph_query_single",
+    "question": "What is the design volume flow rate of pump P4712?",
+    "reference_answer": "420.0 m³/h",
+    "agent_answer": "The design volume flow rate of pump P4712 is 420.0 m³/h.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1889,
+      "completion_tokens": 48,
+      "total_tokens": 1937
+    },
+    "cost_usd": 0.000312,
+    "latency_seconds": 3.67
+  },
+  {
+    "id": 6,
+    "category": "graph_query_single",
+    "question": "What is the nominal diameter of valve 66KL21?",
+    "reference_answer": "DN 80",
+    "agent_answer": "It appears that there is no information available regarding the nominal diameter of valve 66KL21 in the P&ID data.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1892,
+      "completion_tokens": 54,
+      "total_tokens": 1946
+    },
+    "cost_usd": 0.000316,
+    "latency_seconds": 5.39
+  },
+  {
+    "id": 7,
+    "category": "graph_query_single",
+    "question": "What is the set pressure of safety valve SV 104.01?",
+    "reference_answer": "6.0 bar",
+    "agent_answer": "The set pressure of safety valve SV 104.01 is 6.0 bar.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 1891,
+      "completion_tokens": 48,
+      "total_tokens": 1939
+    },
+    "cost_usd": 0.000312,
+    "latency_seconds": 4.52
+  },
+  {
+    "id": 8,
+    "category": "graph_query_single",
+    "question": "What is the upper design temperature of tank T4750?",
+    "reference_answer": "100.0 °C",
+    "agent_answer": "I couldn't find the upper design temperature specifically for tank T4750. However, I retrieved some design specifications: \n\n- **Cylinder Length**: 4.0 m\n- **Label**: Tank\n- **Label Description**: A vessel intended to contain fluid for storage, typically with a vertical cylindrical or square shape and a flat or conical bottom.\n\nIf you need more specific information, please let me know!",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 3048,
+      "completion_tokens": 141,
+      "total_tokens": 3189
+    },
+    "cost_usd": 0.000542,
+    "latency_seconds": 9.06
+  },
+  {
+    "id": 9,
+    "category": "graph_query_multi",
+    "question": "List all valves in the P&ID along with their specification.",
+    "reference_answer": "11 valves total: 3 Globe Valves (C1, actuated by HV4750.01/PV4712.02/TV4750.03), 1 Butterfly Valve (66KL21), 1 Swing Check Valve (75SA21/C2), 5 Ball Valves (73KH12, C4/C2/C5/C7/C10), 1 Spring Loaded Globe Safety Valve (SV 104.01). Key specs: nominal diameters DN 25-80, piping classes 73HG12/75HB13, fluid codes MNb/MNc/QSb.",
+    "agent_answer": "The valves in the P&ID along with their specifications are as follows:\n\n1. **Ball Valve**\n   - Tags: C4, C2, C5, C7, C10\n   - Description: A rotary valve that has a ball closure member.\n\n2. **Butterfly Valve**\n   - Tag: C1\n   - Description: A rotary valve that has a closure member of a disc type with a shaft parallel to the plane of the disc.\n\n3. **Swing Check Valve**\n   - Tag: C2\n   - Description: A check valve where the closure member is a disc that swings freely on a hinge.\n\n4. **Globe Valve**\n   - Tag: C1\n   - Description: A valve where the closure member is a disc or piston operating with linear motion.\n\n5. **Spring Loaded Globe Safety Valve**\n   - Tag: SV 104.01\n   - Description: A spring-loaded globe safety valve.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2068,
+      "completion_tokens": 219,
+      "total_tokens": 2287
+    },
+    "cost_usd": 0.000442,
+    "latency_seconds": 10.21
+  },
+  {
+    "id": 10,
+    "category": "graph_query_multi",
+    "question": "List all pipe fittings in the P&ID along with their specification.",
+    "reference_answer": "Pipe Reducers (C3, DN50, 73HG12), Pipe Tees (C3/C1/C4/C8/C9, DN25-50, 75HB13), Blind Flanges (C6/C11, DN25, 75HB13). All fluid code MNc, line 47124/47126.",
+    "agent_answer": "Here are the pipe fittings in the P&ID along with their specifications:\n\n1. **PipeReducer (Tag: C3)**\n   - **Description:** Connects pipes of different nominal sizes.\n   - **Nominal Diameter:** DN 80 (80 mm)\n   - **Standard:** DN 80 (DIN 2448)\n   - **Piping Class Code:** 73HG12\n   - **Proteus ID:** PipeReducer-1\n\n2. **PipeTee (Tag: C1)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50 (50 mm)\n   - **Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-2\n\n3. **PipeTee (Tag: C3)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 25 (25 mm)\n   - **Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-1\n\n4. **PipeTee (Tag: C4)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50 (50 mm)\n   - **Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-3\n\n5. **BlindFlange (Tag: C6)**\n   - **Description:** Flange without a central opening to shut off a pipe end.\n   - **Nominal Diameter:** DN 25 (25 mm)\n   - **Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** BlindFlange-1\n\n6. **PipeTee (Tag: C8)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50 (50 mm)\n   - **Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-4\n\n7. **PipeTee (Tag: C9)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50 (50 mm)\n   - **Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-5\n\n8. **BlindFlange (Tag: C11)**\n   - **Description:** Flange without a central opening to shut off a pipe end.\n   - **Nominal Diameter:** DN 25 (25 mm)\n   - **Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** BlindFlange-2",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2780,
+      "completion_tokens": 721,
+      "total_tokens": 3501
+    },
+    "cost_usd": 0.00085,
+    "latency_seconds": 20.74
+  },
+  {
+    "id": 11,
+    "category": "path_exploration",
+    "question": "If heat exchanger H1007 needs maintenance, can flow still reach tank T4750? Describe the alternative path.",
+    "reference_answer": "If H1007 is bypassed, flow can potentially reach T4750 via H1008 (tubular heat exchanger) if a tie-in point exists on line MNb47123 or via N3 of T4750. However, H1008 controls tank temperature, so using it as an alternative path is not recommended. Currently no bypass tie-in exists.",
+    "agent_answer": "If heat exchanger **H1007** is undergoing maintenance, flow can still reach tank **T4750** through an alternative path. The flow would follow this route:\n\n1. **H1007** (Heat Exchanger) → \n2. **C1** (Globe Valve) → \n3. **C2** (Swing Check Valve) → \n4. **C3** (Pipe Reducer) → \n5. **T4750** (Tank).\n\nThis path allows the fluid to bypass the heat exchanger while still maintaining flow to the tank.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 66780,
+      "completion_tokens": 157,
+      "total_tokens": 66937
+    },
+    "cost_usd": 0.010111,
+    "latency_seconds": 8.55
+  },
+  {
+    "id": 12,
+    "category": "path_exploration",
+    "question": "If you need to isolate tank T4750 from all upstream equipment, which valves would you need to close?",
+    "reference_answer": "Shut the main DN80 feed globe valve (HV4750.01). Close the DN50 globe valve on the recirculation line (PV4712.02).",
+    "agent_answer": "To isolate tank T4750 from all upstream equipment, you need to close the following valves:\n\n1. **C1** - Butterfly Valve\n2. **C2** - Swing Check Valve\n\nThese valves are located in the flow path leading to tank T4750, effectively stopping any fluid from reaching the tank.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 66729,
+      "completion_tokens": 91,
+      "total_tokens": 66820
+    },
+    "cost_usd": 0.010064,
+    "latency_seconds": 9.16
+  },
+  {
+    "id": 13,
+    "category": "path_exploration",
+    "question": "Trace the flow path from tank T4750 to pump P4712.",
+    "reference_answer": "T4750 (Tank) → 66KL21 (Butterfly valve) → 75SA21 (Swing check valve) → Pipe reducer (DN80 to DN50) → 73KH12 (Ball valve) → P4712 (Reciprocating pump)",
+    "agent_answer": "The flow path from tank **T4750** to pump **P4712** can be traced as follows:\n\n1. **T4750** (Tank) connects to **C1** (Butterfly Valve).\n2. **C1** connects to **P4712** (Reciprocating Pump).\n\nThus, the flow path is: **T4750 → C1 → P4712**. \n\nAdditionally, there is a safety valve **SV 104.01** that is also connected to **C1**, indicating that it plays a role in managing the flow from the tank to the pump.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 66631,
+      "completion_tokens": 154,
+      "total_tokens": 66785
+    },
+    "cost_usd": 0.010087,
+    "latency_seconds": 6.18
+  },
+  {
+    "id": 14,
+    "category": "path_exploration",
+    "question": "Working backwards from tank T4750, what are the two possible inlet paths and their source equipment?",
+    "reference_answer": "Path 1: T4750 ← Globe Valve (HV4750.01) ← H1007 (Plate Heat Exchanger) ← P4711 (Centrifugal Pump). Path 2: T4750 ← Globe Valve (TV4712.02/PV4712.02) ← H1008 (Tubular Heat Exchanger).",
+    "agent_answer": "ERROR: OpenAIContextOverflowError: Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 130729 tokens (130142 in the messages, 587 in the functions). Please r",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 0,
+      "completion_tokens": 0,
+      "total_tokens": 0
+    },
+    "cost_usd": 0.0,
+    "latency_seconds": 0.0,
+    "error": "Error code: 400 - {'error': {'message': \"This model's maximum context length is 128000 tokens. However, your messages resulted in 130729 tokens (130142 in the messages, 587 in the functions). Please reduce the length of the messages or functions.\", 'type': 'invalid_request_error', 'param': 'messages', 'code': 'context_length_exceeded'}}"
+  },
+  {
+    "id": 15,
+    "category": "path_exploration",
+    "question": "What is the flow path from pump P4711 to tank T4750?",
+    "reference_answer": "P4711 (Centrifugal Pump) → H1007 (Plate Heat Exchanger) → HV4750.01 (Globe Valve) → T4750 (Tank)",
+    "agent_answer": "The flow path from pump **P4711** to tank **T4750** is as follows:\n\n1. **P4711** (Centrifugal Pump) → \n2. **H1007** (Plate Heat Exchanger) → \n3. **C1** (Globe Valve) → \n4. **T4750** (Tank)\n\nThis path indicates that the fluid is pumped from **P4711** to **H1007**, then flows through **C1** before reaching **T4750**.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 66627,
+      "completion_tokens": 139,
+      "total_tokens": 66766
+    },
+    "cost_usd": 0.010077,
+    "latency_seconds": 5.43
+  },
+  {
+    "id": 16,
+    "category": "knowledge_inference",
+    "question": "Analyze the flowsheet and give recommendations regarding process safety.",
+    "reference_answer": "Key findings: (1) Safety valve SV104.01 set at 6.0 bar but T4750 design pressure is only 0.1/0.05 bar — PSV provides no effective protection. (2) Missing pressure relief for P4711/P4712/H1007/H1008 (design pressure up to 60 bar). (3) Fluid codes MNb/MNc/QSb not defined. (4) Blind flanges without clear isolation points. (5) TV4750.03 fail-open may be unsafe if fluid is heating.",
+    "agent_answer": "Based on the analysis of the flowsheet, here are some recommendations regarding process safety:\n\n1. **Safety Valves**: Ensure that the **Spring Loaded Globe Safety Valve (SV 104.01)** is regularly tested and maintained. It is set to a high pressure of 6.0 bar, which indicates it plays a critical role in preventing overpressure scenarios.\n\n2. **Isolation Valves**: The presence of multiple **Ball Valves (C4, C2, C10)** and **Globe Valves (C1)** allows for effective isolation of sections of the process. Regular checks should be conducted to ensure these valves are operational and can effectively isolate equipment during maintenance or emergencies.\n\n3. **Check Valves**: The **Swing Check Valve (C2)** should be inspected to prevent backflow, which could lead to contamination or process disruptions.\n\n4. **Instrumentation**: The instrumentation loops (e.g., **PT4712.01**, **PT4712.02**) should be calibrated and tested to ensure accurate monitoring of process parameters. This is crucial for maintaining safe operating conditions.\n\n5. **Pressure and Temperature Limits**: Review the design pressure and temperature limits of chambers (e.g., **Chamber 1** with a maximum pressure of 60.0 bar) to ensure they are not exceeded during operation. Implement pressure relief systems where necessary.\n\n6. **Material Compatibility**: Ensure that the materials of construction (e.g., **1.4306**, **1.4308**) are compatible with the fluids being processed to prevent leaks or failures.\n\n7. **Emergency Procedures**: Develop and regularly update emergency response procedures, including evacuation routes and emergency shutdown protocols, especially for high-pressure systems.\n\n8. **Training**: Regular training for personnel on safety protocols, emergency response, and the operation of safety equipment is essential to maintain a safe working environment.\n\n9. **Regular Inspections**: Implement a routine inspection schedule for all piping and equipment to identify wear, corrosion, or other potential failure points before they lead to safety incidents.\n\nBy following these recommendations, the safety of the process can be significantly enhanced, reducing the risk of accidents and ensuring compliance with safety regulations.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 5730,
+      "completion_tokens": 465,
+      "total_tokens": 6195
+    },
+    "cost_usd": 0.001138,
+    "latency_seconds": 6.14
+  },
+  {
+    "id": 17,
+    "category": "knowledge_inference",
+    "question": "List all control valves along with its control philosophy, why and what ifs fail.",
+    "reference_answer": "3 control valves: HV4750.01 (flow control, fail-close — prevents uncontrolled flow into T4750); PV4712.02 (pressure control via PICSA 4712.02, fail-close — prevents return to T4750, may increase downstream pressure); TV4750.03 (temperature control via TICSA 4750.03 for H1008, fail-open — ensures continuous cooling/heating medium flow, may cause overcooling/overheating).",
+    "agent_answer": "Here are the control valves along with their control philosophies and failure modes:\n\n### Control Valves and Control Philosophies:\n1. **Control Valve Tag: C1**\n   - **Control Philosophy:** Linear motion valve with a disc or piston closure member.\n   \n2. **Control Valve Tag: C1** (another type)\n   - **Control Philosophy:** Rotary valve with a disc closure member, shaft parallel to the disc.\n\n3. **Control Valve Tag: C2**\n   - **Control Philosophy:** Rotary valve with a ball closure member.\n\n4. **Control Valve Tag: C4**\n   - **Control Philosophy:** Rotary valve with a ball closure member.\n\n5. **Control Valve Tag: C5**\n   - **Control Philosophy:** Rotary valve with a ball closure member.\n\n6. **Control Valve Tag: C7**\n   - **Control Philosophy:** Rotary valve with a ball closure member.\n\n7. **Control Valve Tag: C10**\n   - **Control Philosophy:** Rotary valve with a ball closure member.\n\n### Failure Modes:\n- **Control Valve C1:** Failure Mode - None\n- **Control Valve C2:** Failure Mode - None\n- **Control Valve C4:** Failure Mode - None\n- **Control Valve C5:** Failure Mode - None\n- **Control Valve C7:** Failure Mode - None\n- **Control Valve C10:** Failure Mode - None\n\nAll listed control valves currently have a failure mode of \"None.\"",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2400,
+      "completion_tokens": 359,
+      "total_tokens": 2759
+    },
+    "cost_usd": 0.000575,
+    "latency_seconds": 11.21
+  },
+  {
+    "id": 18,
+    "category": "knowledge_inference",
+    "question": "What would be the effect if the heating fluid temperature in Heat Exchanger H1007 increased from the design temperature to 120°C?",
+    "reference_answer": "H1007 design: 313 kW, 46.8 m², chamber design temp 100°C. Effects: (1) Increased heat transfer rate, potentially exceeding 313 kW design. (2) Exceeds chamber design temperature by 20°C — thermal stress and equipment damage risk. (3) Downstream T4750 affected, TV4750.03 control loop would need to compensate. (4) TV4750.03 might need to throttle more.",
+    "agent_answer": "If the heating fluid temperature in Heat Exchanger H1007 increases from the design temperature to 120°C, several effects may occur:\n\n1. **Increased Heat Transfer Rate**: The heat exchanger is designed to transfer heat efficiently. A higher temperature of the heating fluid can enhance the heat transfer rate, potentially leading to a more effective heating of the fluid passing through the heat exchanger.\n\n2. **Potential for Overheating**: If the temperature exceeds the maximum allowable temperature for the heat exchanger, it could lead to overheating, which may damage the heat exchanger or other connected components. This could compromise the integrity of the heat exchanger plates and seals.\n\n3. **Increased Pressure Drop**: Higher temperatures can lead to changes in fluid properties, such as viscosity, which may increase the pressure drop across the heat exchanger. This could affect the overall system performance and efficiency.\n\n4. **Thermal Expansion**: The materials used in the heat exchanger may expand at higher temperatures, which could lead to mechanical stresses. If the design does not account for this expansion, it could result in leaks or structural failure.\n\n5. **Impact on Control Systems**: The control systems that monitor and regulate the temperature and flow rates may need to be adjusted to accommodate the higher temperature, ensuring that the system operates within safe limits.\n\nIn summary, while an increase in temperature can enhance heat transfer, it also poses risks of overheating, increased pressure drop, and potential mechanical failure if not properly managed.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 71270,
+      "completion_tokens": 419,
+      "total_tokens": 71689
+    },
+    "cost_usd": 0.010942,
+    "latency_seconds": 34.93
+  },
+  {
+    "id": 19,
+    "category": "graph_summarization",
+    "question": "Based on the P&ID, make a narrative to describe the process flow from the inlet to the final outlet, identifying all major equipment, intermediate streams, and control points in sequence.",
+    "reference_answer": "Inlet → P4711 (centrifugal pump) → H1007 (plate heat exchanger) → HV4750.01 (globe valve, flow control) → T4750 (tank, temp monitored by TICSA4750.03) → 66KL21 (butterfly valve) → 75SA21 (check valve) → pipe reducer DN80→DN50 → 73KH12 (ball valve) → P4712 (reciprocating pump) → tee with SV104.01 (safety valve, 6 bar) → H1008 (tubular heat exchanger, temp control via TV4750.03) → PV4712.02 (return to T4750, pressure control via PICSA 4712.02) → outlet. Three control loops: flow (HV4750.01), pressure (PV4712.02), temperature (TV4750.03).",
+    "agent_answer": "The process flow from the inlet to the final outlet in the P&ID can be described as follows:\n\n1. **Inlet**: The process begins at the **FlowInPipeOffPageConnector**, which serves as a junction for fluid entering the system. This connector indicates that the flow originates from a preceding segment, either on the same or a different P&ID.\n\n2. **Centrifugal Pump (P4711)**: The fluid is directed to the **Centrifugal Pump (P4711)**. This pump is designed to handle a flow rate of 200 m³/h and generates a pressure head of 10 m. It operates at a rotational speed of 600 min⁻¹ and a power of 60 kW, effectively transferring the fluid through the system.\n\n3. **Plate Heat Exchanger (H1007)**: After being pumped, the fluid flows into the **Plate Heat Exchanger (H1007)**. This unit is crucial for thermal energy exchange, designed to transfer heat with a heat flow rate of 313 kW and a heat transfer area of 46.8 m². It ensures that the fluid is either heated or cooled as required by the process.\n\n4. **Globe Valve (C1)**: The fluid then passes through the **Globe Valve (C1)**, which regulates the flow rate within the system. This valve is designed to handle a nominal diameter of DN 80 and is essential for controlling the fluid flow to downstream components.\n\n5. **Downstream Components**: From the globe valve, the fluid continues through a series of pipes and valves, including a **Swing Check Valve (C2)**, which prevents backflow, and a **Pipe Reducer (C3)**, which facilitates the transition between different pipe sizes. Finally, the fluid reaches a **Ball Valve (C4)**, which further regulates the flow before it exits the system.\n\nThis sequence of equipment and control points ensures efficient fluid management and thermal regulation throughout the process, culminating in the final outlet.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 66859,
+      "completion_tokens": 438,
+      "total_tokens": 67297
+    },
+    "cost_usd": 0.010292,
+    "latency_seconds": 9.66
+  }
+]
