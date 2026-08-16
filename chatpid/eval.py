@@ -33,8 +33,17 @@ GEMINI_PRICING = {
     "gemini-1.5-pro": {"input": 1.25, "output": 5.00},
 }
 
+# OpenAI: https://openai.com/api/pricing/
+OPENAI_PRICING = {
+    "gpt-4o-mini": {"input": 0.15, "output": 0.60},
+    "gpt-4o": {"input": 2.50, "output": 10.00},
+    "gpt-4.1-mini": {"input": 0.40, "output": 1.60},
+    "gpt-4.1": {"input": 2.00, "output": 8.00},
+    "gpt-4.1-nano": {"input": 0.10, "output": 0.40},
+}
+
 # Merge all pricing into one lookup
-ALL_PRICING = {**GROQ_PRICING, **GEMINI_PRICING}
+ALL_PRICING = {**GROQ_PRICING, **GEMINI_PRICING, **OPENAI_PRICING}
 
 
 def estimate_cost(model: str, prompt_tokens: int, completion_tokens: int) -> float:

@@ -32,6 +32,8 @@ class Settings:
     llm_api_key: str  # GROQ_API_KEY or OPENAI_API_KEY
     # Gemini-specific
     google_api_key: str
+    # OpenAI direct
+    openai_api_key: str
 
 
 @lru_cache
@@ -51,4 +53,5 @@ def get_settings() -> Settings:
         ),
         llm_api_key=os.environ.get("GROQ_API_KEY", ""),
         google_api_key=os.environ.get("GOOGLE_API_KEY", ""),
+        openai_api_key=os.environ.get("OPENAI_API_KEY", ""),
     )

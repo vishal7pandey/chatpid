@@ -1,11 +1,12 @@
 """LLM factory: returns the right ChatModel based on LLM_PROVIDER setting.
 
 Supports:
+  - "openai" : ChatOpenAI using OpenAI's API (gpt-4o-mini, gpt-4o, etc.)
   - "groq"   : ChatOpenAI pointed at Groq's OpenAI-compatible endpoint
   - "gemini" : ChatGoogleGenerativeAI using Google's native API
 
-Both return a LangChain BaseChatModel, so callers don't need to know
-which provider is active.
+All return a LangChain BaseChatModel, so callers don't need to know
+which provider is active. Switch via LLM_PROVIDER in .env — no code changes.
 """
 
 from __future__ import annotations
@@ -28,7 +29,16 @@ def get_llm(temperature: float = 0) -> BaseChatModel:
             google_api_key=settings.google_api_key,
         )
 
-    # Default: groq (or any OpenAI-compatible endpoint)
+    if settings.llm_provider == "openai":
+        from langchain_openai import ChatOpenAI
+
+        return ChatOpenAI(
+            model=settings.chat_model,
+            temperature=temperature,
+            api_key=settings.openai_api_key,
+        )
+
+    # Default: groq (or any OpenAI-compatible endpoint via base_url)
     from langchain_openai import ChatOpenAI
 
     return ChatOpenAI(
