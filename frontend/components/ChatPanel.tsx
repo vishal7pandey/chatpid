@@ -22,7 +22,7 @@ const TOOL_COLORS: Record<string, string> = {
   CypherRAG: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
 };
 
-const SUGGESTED_QUESTIONS = [
+const DEFAULT_QUESTIONS = [
   'What is the cylinder length of tank T4750?',
   'Trace the flow path from tank T4750 to pump P4712.',
   'List all valves in the P&ID along with their specifications.',
@@ -31,9 +31,11 @@ const SUGGESTED_QUESTIONS = [
 
 interface ChatPanelProps {
   onTouchedNodes?: (nodes: string[]) => void;
+  demoQuestions?: string[];
 }
 
-export function ChatPanel({ onTouchedNodes }: ChatPanelProps) {
+export function ChatPanel({ onTouchedNodes, demoQuestions }: ChatPanelProps) {
+  const suggested = demoQuestions || DEFAULT_QUESTIONS;
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -111,7 +113,7 @@ export function ChatPanel({ onTouchedNodes }: ChatPanelProps) {
               ))}
             </div>
             <div className="space-y-2 w-full max-w-md">
-              {SUGGESTED_QUESTIONS.map((q) => (
+              {suggested.map((q, i) => (
                 <button
                   key={q}
                   onClick={() => send(q)}
@@ -122,6 +124,7 @@ export function ChatPanel({ onTouchedNodes }: ChatPanelProps) {
                     backgroundColor: 'var(--hover-bg)',
                   }}
                 >
+                  <span className="font-semibold mr-1.5" style={{ color: 'var(--brand-primary)' }}>{i + 1}.</span>
                   {q}
                 </button>
               ))}
