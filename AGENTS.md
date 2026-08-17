@@ -129,7 +129,7 @@ Key fixes applied during SCRUM-372:
 | Ticket | Status | Notes |
 |---|---|---|
 | SCRUM-373 | Done | Model x tool benchmark: 3 models x 4 tools, 228 LLM calls |
-| SCRUM-376 | To Do | Multi-agent supervisor spike |
+| SCRUM-376 | Done | Multi-agent supervisor spike: 7/19 correct, 10/19 partial, 2/19 incorrect |
 
 ### SCRUM-373 Model x Tool Results (2026-08-17)
 
@@ -157,6 +157,27 @@ Cost per question:
 - gpt-oss-20b is the cost leader ($0.000016/Q) but less accurate
 - **gpt-4o-mini remains the best accuracy/cost sweet spot** for ContextRAG
 - Gemini excluded — free tier rate-limited after ~20 calls (429 RESOURCE_EXHAUSTED)
+
+### SCRUM-376 Supervisor Spike Results (2026-08-17)
+
+Results file: `data/supervisor_benchmark_20260817_193637_scored.json`
+
+Architecture: Fan-out all 4 tools in parallel (ThreadPoolExecutor), then supervisor LLM synthesizes answer from all tool outputs.
+
+| Metric | Single-Agent (SCRUM-372) | Supervisor (SCRUM-376) |
+|---|---|---|
+| Correct | 6/19 (32%) | 7/19 (37%) |
+| Partial | 8/19 (42%) | 10/19 (53%) |
+| Incorrect | 5/19 (26%) | 2/19 (11%) |
+| Cost/Q | $0.00058 | $0.00066 |
+| Avg latency | 7.6s | 12.8s |
+
+**Key findings:**
+- Supervisor improves accuracy: 17/19 correct+partial (vs 14/19 for single-agent)
+- Incorrect answers dropped from 5 to 2 — parallel tools provide redundancy
+- Cost only 14% higher — fan-out is cheap, synthesis is one LLM call
+- Path questions improved most: 5/5 partial (was 0/5 partial) — ContextRAG fills gaps when PathRAG fails
+- CypherRAG errors (6/19) masked by other tools — no single point of failure
 
 Known issues:
 - Q6 (nominal diameter of valve 66KL21): data not in conceptual graph, agent loops trying to find it
