@@ -1,0 +1,26 @@
+# ChatP&ID API — FastAPI wrapper
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Install uv for fast dependency management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
+
+# Copy project files
+COPY pyproject.toml .
+COPY chatpid/ chatpid/
+COPY scripts/ scripts/
+COPY data/ data/
+COPY .env.example .env.example
+
+# Install dependencies
+RUN uv sync --no-dev
+
+# Expose API port
+EXPOSE 8000
+
+# Start the API + run seed ingestion on first boot
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
+
+ENTRYPOINT ["/docker-entrypoint.sh"]
