@@ -84,9 +84,9 @@ act → observe → (answer | another tool) loop, capped by a tool-call limit.
 | Tool | What it does | Status |
 |---|---|---|
 | `ContextRAG` | Exports one graph level as compact text (paper's best accuracy/cost tradeoff) | **implemented** |
-| `VectorRAG` | Cosine similarity search over LLM-generated node embeddings | scaffolded, needs enrichment pipeline |
-| `PathRAG` | VectorRAG to find a starting node, then hop through neighbors ("locate-and-trace") | scaffolded, needs VectorRAG |
-| `CypherRAG` | LLM translates the question into a Cypher query; Neo4j validates it | scaffolded |
+| `VectorRAG` | Cosine similarity search over LLM-generated node embeddings | **implemented** |
+| `PathRAG` | VectorRAG to find a starting node, then hop through neighbors ("locate-and-trace") | **implemented** |
+| `CypherRAG` | LLM translates the question into a Cypher query; Neo4j validates it | **implemented** |
 
 ## Setup
 
@@ -100,18 +100,50 @@ uv run python scripts/01_ingest.py
 uv run python scripts/ask.py "What is the design volume flow rate of pump P4712?"
 ```
 
+## Try the demo in 5 minutes (Docker)
+
+The fastest way to see ChatP&ID working — no manual setup, no Python env:
+
+```bash
+# 1. Set your OpenAI API key (the only thing you need to provide)
+export OPENAI_API_KEY=sk-...
+
+# 2. One command brings up Neo4j + API + frontend + auto-seeds the P&ID
+docker compose up --build
+
+# 3. Open the demo UI
+#    http://localhost:3000  — chat + graph visualization
+#    http://localhost:8000  — API (POST /ask, GET /graph)
+#    http://localhost:7474  — Neo4j browser (neo4j / chatpid_dev_pw)
+```
+
+On first boot, the API container automatically:
+1. Waits for Neo4j to be ready
+2. Fetches the DEXPI reference P&ID (`C01V04-VER.EX01.xml`)
+3. Ingests it into Neo4j at all 3 abstraction levels (complete/process/conceptual)
+4. Starts the FastAPI server
+
+The frontend loads with 4 suggested questions that hit different GraphRAG tools
+(CypherRAG for lookups, PathRAG for flow tracing, ContextRAG for analysis).
+Click through them to see the agent pick its own retrieval strategy per question,
+with the graph panel highlighting which nodes it touched.
+
+To stop: `docker compose down` (data persists in the `neo4j_data` volume).
+
+
 ## Roadmap
 
 1. ~~Ingestion pipeline (DEXPI → 3 graph levels → Neo4j)~~ — done
-2. ~~ContextRAG + LangGraph ReAct agent~~ — done, this is the first thing to
-   actually run end to end
-3. Semantic enrichment (`chatpid/tools_todo.py` — `enrich_all_nodes`) — generate
-   global/local node descriptions via LLM
-4. Embeddings + Neo4j vector indexes (`chatpid/tools_todo.py` — `enrich_and_index`) → unblocks
-   `VectorRAG`
-5. `PathRAG` (builds on VectorRAG)
-6. `CypherRAG` (independent — could be pulled forward before 3–5 if you want
-   schema-aware querying sooner)
-7. Add all implemented tools to `chatpid/agent.py`'s `tools=[...]` list
-8. Bigger/real P&IDs; multi-page flowsheets; multi-agent supervisor (paper's
-   own stated future direction)
+2. ~~ContextRAG + LangGraph ReAct agent~~ — done
+3. ~~Semantic enrichment — global/local node descriptions via LLM~~ — done
+4. ~~Embeddings + Neo4j vector indexes → VectorRAG~~ — done
+5. ~~PathRAG (locate-and-trace path exploration)~~ — done
+6. ~~CypherRAG (LLM-translated Cypher queries)~~ — done
+7. ~~All 4 tools wired into agent~~ — done
+8. ~~Eval harness (LLM-as-judge + semantic similarity)~~ — done
+9. ~~Denser P&ID graphs + level scaling comparison~~ — done
+10. ~~Model x tool benchmark (3 models x 4 tools)~~ — done
+11. ~~Multi-agent supervisor spike (parallel tool agents)~~ — done
+12. ~~FastAPI wrapper + Next.js frontend (chat + graph panels)~~ — done
+13. ~~One-click Docker demo deployment~~ — done
+14. Real engineering tasks (flowsheet modification, HAZOP) — future work
