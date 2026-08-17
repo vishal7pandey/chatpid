@@ -124,6 +124,40 @@ Key fixes applied during SCRUM-372:
 4. **System prompt tuning** — balanced prompt directs path questions to PathRAG (cheaper) while allowing ContextRAG for broad questions
 5. **Recursion limit** — increased from 10 to 25 to give agent room to retry with different tools
 
+## Sprint 5 Status (as of 2026-08-17)
+
+| Ticket | Status | Notes |
+|---|---|---|
+| SCRUM-373 | Done | Model x tool benchmark: 3 models x 4 tools, 228 LLM calls |
+| SCRUM-376 | To Do | Multi-agent supervisor spike |
+
+### SCRUM-373 Model x Tool Results (2026-08-17)
+
+Results file: `data/model_benchmark_20260817_181522_scored.json`
+
+Accuracy (correct/19):
+| Model | ContextRAG | VectorRAG | PathRAG | CypherRAG |
+|---|---|---|---|---|
+| gpt-4o-mini | 6/19 | 0/19 | 1/19 | 6/19 |
+| gpt-oss-120b | 8/19 | 0/19 | 1/19 | 6/19 |
+| gpt-oss-20b | 7/19 | 0/19 | 1/19 | 6/19 |
+
+Cost per question:
+| Model | ContextRAG | VectorRAG | PathRAG | CypherRAG |
+|---|---|---|---|---|
+| gpt-4o-mini | $0.000492 | $0.000037 | $0.000160 | $0.000097 |
+| gpt-oss-120b | $0.001916 | $0.000193 | $0.000566 | $0.000249 |
+| gpt-oss-20b | $0.000174 | $0.000016 | $0.000046 | $0.000026 |
+
+**Key findings:**
+- ContextRAG is the clear accuracy winner across all models (6-8/19 correct)
+- CypherRAG matches ContextRAG on specific factual questions but fails on path/flow (6 syntax errors)
+- VectorRAG and PathRAG score 0-1/19 standalone — they're retrieval tools meant to feed the agent, not answer directly
+- gpt-oss-120b is the accuracy leader (8/19) but costs 4x more than gpt-4o-mini
+- gpt-oss-20b is the cost leader ($0.000016/Q) but less accurate
+- **gpt-4o-mini remains the best accuracy/cost sweet spot** for ContextRAG
+- Gemini excluded — free tier rate-limited after ~20 calls (429 RESOURCE_EXHAUSTED)
+
 Known issues:
 - Q6 (nominal diameter of valve 66KL21): data not in conceptual graph, agent loops trying to find it
 - Q8 (upper design temperature): data not in conceptual graph
