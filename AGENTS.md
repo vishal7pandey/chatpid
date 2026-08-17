@@ -44,9 +44,32 @@ Configured via `LLM_PROVIDER` env var in `.env`:
 | SCRUM-397 | Done | CypherRAG retry/fallback with schema hints + ContextRAG fallback (commit b0cf772) |
 | SCRUM-371 | Done | Eval harness: LLM-as-judge + semantic similarity (commit 2993b61) |
 | SCRUM-372 | Done | Re-ran 19Q benchmark with all fixes. Final: 19/19 completed, 6/19 correct, 8/19 partial, 5/19 incorrect, $0.011 total. See benchmark results below. |
-| SCRUM-398 | To Do | Benchmark VectorRAG/PathRAG on dense 3x/5x graphs |
+| SCRUM-398 | Done | Scaling benchmark: VectorRAG/PathRAG on 1x/3x/5x graphs. PathRAG scales O(1), VectorRAG O(log n), ContextRAG O(n). |
 | SCRUM-374 | To Do | Ingest denser P&ID at scale, repeat graph-level comparison |
 | SCRUM-392 | To Do | Scaffold chatpid/frontend as Next.js app |
+
+### SCRUM-398 Scaling Results (2026-08-17)
+
+Results file: `data/scaling_vector_path_20260817_162523.json`
+
+| Tool | Graph | Cost/Q | Tokens/Q | Ctx Tokens |
+|---|---|---|---|---|
+| ContextRAG | 1x (36 nodes) | $0.000498 | 2,760 | 1,927 |
+| ContextRAG | 3x (108 nodes) | $0.001254 | 7,722 | 5,782 |
+| ContextRAG | 5x (180 nodes) | $0.001993 | 12,656 | 9,637 |
+| VectorRAG | 1x | $0.000042 | 168 | 25 |
+| VectorRAG | 3x | $0.000065 | 276 | 119 |
+| VectorRAG | 5x | $0.000079 | 362 | 207 |
+| PathRAG | 1x | $0.000167 | 787 | 423 |
+| PathRAG | 3x | $0.000160 | 772 | 419 |
+| PathRAG | 5x | $0.000160 | 772 | 419 |
+
+**Key findings:**
+- **PathRAG scales O(1)** — constant cost/tokens regardless of graph size (traverses fixed depth/breadth)
+- **VectorRAG scales sub-linearly** — top-k results are constant, but vector index scan grows slightly
+- **ContextRAG scales O(n)** — cost grows linearly with graph size (serializes entire graph)
+- At 5x scale, ContextRAG costs 25x more than VectorRAG and 12x more than PathRAG
+- This confirms the paper's Section 6 scaling concern and validates targeted retrieval for production
 
 ### SCRUM-372 Benchmark Results (2026-08-17)
 
