@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Semantic Design Token System
+   Ported from ade's design-token system (ADEP brand palette).
+
+   All color references in components should use var(--token-name).
+   No hex literals in components. This enables dark mode to work
+   by simply swapping token values via the .dark class.
+
+   Token naming convention:
+     --brand-*      Brand colors (ADEP palette)
+     --surface-*    Background surfaces
+     --text-*       Text colors
+     --border-*     Border colors
+     --status-*     Status/state colors
+     --interactive-* Hover, active, focus states
+   ============================================================ */
+
+@theme {
+  --color-adep-blue: #00205C;
+  --color-mobility-blue: #0071CE;
+  --color-s-green: #4DB848;
+  --color-tech-yellow: #F2E500;
+  --color-neutral-dark: #101820;
+  --color-electric-blue: #00B5E2;
+  --color-purple: #A27CC9;
+  --color-periwinkle: #C5B4E3;
+  --color-neutral-light: #E1E1E1;
+
+  --color-light-blue: #8FD3E8;
+  --color-skobeloff: #007A78;
+  --color-coral: #F47C6D;
+  --color-dark-blue: #374785;
+  --color-grey: #A7A9AC;
+}
+
+/* ============================================================
+   Light Theme (default)
+   ============================================================ */
+:root {
+  /* --- Surfaces --- */
+  --app-bg: #F8FAFC;
+  --sidebar-bg: #00205C;
+  --sidebar-text: #FFFFFF;
+  --sidebar-hover: rgba(255, 255, 255, 0.1);
+  --sidebar-active: rgba(255, 255, 255, 0.15);
+  --pane-bg: #FFFFFF;
+  --pane-border: #E1E1E1;
+  --card-bg: #FFFFFF;
+  --card-border: #E2E8F0;
+  --hover-bg: #F1F5F9;
+  --surface-raised: rgba(0, 0, 0, 0.05);
+  --surface-sunken: rgba(0, 0, 0, 0.1);
+  --surface-overlay: rgba(0, 0, 0, 0.5);
+
+  /* --- Text --- */
+  --primary-text: #101820;
+  --secondary-text: #374785;
+  --muted-text: #64748B;
+  --inverse-text: #FFFFFF;
+
+  /* --- Brand --- */
+  --brand-primary: #0071CE;
+  --brand-primary-hover: #005BA8;
+  --brand-primary-subtle: rgba(0, 113, 206, 0.1);
+  --brand-primary-muted: rgba(0, 113, 206, 0.15);
+  --brand-accent: #00B5E2;
+  --brand-accent-subtle: rgba(0, 181, 226, 0.15);
+  --brand-navy: #00205C;
+
+  /* --- Status --- */
+  --status-success: #4DB848;
+  --status-success-subtle: rgba(77, 184, 72, 0.15);
+  --status-warning: #F5BD1E;
+  --status-warning-subtle: rgba(245, 189, 30, 0.15);
+  --status-error: #DC3545;
+  --status-error-subtle: rgba(220, 53, 69, 0.15);
+  --status-info: #0071CE;
+  --status-info-subtle: rgba(0, 113, 206, 0.1);
+
+  /* --- Interactive --- */
+  --focus-ring: rgba(0, 113, 206, 0.5);
+  --input-border: rgba(0, 0, 0, 0.1);
+  --input-border-focus: #0071CE;
+  --button-secondary-bg: transparent;
+  --button-secondary-border: #E1E1E1;
+  --button-secondary-hover: #F1F5F9;
+
+  /* --- Misc --- */
+  --badge-tool-bg: rgba(162, 124, 201, 0.15);
+  --badge-tool-text: #A27CC9;
+  --scrollbar-thumb: rgba(167, 169, 172, 0.4);
+  --scrollbar-thumb-hover: rgba(167, 169, 172, 0.7);
+  --code-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================
+   Dark Theme
+   ============================================================ */
+.dark {
+  /* --- Surfaces --- */
+  --app-bg: #0D1117;
+  --sidebar-bg: #010B1A;
+  --sidebar-text: #E1E1E1;
+  --sidebar-hover: rgba(255, 255, 255, 0.08);
+  --sidebar-active: rgba(255, 255, 255, 0.12);
+  --pane-bg: #161B22;
+  --pane-border: #30363D;
+  --card-bg: #1C2128;
+  --card-border: #30363D;
+  --hover-bg: #1F2937;
+  --surface-raised: rgba(255, 255, 255, 0.05);
+  --surface-sunken: rgba(0, 0, 0, 0.3);
+  --surface-overlay: rgba(0, 0, 0, 0.7);
+
+  /* --- Text --- */
+  --primary-text: #E6EDF3;
+  --secondary-text: #8B949E;
+  --muted-text: #7D8590;
+  --inverse-text: #101820;
+
+  /* --- Brand --- */
+  --brand-primary: #58A6FF;
+  --brand-primary-hover: #79B8FF;
+  --brand-primary-subtle: rgba(88, 166, 255, 0.12);
+  --brand-primary-muted: rgba(88, 166, 255, 0.18);
+  --brand-accent: #56D4F0;
+  --brand-accent-subtle: rgba(86, 212, 240, 0.15);
+  --brand-navy: #0D1B3E;
+
+  /* --- Status --- */
+  --status-success: #56D364;
+  --status-success-subtle: rgba(86, 211, 100, 0.15);
+  --status-warning: #E3B341;
+  --status-warning-subtle: rgba(227, 179, 65, 0.15);
+  --status-error: #F85149;
+  --status-error-subtle: rgba(248, 81, 73, 0.15);
+  --status-info: #58A6FF;
+  --status-info-subtle: rgba(88, 166, 255, 0.12);
+
+  /* --- Interactive --- */
+  --focus-ring: rgba(88, 166, 255, 0.5);
+  --input-border: rgba(255, 255, 255, 0.1);
+  --input-border-focus: #58A6FF;
+  --button-secondary-bg: transparent;
+  --button-secondary-border: #30363D;
+  --button-secondary-hover: #1F2937;
+
+  /* --- Misc --- */
+  --badge-tool-bg: rgba(197, 180, 227, 0.15);
+  --badge-tool-text: #C5B4E3;
+  --scrollbar-thumb: rgba(139, 148, 158, 0.35);
+  --scrollbar-thumb-hover: rgba(139, 148, 158, 0.6);
+  --code-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* ============================================================
+   Global Styles
+   ============================================================ */
+body {
+  background-color: var(--app-bg);
+  color: var(--primary-text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  margin: 0;
+}
+
+/* Utility class for muted text */
+.text-muted {
+  color: var(--muted-text);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.15s ease-out;
+}
