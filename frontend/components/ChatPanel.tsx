@@ -29,7 +29,11 @@ const SUGGESTED_QUESTIONS = [
   'Analyze the flowsheet and give recommendations regarding process safety.',
 ];
 
-export function ChatPanel() {
+interface ChatPanelProps {
+  onTouchedNodes?: (nodes: string[]) => void;
+}
+
+export function ChatPanel({ onTouchedNodes }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -59,6 +63,7 @@ export function ChatPanel() {
           graphNodes: res.graph_node_ids,
         },
       ]);
+      onTouchedNodes?.(res.graph_node_ids);
     } catch (err) {
       setMessages((m) => [
         ...m,
