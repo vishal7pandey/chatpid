@@ -1,0 +1,762 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The cylinder length of tank T4750 is 4.0 m, as provided by the CypherRAG tool.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3304,
+      "completion_tokens": 25,
+      "total_tokens": 3329
+    },
+    "cost_usd": 0.000511,
+    "latency_seconds": 79.37,
+    "fanout_seconds": 76.98,
+    "synthesis_seconds": 2.39,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 2.81,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 3.53,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 10,
+        "elapsed": 12.47,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 76.5,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m²",
+    "agent_answer": "The design heat transfer area of heat exchanger H1007 is 46.8 m², as provided by the CypherRAG tool.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3311,
+      "completion_tokens": 29,
+      "total_tokens": 3340
+    },
+    "cost_usd": 0.000514,
+    "latency_seconds": 4.91,
+    "fanout_seconds": 3.66,
+    "synthesis_seconds": 1.25,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.19,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 1.51,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 1.96,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 16,
+        "elapsed": 3.36,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The design pressure of pump P4711 is 10.0 m, as provided by the CypherRAG tool.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3304,
+      "completion_tokens": 25,
+      "total_tokens": 3329
+    },
+    "cost_usd": 0.000511,
+    "latency_seconds": 5.99,
+    "fanout_seconds": 4.68,
+    "synthesis_seconds": 1.31,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.49,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.38,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 1.54,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 11,
+        "elapsed": 4.38,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 4,
+    "category": "graph_query_single",
+    "question": "What is the design shaft power of pump P4711?",
+    "reference_answer": "60.0 kW",
+    "agent_answer": "The design shaft power of pump P4711 is 60.0 kW, as provided by the CypherRAG tool.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3307,
+      "completion_tokens": 27,
+      "total_tokens": 3334
+    },
+    "cost_usd": 0.000512,
+    "latency_seconds": 5.81,
+    "fanout_seconds": 3.84,
+    "synthesis_seconds": 1.97,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.61,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.59,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 12,
+        "elapsed": 3.14,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 3.73,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 5,
+    "category": "graph_query_single",
+    "question": "What is the design volume flow rate of pump P4712?",
+    "reference_answer": "420.0 m³/h",
+    "agent_answer": "The design volume flow rate of pump P4712 is 420.0 m³/h, as provided by the CypherRAG tool.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3310,
+      "completion_tokens": 29,
+      "total_tokens": 3339
+    },
+    "cost_usd": 0.000514,
+    "latency_seconds": 4.52,
+    "fanout_seconds": 3.37,
+    "synthesis_seconds": 1.15,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 1.03,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 2.17,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 2.64,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 14,
+        "elapsed": 3.2,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 6,
+    "category": "graph_query_single",
+    "question": "What is the nominal diameter of valve 66KL21?",
+    "reference_answer": "DN 80",
+    "agent_answer": "The nominal diameter of valve 66KL21 is DN 80. This information was provided by ContextRAG, which identified the valve with the label \"ButterflyValve\" and specified its nominal diameter representation as DN 80 (tag=C1).",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3347,
+      "completion_tokens": 50,
+      "total_tokens": 3397
+    },
+    "cost_usd": 0.000532,
+    "latency_seconds": 3.73,
+    "fanout_seconds": 2.33,
+    "synthesis_seconds": 1.4,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.95,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 1.37,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 1.87,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 2.14,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 7,
+    "category": "graph_query_single",
+    "question": "What is the set pressure of safety valve SV 104.01?",
+    "reference_answer": "6.0 bar",
+    "agent_answer": "The set pressure of safety valve SV 104.01 is 6.0 bar. This information was provided by both PathRAG and CypherRAG, with CypherRAG specifically stating, \"The set pressure of safety valve SV 104.01 is 6.0 bar.\"",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3293,
+      "completion_tokens": 60,
+      "total_tokens": 3353
+    },
+    "cost_usd": 0.00053,
+    "latency_seconds": 5.51,
+    "fanout_seconds": 3.73,
+    "synthesis_seconds": 1.78,
+    "tool_results": {
+      "PathRAG": {
+        "tokens": 398,
+        "elapsed": 0.21,
+        "error": null
+      },
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.25,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 1.38,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 13,
+        "elapsed": 3.43,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 8,
+    "category": "graph_query_single",
+    "question": "What is the upper design temperature of tank T4750?",
+    "reference_answer": "100.0 °C",
+    "agent_answer": "The outputs from the tools do not provide any information regarding the upper design temperature of tank T4750. The CypherRAG specifically states that the query results do not include details about the upper design temperature, only mentioning the tank's label, description, and tag information. Therefore, I cannot provide the upper design temperature for tank T4750.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3326,
+      "completion_tokens": 70,
+      "total_tokens": 3396
+    },
+    "cost_usd": 0.000541,
+    "latency_seconds": 4.91,
+    "fanout_seconds": 3.31,
+    "synthesis_seconds": 1.6,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.14,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.29,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.53,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 46,
+        "elapsed": 3.16,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 9,
+    "category": "graph_query_multi",
+    "question": "List all valves in the P&ID along with their specification.",
+    "reference_answer": "11 valves total: 3 Globe Valves (C1, actuated by HV4750.01/PV4712.02/TV4750.03), 1 Butterfly Valve (66KL21), 1 Swing Check Valve (75SA21/C2), 5 Ball Valves (73KH12, C4/C2/C5/C7/C10), 1 Spring Loaded Globe Safety Valve (SV 104.01). Key specs: nominal diameters DN 25-80, piping classes 73HG12/75HB13, fluid codes MNb/MNc/QSb.",
+    "agent_answer": "Here are the valves in the P&ID along with their specifications:\n\n1. **Ball Valve**\n   - **Tag:** C4\n     - **Description:** A rotary valve that has a ball closure member.\n     - **Nominal Diameter:** DN 50\n     - **Piping Class Code:** 73HG12\n   - **Tag:** C2\n     - **Description:** A rotary valve that has a ball closure member.\n     - **Nominal Diameter:** DN 25\n     - **Piping Class Code:** 75HB13\n   - **Tag:** C5\n     - **Description:** A rotary valve that has a ball closure member.\n     - **Nominal Diameter:** DN 25\n     - **Piping Class Code:** 75HB13\n   - **Tag:** C7\n     - **Description:** A rotary valve that has a ball closure member.\n     - **Nominal Diameter:** DN 50\n     - **Piping Class Code:** 75HB13\n   - **Tag:** C10\n     - **Description:** A rotary valve that has a ball closure member.\n     - **Nominal Diameter:** DN 25\n     - **Piping Class Code:** 75HB13\n\n2. **Butterfly Valve**\n   - **Tag:** C1\n     - **Description:** A rotary valve that has a closure member of a disc type with a shaft parallel to the plane of the disc.\n     - **Nominal Diameter:** DN 80\n     - **Piping Class Code:** 75HB13\n\n3. **Swing Check Valve**\n   - **Tag:** C2\n     - **Description:** A check valve where the closure member is a disc which swings freely on a hinge.\n     - **Nominal Diameter:** DN 80\n     - **Piping Class Code:** 75HB13\n\n4. **Globe Valve**\n   - **Tag:** C1\n     - **Description:** A valve where the closure member is a disc or piston operating with linear motion normal to the seat.\n     - **Nominal Diameter:** DN 50\n     - **Piping Class Code:** 75HB13\n   - **Tag:** C1\n     - **Description:** A valve where the closure member is a disc or piston operating with linear motion normal to the seat.\n     - **Nominal Diameter:** DN 80\n     - **Piping Class Code:** 75HB13\n\n5. **Spring Loaded Globe Safety Valve**\n   - **Tag:** SV 104.01\n     - **Description:** A spring-loaded globe safety valve.\n     - **Nominal Diameter:** DN 25\n     - **Piping Class Code:** 73HG12\n\nThis information was synthesized from the outputs of the ContextRAG and CypherRAG tools.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3811,
+      "completion_tokens": 579,
+      "total_tokens": 4390
+    },
+    "cost_usd": 0.000919,
+    "latency_seconds": 16.97,
+    "fanout_seconds": 10.0,
+    "synthesis_seconds": 6.97,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.14,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.35,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.41,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 458,
+        "elapsed": 9.96,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 10,
+    "category": "graph_query_multi",
+    "question": "List all pipe fittings in the P&ID along with their specification.",
+    "reference_answer": "Pipe Reducers (C3, DN50, 73HG12), Pipe Tees (C3/C1/C4/C8/C9, DN25-50, 75HB13), Blind Flanges (C6/C11, DN25, 75HB13). All fluid code MNc, line 47124/47126.",
+    "agent_answer": "Here is the list of pipe fittings in the P&ID along with their specifications:\n\n1. **PipeReducer (Tag: C3)**\n   - Description: An artefact that has different nominal pipe sizes at the two ends, intended to connect pipes or piping components.\n   - Line Number: 47124\n   - Nominal Diameter: DN 80\n   - Piping Class Code: 73HG12\n   - Segment Number: S2\n   - Source: CypherRAG\n\n2. **PipeTee (Tag: C1)**\n   - Description: An artefact that has three piping ends in T-shape, including a branch at 90 degrees.\n   - Line Number: 47126\n   - Nominal Diameter: DN 50\n   - Piping Class Code: 75HB13\n   - Segment Number: S1\n   - Source: CypherRAG\n\n3. **PipeTee (Tag: C3)**\n   - Description: An artefact that has three piping ends in T-shape, including a branch at 90 degrees.\n   - Line Number: 47125\n   - Nominal Diameter: DN 25\n   - Piping Class Code: 75HB13\n   - Segment Number: S1\n   - Source: CypherRAG\n\n4. **PipeTee (Tag: C4)**\n   - Description: An artefact that has three piping ends in T-shape, including a branch at 90 degrees.\n   - Line Number: 47126\n   - Nominal Diameter: DN 50\n   - Piping Class Code: 75HB13\n   - Segment Number: S4\n   - Source: CypherRAG\n\n5. **BlindFlange (Tag: C6)**\n   - Description: A pipe flange that is without a central opening and used to shut off a flanged pipe end.\n   - Line Number: 47126\n   - Nominal Diameter: DN 25\n   - Piping Class Code: 75HB13\n   - Segment Number: S5\n   - Source: CypherRAG\n\n6. **PipeTee (Tag: C8)**\n   - Description: An artefact that has three piping ends in T-shape, including a branch at 90 degrees.\n   - Line Number: 47126\n   - Nominal Diameter: DN 50\n   - Piping Class Code: 75HB13\n   - Segment Number: S6\n   - Source: CypherRAG\n\n7. **PipeTee (Tag: C9)**\n   - Description: An artefact that has three piping ends in T-shape, including a branch at 90 degrees.\n   - Line Number: 47126\n   - Nominal Diameter: DN 50\n   - Piping Class Code: 75HB13\n   - Segment Number: S8\n   - Source: CypherRAG\n\n8. **BlindFlange (Tag: C11)**\n   - Description: A pipe flange that is without a central opening and used to shut off a flanged pipe end.\n   - Line Number: 47126\n   - Nominal Diameter: DN 25\n   - Piping Class Code: 75HB13\n   - Segment Number: S9\n   - Source: CypherRAG\n\nThis information is compiled from the CypherRAG tool, which provided detailed specifications for each fitting.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 4214,
+      "completion_tokens": 723,
+      "total_tokens": 4937
+    },
+    "cost_usd": 0.001066,
+    "latency_seconds": 21.73,
+    "fanout_seconds": 12.45,
+    "synthesis_seconds": 9.28,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.16,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.26,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.33,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 725,
+        "elapsed": 12.41,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 11,
+    "category": "path_exploration",
+    "question": "If heat exchanger H1007 needs maintenance, can flow still reach tank T4750? Describe the alternative path.",
+    "reference_answer": "If H1007 is bypassed, flow can potentially reach T4750 via H1008 (tubular heat exchanger) if a tie-in point exists on line MNb47123 or via N3 of T4750. However, H1008 controls tank temperature, so using it as an alternative path is not recommended. Currently no bypass tie-in exists.",
+    "agent_answer": "If heat exchanger H1007 requires maintenance, flow can still reach tank T4750 through an alternative path. The flow can bypass H1007 by utilizing the following route:\n\n1. **Centrifugal Pump (P4711)**: Flow can be directed from the FlowInPipeOffPageConnector to the centrifugal pump (P4711).\n2. **Globe Valve (C1)**: After the pump, the flow can pass through the globe valve (C1).\n3. **Tank (T4750)**: Finally, the flow can reach the tank (T4750) directly from the globe valve (C1).\n\nThis alternative path is confirmed by the connections in the P&ID, specifically:\n- FlowInPipeOffPageConnector --PIPE--> P4711\n- P4711 --PIPE--> C1\n- C1 --PIPE--> T4750\n\nThus, even with H1007 out of service, flow can still be maintained to tank T4750 through the centrifugal pump and globe valve. This information is derived from the ContextRAG tool outputs.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3354,
+      "completion_tokens": 220,
+      "total_tokens": 3574
+    },
+    "cost_usd": 0.000635,
+    "latency_seconds": 8.9,
+    "fanout_seconds": 3.58,
+    "synthesis_seconds": 5.32,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.12,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 420,
+        "elapsed": 0.41,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.49,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 3.25,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      }
+    }
+  },
+  {
+    "id": 12,
+    "category": "path_exploration",
+    "question": "If you need to isolate tank T4750 from all upstream equipment, which valves would you need to close?",
+    "reference_answer": "Shut the main DN80 feed globe valve (HV4750.01). Close the DN50 globe valve on the recirculation line (PV4712.02).",
+    "agent_answer": "To isolate tank T4750 from all upstream equipment, you would need to close the following valves:\n\n1. **Globe Valve (C1)** - This valve is directly connected to tank T4750 and is essential for isolating it from the upstream flow. (ContextRAG)\n2. **Ball Valve (C2)** - This valve is also connected to the piping leading to tank T4750 and would need to be closed to ensure complete isolation. (PathRAG)\n\nClosing these two valves will effectively isolate tank T4750 from all upstream equipment.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3330,
+      "completion_tokens": 114,
+      "total_tokens": 3444
+    },
+    "cost_usd": 0.000568,
+    "latency_seconds": 4.87,
+    "fanout_seconds": 2.53,
+    "synthesis_seconds": 2.34,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.06,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 406,
+        "elapsed": 0.31,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.82,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 2.48,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      }
+    }
+  },
+  {
+    "id": 13,
+    "category": "path_exploration",
+    "question": "Trace the flow path from tank T4750 to pump P4712.",
+    "reference_answer": "T4750 (Tank) → 66KL21 (Butterfly valve) → 75SA21 (Swing check valve) → Pipe reducer (DN80 to DN50) → 73KH12 (Ball valve) → P4712 (Reciprocating pump)",
+    "agent_answer": "To trace the flow path from tank T4750 to pump P4712, we can follow the connections provided in the outputs:\n\n1. **T4750 (Tank)** connects to **C1 (Globe Valve)** via a pipe.\n   - Source: ContextRAG, PathRAG\n\n2. **C1 (Globe Valve)** connects to **C2 (Pipe Tee)** via a pipe.\n   - Source: ContextRAG, PathRAG\n\n3. **C2 (Pipe Tee)** connects to **C3 (Pipe Reducer)** via a pipe.\n   - Source: ContextRAG, PathRAG\n\n4. **C3 (Pipe Reducer)** connects to **P4712 (Reciprocating Pump)** via a pipe.\n   - Source: ContextRAG\n\nThus, the complete flow path from tank T4750 to pump P4712 is:\n- **T4750** → **C1** → **C2** → **C3** → **P4712**. \n\nThis path is confirmed by the ContextRAG and PathRAG outputs.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3323,
+      "completion_tokens": 228,
+      "total_tokens": 3551
+    },
+    "cost_usd": 0.000635,
+    "latency_seconds": 9.39,
+    "fanout_seconds": 2.3,
+    "synthesis_seconds": 7.09,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.23,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 406,
+        "elapsed": 0.48,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.7,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 2.21,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      }
+    }
+  },
+  {
+    "id": 14,
+    "category": "path_exploration",
+    "question": "Working backwards from tank T4750, what are the two possible inlet paths and their source equipment?",
+    "reference_answer": "Path 1: T4750 ← Globe Valve (HV4750.01) ← H1007 (Plate Heat Exchanger) ← P4711 (Centrifugal Pump). Path 2: T4750 ← Globe Valve (TV4712.02/PV4712.02) ← H1008 (Tubular Heat Exchanger).",
+    "agent_answer": "Working backwards from tank T4750, there are two possible inlet paths and their source equipment:\n\n1. **Path 1**: \n   - **Source Equipment**: **Centrifugal Pump (P4711)**\n   - **Path**: P4711 --PIPE--> T4750\n\n2. **Path 2**: \n   - **Source Equipment**: **Reciprocating Pump (P4712)**\n   - **Path**: P4712 --PIPE--> C1 --PIPE--> T4750\n\nThis information is derived from the outputs of ContextRAG, specifically the connections involving T4750 and the pumps (P4711 and P4712).",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3355,
+      "completion_tokens": 143,
+      "total_tokens": 3498
+    },
+    "cost_usd": 0.000589,
+    "latency_seconds": 5.29,
+    "fanout_seconds": 2.49,
+    "synthesis_seconds": 2.8,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.16,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.26,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.34,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 2.45,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      }
+    }
+  },
+  {
+    "id": 15,
+    "category": "path_exploration",
+    "question": "What is the flow path from pump P4711 to tank T4750?",
+    "reference_answer": "P4711 (Centrifugal Pump) → H1007 (Plate Heat Exchanger) → HV4750.01 (Globe Valve) → T4750 (Tank)",
+    "agent_answer": "The flow path from pump P4711 to tank T4750 is as follows: \n\n**P4711 → H1007 → C1 → T4750**\n\n- **P4711** is a centrifugal pump with a design pressure head of 10.0 m and a design volume flow rate of 200.0 m³/h (PathRAG).\n- **H1007** is a plate heat exchanger with a design heat flow rate of 313.0 kW (PathRAG).\n- **C1** is a globe valve that connects to tank T4750 (CypherRAG).\n\nThis information is corroborated by both PathRAG and CypherRAG outputs.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3345,
+      "completion_tokens": 142,
+      "total_tokens": 3487
+    },
+    "cost_usd": 0.000587,
+    "latency_seconds": 6.27,
+    "fanout_seconds": 3.19,
+    "synthesis_seconds": 3.08,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.19,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 425,
+        "elapsed": 0.37,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.46,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 31,
+        "elapsed": 3.17,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 16,
+    "category": "knowledge_inference",
+    "question": "Analyze the flowsheet and give recommendations regarding process safety.",
+    "reference_answer": "Key findings: (1) Safety valve SV104.01 set at 6.0 bar but T4750 design pressure is only 0.1/0.05 bar — PSV provides no effective protection. (2) Missing pressure relief for P4711/P4712/H1007/H1008 (design pressure up to 60 bar). (3) Fluid codes MNb/MNc/QSb not defined. (4) Blind flanges without clear isolation points. (5) TV4750.03 fail-open may be unsafe if fluid is heating.",
+    "agent_answer": "Based on the analysis of the flowsheet and the provided tool outputs, here are the recommendations regarding process safety:\n\n1. **Heat Exchangers**:\n   - **Plate Heat Exchanger (H1007)** and **Tubular Heat Exchanger (H1008)**: Both lack specified design pressure heads and fail actions. It is crucial to establish these parameters to ensure safe operation under varying conditions. Implementing pressure relief systems and regular maintenance checks can mitigate risks associated with overpressure scenarios (CypherRAG).\n\n2. **Pumps**:\n   - **Centrifugal Pump (P4711)**: Has a design pressure head of 10.0 m and a volume flow rate of 200.0 m³/h.\n   - **Reciprocating Pump (P4712)**: Has a higher design pressure head of 40.0 m and a flow rate of 420.0 m³/h. The significant difference in pressure heads suggests that the Reciprocating Pump may be more susceptible to overpressure situations. It is recommended to install pressure monitoring devices and safety valves on both pumps to prevent potential failures (CypherRAG).\n\n3. **Tank**:\n   - **Tank (T4750)**: Designed for fluid storage but lacks specific design pressure and flow rate information. To enhance safety, it is advisable to assess the tank's structural integrity and ensure it is equipped with appropriate level monitoring and overflow protection systems to prevent spills or leaks (CypherRAG).\n\nOverall, establishing clear design parameters, implementing monitoring systems, and ensuring regular maintenance are essential steps to enhance process safety for the equipment identified in the flowsheet.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3618,
+      "completion_tokens": 335,
+      "total_tokens": 3953
+    },
+    "cost_usd": 0.000744,
+    "latency_seconds": 11.01,
+    "fanout_seconds": 6.76,
+    "synthesis_seconds": 4.25,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.2,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.91,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.99,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 390,
+        "elapsed": 6.7,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 17,
+    "category": "knowledge_inference",
+    "question": "List all control valves along with its control philosophy, why and what ifs fail.",
+    "reference_answer": "3 control valves: HV4750.01 (flow control, fail-close — prevents uncontrolled flow into T4750); PV4712.02 (pressure control via PICSA 4712.02, fail-close — prevents return to T4750, may increase downstream pressure); TV4750.03 (temperature control via TICSA 4750.03 for H1008, fail-open — ensures continuous cooling/heating medium flow, may cause overcooling/overheating).",
+    "agent_answer": "Here is the list of control valves along with their control philosophy, reasons for failure, and potential failure scenarios:\n\n1. **Control Valve Tag: C1**\n   - **Label:** GlobeValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** \n     - 1st Instance: bdb202c7-9c89-4b31-b1c6-d0f36d36f653, 53facd9d-fbae-47ad-8a27-d9040e2ef1eb\n     - 2nd Instance: 4b5081ae-6869-4fc4-9f5c-6168bc2ae469, 7adc390d-130e-4446-92b6-0f691430e9b1\n     - 3rd Instance: edb2175b-f62b-4766-875e-08de4531d8d2, ace483ed-84db-4835-8581-1cc028c92862\n   - **Source:** CypherRAG\n\n2. **Control Valve Tag: C2**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 9f6602ac-3e4e-4f57-8057-3a37f3bf21da, e65e6b86-cdeb-4e42-9900-d2d308cd9e47\n   - **Source:** CypherRAG\n\n3. **Control Valve Tag: C4**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 865418de-7cb0-41ad-8936-be8b44b68128, 68d459e0-120f-43b0-a6c8-de031cd2ea22\n   - **Source:** CypherRAG\n\n4. **Control Valve Tag: C5**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 9f6602ac-3e4e-4f57-8057-3a37f3bf21da, 2ddf826e-4c52-4a58-a362-768a17e504d3\n   - **Source:** CypherRAG\n\n5. **Control Valve Tag: C7**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 9f6602ac-3e4e-4f57-8057-3a37f3bf21da, 09242342-4f43-414f-839a-fb1fb88ea4b2\n   - **Source:** CypherRAG\n\n6. **Control Valve Tag: C10**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 9f6602ac-3e4e-4f57-8057-3a37f3bf21da, 6c35160f-4978-4f6e-b687-95dc22ab6fcc\n   - **Source:** CypherRAG\n\n7. **Control Valve Tag: C1 (ButterflyValve)**\n   - **Label:** ButterflyValve\n   - **Control Philosophy:** None\n   - **Why Fail:** None\n   - **What If Fail:** 865418de-7cb0-41ad-8936-be8b44b68128, 87f153ef-28d8-4313-ac52-8d3982ac5037\n   - **Source:** CypherRAG\n\nAll control valves listed have no defined control philosophy or reasons for failure. The \"what if\" scenarios are provided as unique identifiers.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 4096,
+      "completion_tokens": 877,
+      "total_tokens": 4973
+    },
+    "cost_usd": 0.001141,
+    "latency_seconds": 23.95,
+    "fanout_seconds": 11.56,
+    "synthesis_seconds": 12.39,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.18,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.46,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.51,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 496,
+        "elapsed": 11.5,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 18,
+    "category": "knowledge_inference",
+    "question": "What would be the effect if the heating fluid temperature in Heat Exchanger H1007 increased from the design temperature to 120°C?",
+    "reference_answer": "H1007 design: 313 kW, 46.8 m², chamber design temp 100°C. Effects: (1) Increased heat transfer rate, potentially exceeding 313 kW design. (2) Exceeds chamber design temperature by 20°C — thermal stress and equipment damage risk. (3) Downstream T4750 affected, TV4750.03 control loop would need to compensate. (4) TV4750.03 might need to throttle more.",
+    "agent_answer": "If the heating fluid temperature in Heat Exchanger H1007 (tag: H1007) increased from the design temperature to 120°C, it could potentially enhance the heat transfer efficiency due to a higher temperature differential between the heating fluid and the fluid being heated. However, this increase may exceed the design specifications of the Plate Heat Exchanger, leading to issues such as thermal stress on the equipment, reduced lifespan, or even failure if the materials are not rated for such temperatures. The design parameters, including the design heat flow rate of 313.0 kW and the design heat transfer area of 46.8 m², may not be adequate to handle the increased thermal load safely (CypherRAG).",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3450,
+      "completion_tokens": 144,
+      "total_tokens": 3594
+    },
+    "cost_usd": 0.000604,
+    "latency_seconds": 11.45,
+    "fanout_seconds": 4.12,
+    "synthesis_seconds": 7.33,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.22,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 420,
+        "elapsed": 0.45,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.87,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 181,
+        "elapsed": 4.04,
+        "error": null
+      }
+    }
+  },
+  {
+    "id": 19,
+    "category": "graph_summarization",
+    "question": "Based on the P&ID, make a narrative to describe the process flow from the inlet to the final outlet, identifying all major equipment, intermediate streams, and control points in sequence.",
+    "reference_answer": "Inlet → P4711 (centrifugal pump) → H1007 (plate heat exchanger) → HV4750.01 (globe valve, flow control) → T4750 (tank, temp monitored by TICSA4750.03) → 66KL21 (butterfly valve) → 75SA21 (check valve) → pipe reducer DN80→DN50 → 73KH12 (ball valve) → P4712 (reciprocating pump) → tee with SV104.01 (safety valve, 6 bar) → H1008 (tubular heat exchanger, temp control via TV4750.03) → PV4712.02 (return to T4750, pressure control via PICSA 4712.02) → outlet. Three control loops: flow (HV4750.01), pressure (PV4712.02), temperature (TV4750.03).",
+    "agent_answer": "The process flow described in the Piping and Instrumentation Diagram (P&ID) begins at the **FlowInPipeOffPageConnector** (tag: FlowInPipeOffPageConnector), which receives the inlet fluid (fluid code: MNb) with a nominal diameter of DN 80. \n\nFrom there, the fluid flows into a **GlobeValve** (tag: C1) that regulates the flow. This valve is connected to a **PipeTee** (tag: C3), which splits the flow into two paths. One path leads to another **PipeReducer** (tag: C2), which reduces the diameter to DN 80, and subsequently to a **BallValve** (tag: C4) with a nominal diameter of DN 50. This valve is crucial for controlling the flow rate before it reaches the **ReciprocatingPump** (tag: P4712), which has a design volume flow rate of 420.0 m³/h and a design pressure head of 40.0 m.\n\nThe output from the pump is directed to a **Tank** (tag: T4750), where the fluid is stored temporarily. The tank is connected to a **SpringLoadedGlobeSafetyValve** (tag: SV 104.01) that ensures safety by relieving excess pressure, set at 6.0 bar.\n\nAfter the tank, the fluid flows through another **PipeTee** (tag: C8) and into a **TubularHeatExchanger** (tag: H1008), where it is heated. The heat exchanger is designed for a heat flow rate of 313.0 kW. The fluid then continues through another **PipeTee** (tag: C9) before reaching the **FlowOutPipeOffPageConnector** (tag: FlowOutPipeOffPageConnector), which serves as the final outlet for the processed fluid.\n\nThroughout this process, various control points are established, including the **ProcessSignalGeneratingFunctions** (tags: PT4712.01 and PT4712.02) that monitor and control the flow and pressure, ensuring the system operates within safe and efficient parameters.\n\nIn summary, the major equipment in the process flow includes:\n1. **FlowInPipeOffPageConnector** (FlowInPipeOffPageConnector)\n2. **GlobeValve** (C1)\n3. **PipeTee** (C3)\n4. **PipeReducer** (C2)\n5. **BallValve** (C4)\n6. **ReciprocatingPump** (P4712)\n7. **Tank** (T4750)\n8. **SpringLoadedGlobeSafetyValve** (SV 104.01)\n9. **TubularHeatExchanger** (H1008)\n10. **FlowOutPipeOffPageConnector** (FlowOutPipeOffPageConnector)\n\nThis narrative captures the essential flow and control points as per the P&ID data provided.",
+    "model": "gpt-4o-mini",
+    "mode": "supervisor",
+    "tokens": {
+      "prompt_tokens": 3372,
+      "completion_tokens": 599,
+      "total_tokens": 3971
+    },
+    "cost_usd": 0.000865,
+    "latency_seconds": 9.06,
+    "fanout_seconds": 2.85,
+    "synthesis_seconds": 6.21,
+    "tool_results": {
+      "ContextRAG": {
+        "tokens": 1927,
+        "elapsed": 0.19,
+        "error": null
+      },
+      "PathRAG": {
+        "tokens": 432,
+        "elapsed": 0.29,
+        "error": null
+      },
+      "VectorRAG": {
+        "tokens": 6,
+        "elapsed": 0.38,
+        "error": null
+      },
+      "CypherRAG": {
+        "tokens": 0,
+        "elapsed": 2.67,
+        "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT"
+      }
+    }
+  }
+]
