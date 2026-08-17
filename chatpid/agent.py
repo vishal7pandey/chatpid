@@ -56,6 +56,26 @@ answer is grounded in.
 """
 
 
+def _safe_tool(name: str, fn):
+    """Wrap a tool function so exceptions return an error string instead of propagating.
+
+    LangGraph's @tool decorator does NOT catch exceptions from the tool body —
+    an unhandled exception crashes the entire agent.invoke() call.  This wrapper
+    ensures the agent always gets a message back and can decide to retry with a
+    different tool or answer from what it has.
+    """
+    import functools
+
+    @functools.wraps(fn)
+    def wrapper(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except Exception as exc:
+            return f"[{name} error] {type(exc).__name__}: {exc!s:.300}"
+
+    return wrapper
+
+
 def build_agent(driver: Driver):
     """Build the ChatP&ID LangGraph ReAct agent bound to a live Neo4j driver."""
     @tool
@@ -71,7 +91,7 @@ def build_agent(driver: Driver):
             mode: "graph" includes node/edge attributes (tags, design specs);
                 "topology" is connectivity only, for a lightweight overview.
         """
-        return context_rag(driver, level=level, mode=mode)
+        return _safe_tool("ContextRAG", lambda: context_rag(driver, level=level, mode=mode))()
 
     @tool
     def PathRAG(query: str, level: str = "conceptual", max_depth: int = 3, max_breadth: int = 2) -> str:
@@ -87,7 +107,7 @@ def build_agent(driver: Driver):
             max_depth: max hops per path (default: 3).
             max_breadth: max parallel starting paths (default: 2).
         """
-        return path_rag_text(driver, query, level=level, max_depth=max_depth, max_breadth=max_breadth)
+        return _safe_tool("PathRAG", lambda: path_rag_text(driver, query, level=level, max_depth=max_depth, max_breadth=max_breadth))()
 
     @tool
     def CypherRAG(query: str, level: str = "conceptual") -> str:
@@ -101,7 +121,7 @@ def build_agent(driver: Driver):
             query: the natural language question.
             level: graph abstraction level (default: conceptual).
         """
-        return cypher_rag_text(driver, query, level=level)
+        return _safe_tool("CypherRAG", lambda: cypher_rag_text(driver, query, level=level))()
 
     @tool
     def VectorRAG(query: str, index: str = "global_semantic_index", top_k: int = 5, level: str = "conceptual") -> str:
@@ -118,7 +138,7 @@ def build_agent(driver: Driver):
             top_k: number of results (default: 5).
             level: graph abstraction level (default: conceptual).
         """
-        return vector_rag_text(driver, query, index=index, top_k=top_k, level=level)
+        return _safe_tool("VectorRAG", lambda: vector_rag_text(driver, query, index=index, top_k=top_k, level=level))()
 
     llm = get_llm(temperature=0)
     return create_react_agent(llm, tools=[ContextRAG, VectorRAG, PathRAG, CypherRAG], prompt=SYSTEM_PROMPT)
