@@ -9,7 +9,8 @@ This module implements:
     and property keys at a given level
   - generate_cypher_prompt(): builds the LLM prompt with schema + question
   - execute_cypher(): runs a Cypher query safely (read-only)
-  - cypher_rag(): full pipeline (needs LLM for steps 1 and 4)
+  - cypher_rag(): full pipeline with retry on syntax errors and 0-result
+    fallback to ContextRAG (needs LLM for steps 1 and 4)
 
 The LLM-dependent steps (Cypher generation, answer synthesis) are separated
 so the graph introspection and execution can be tested independently.
@@ -19,6 +20,7 @@ from __future__ import annotations
 
 from neo4j import Driver
 
+from chatpid.context_rag import context_rag
 from chatpid.llm import get_llm
 
 # --- Graph schema introspection ---
@@ -123,6 +125,28 @@ Write ONLY the Cypher query (no explanation, no markdown fences):
 """
 
 
+def _get_label_list(driver: Driver, level: str = "conceptual") -> list[str]:
+    """Return just the node label names at `level`, for retry hints."""
+    with driver.session() as session:
+        result = session.run("""
+            MATCH (n {level: $level})
+            UNWIND labels(n) AS label
+            WHERE label <> 'Node'
+            RETURN DISTINCT label
+            ORDER BY label
+        """, level=level)
+        return [record["label"] for record in result]
+
+
+def _strip_code_fences(text: str) -> str:
+    """Strip markdown code fences from LLM output."""
+    text = text.strip()
+    if text.startswith("```"):
+        lines = text.split("\n")
+        text = "\n".join(lines[1:-1] if lines[-1].startswith("```") else lines[1:])
+    return text.strip()
+
+
 def generate_cypher(driver: Driver, question: str, level: str = "conceptual") -> str:
     """Use the LLM to translate a natural language question into a Cypher query."""
     schema = get_graph_schema(driver, level)
@@ -131,14 +155,7 @@ def generate_cypher(driver: Driver, question: str, level: str = "conceptual") ->
     )
     llm = get_llm(temperature=0)
     response = llm.invoke(prompt)
-    cypher = response.content.strip()
-
-    # Strip markdown code fences if present
-    if cypher.startswith("```"):
-        lines = cypher.split("\n")
-        cypher = "\n".join(lines[1:-1] if lines[-1].startswith("```") else lines[1:])
-
-    return cypher.strip()
+    return _strip_code_fences(response.content)
 
 
 # --- Cypher execution ---
@@ -180,8 +197,12 @@ the specific tags/equipment names your answer is grounded in.
 """
 
 
-def synthesize_answer(question: str, cypher: str, results: list[dict]) -> str:
-    """Use the LLM to synthesize an answer from Cypher query results."""
+def synthesize_answer(question: str, cypher: str, results: list[dict], context: str = "") -> str:
+    """Use the LLM to synthesize an answer from Cypher query results.
+
+    If `context` is provided (ContextRAG fallback), it's included so the LLM
+    can answer from the graph text instead of the empty Cypher results.
+    """
     # Format results as readable text
     if not results:
         results_text = "(no results returned)"
@@ -195,51 +216,90 @@ def synthesize_answer(question: str, cypher: str, results: list[dict]) -> str:
     prompt = ANSWER_PROMPT.format(
         question=question, cypher=cypher, results=results_text
     )
+    if context:
+        prompt += f"\n\nGraph context (ContextRAG fallback):\n{context}\n\nAnswer using the graph context above."
     llm = get_llm(temperature=0)
     return llm.invoke(prompt).content
 
 
 # --- Full CypherRAG pipeline ---
 
+def _retry_with_schema(driver: Driver, query: str, level: str, error_or_reason: str) -> str:
+    """Regenerate Cypher with explicit label list injected as a hint."""
+    labels = _get_label_list(driver, level)
+    schema = get_graph_schema(driver, level)
+    retry_prompt = f"""\
+The previous Cypher query {error_or_reason}.
+
+Graph schema (level: {level}):
+{schema}
+
+IMPORTANT: The exact node labels in this graph are: {', '.join(labels)}
+Do NOT use generic labels like "Valve" or "Equipment" — use the exact labels above.
+
+Original question: {query}
+
+Write a corrected read-only Cypher query. Use MATCH/RETURN only.
+Write ONLY the Cypher query (no explanation, no markdown fences):
+"""
+    llm = get_llm(temperature=0)
+    return _strip_code_fences(llm.invoke(retry_prompt).content)
+
+
 def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
     """Full CypherRAG pipeline: question → Cypher → execute → answer.
 
-    Returns {"answer": str, "cypher": str, "results": list[dict]}.
+    Returns {"answer": str, "cypher": str, "results": list[dict], "fallback": bool}.
 
-    Mirrors Algorithm 4 of the paper. If the Cypher execution fails, the
-    error is fed back to the LLM for one retry (per Section 6.2 of the paper).
+    Mirrors Algorithm 4 of the paper, with two robustness improvements:
+      1. On Cypher syntax/execution error: retry once with schema + error hint
+      2. On 0 results: retry once with explicit label list, then fall back
+         to ContextRAG if the retry also returns 0 results
     """
     # Step 1: Generate Cypher
     cypher = generate_cypher(driver, query, level)
 
-    # Step 2: Execute Cypher (with one retry on error)
+    # Step 2: Execute Cypher (with retry on syntax error)
     try:
         results = execute_cypher(driver, cypher)
     except Exception as exc:
-        # Retry: feed error back to LLM
-        retry_prompt = f"""\
-The following Cypher query failed with this error:
-  {exc}
+        # Retry on syntax error: feed error + schema back to LLM
+        cypher = _retry_with_schema(driver, query, level, f"failed with error: {exc}")
+        try:
+            results = execute_cypher(driver, cypher)
+        except Exception:
+            # Both attempts failed — fall back to ContextRAG
+            ctx = context_rag(driver, level=level, mode="graph")
+            answer = synthesize_answer(query, "(CypherRAG failed — using ContextRAG fallback)", [], context=ctx)
+            return {"answer": answer, "cypher": cypher, "results": [], "fallback": True, "context_rag": ctx}
 
-Original question: {query}
+    # Step 3: If 0 results, retry once with explicit label hints
+    if not results:
+        cypher = _retry_with_schema(driver, query, level, "returned 0 results — the label names were likely wrong")
+        try:
+            results = execute_cypher(driver, cypher)
+        except Exception:
+            results = []
 
-Fix the Cypher query. Write ONLY the corrected query:
-"""
-        llm = get_llm(temperature=0)
-        corrected = llm.invoke(retry_prompt).content.strip()
-        if corrected.startswith("```"):
-            lines = corrected.split("\n")
-            corrected = "\n".join(lines[1:-1] if lines[-1].startswith("```") else lines[1:])
-        cypher = corrected.strip()
-        results = execute_cypher(driver, cypher)
+    # Step 4: If still 0 results after retry, fall back to ContextRAG
+    if not results:
+        ctx = context_rag(driver, level=level, mode="graph")
+        answer = synthesize_answer(query, "(CypherRAG returned no results — using ContextRAG fallback)", [], context=ctx)
+        return {"answer": answer, "cypher": cypher, "results": [], "fallback": True, "context_rag": ctx}
 
-    # Step 3: Synthesize answer
+    # Step 5: Synthesize answer from results
     answer = synthesize_answer(query, cypher, results)
 
-    return {"answer": answer, "cypher": cypher, "results": results}
+    return {"answer": answer, "cypher": cypher, "results": results, "fallback": False}
 
 
 def cypher_rag_text(driver: Driver, query: str, level: str = "conceptual") -> str:
-    """Convenience wrapper: return CypherRAG answer as plain text."""
+    """Convenience wrapper: return CypherRAG answer as plain text.
+
+    If CypherRAG fell back to ContextRAG, the context is prepended so the
+    agent has the graph text to reason over.
+    """
     result = cypher_rag(driver, query, level)
+    if result.get("fallback") and result.get("context_rag"):
+        return f"{result['answer']}\n\n--- ContextRAG fallback context ---\n{result['context_rag']}"
     return result["answer"]
