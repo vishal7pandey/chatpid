@@ -105,7 +105,7 @@ def run_benchmark(
                 start = time.time()
                 result = agent.invoke(
                     {"messages": [{"role": "user", "content": q["question"]}]},
-                    config={"recursion_limit": 10},
+                    config={"recursion_limit": 25},
                 )
                 elapsed = time.time() - start
 
