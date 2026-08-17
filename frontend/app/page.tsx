@@ -1,8 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { ChatPanel } from '@/components/ChatPanel';
+import { GraphPanel } from '@/components/GraphPanel';
 
 export default function Home() {
+  const [highlightedNodes, setHighlightedNodes] = useState<string[]>([]);
+
   return (
     <div className="flex h-screen w-screen overflow-hidden" style={{ backgroundColor: 'var(--app-bg)' }}>
       {/* Sidebar */}
@@ -23,10 +27,13 @@ export default function Home() {
         <div className="text-xs opacity-50">Sprint 5</div>
       </aside>
 
-      {/* Main content — chat panel (graph panel will be added in SCRUM-394) */}
+      {/* Main content — chat + graph panels side by side */}
       <main className="flex flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden border-r" style={{ borderColor: 'var(--pane-border)' }}>
+          <ChatPanel onTouchedNodes={setHighlightedNodes} />
+        </div>
         <div className="flex-1 overflow-hidden">
-          <ChatPanel />
+          <GraphPanel highlightedNodes={highlightedNodes} />
         </div>
       </main>
     </div>
