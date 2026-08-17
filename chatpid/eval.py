@@ -71,6 +71,19 @@ def extract_token_usage(result: dict) -> dict:
     return usage
 
 
+def extract_tools_used(result: dict) -> list[str]:
+    """Extract which GraphRAG tools the agent called from the message chain."""
+    tools = []
+    for msg in result.get("messages", []):
+        tool_calls = getattr(msg, "tool_calls", None)
+        if tool_calls:
+            for tc in tool_calls:
+                name = tc.get("name", "?") if isinstance(tc, dict) else getattr(tc, "name", "?")
+                if name not in tools:
+                    tools.append(name)
+    return tools
+
+
 def run_benchmark(
     level: str = "conceptual",
     limit: int | None = None,
@@ -111,6 +124,7 @@ def run_benchmark(
 
                 answer = result["messages"][-1].content
                 usage = extract_token_usage(result)
+                tools_used = extract_tools_used(result)
                 cost = estimate_cost(
                     settings.chat_model,
                     usage["prompt_tokens"],
@@ -128,9 +142,11 @@ def run_benchmark(
                     "tokens": usage,
                     "cost_usd": round(cost, 6),
                     "latency_seconds": round(elapsed, 2),
+                    "tools_used": tools_used,
                 }
                 results.append(entry)
                 print(f"  Answer: {answer[:120]}...")
+                print(f"  Tools: {tools_used}")
                 print(f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
             except Exception as exc:
                 # Save partial result with error info so we can resume later
@@ -145,6 +161,7 @@ def run_benchmark(
                     "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
                     "cost_usd": 0.0,
                     "latency_seconds": 0.0,
+                    "tools_used": [],
                     "error": str(exc),
                 }
                 results.append(entry)
@@ -192,3 +209,15 @@ def print_summary(results: list[dict], level: str = "") -> None:
             f"${stats['cost']:.4f} total (${stats['cost'] / stats['count']:.6f}/Q), "
             f"{stats['tokens']:,} tokens"
         )
+
+    # Tool diversity (SCRUM-409)
+    tool_counts: dict[str, int] = {}
+    for r in results:
+        for t in r.get("tools_used", []):
+            tool_counts[t] = tool_counts.get(t, 0) + 1
+    if tool_counts:
+        print(f"\n  Tool usage (SCRUM-409):")
+        for tool, count in sorted(tool_counts.items(), key=lambda x: -x[1]):
+            print(f"    {tool}: {count}/{len(results)} questions")
+        unique = len(tool_counts)
+        print(f"    Unique tools used: {unique}/4")
