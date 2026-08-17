@@ -1,0 +1,477 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The cylinder length of tank T4750 is 4.0 m.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2028,
+      "completion_tokens": 43,
+      "total_tokens": 2071
+    },
+    "cost_usd": 0.00033,
+    "latency_seconds": 4.87,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer is complete, well-structured, factually accurate, and directly relevant to the question."
+    },
+    "semantic_similarity": 0.367
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m\u00b2",
+    "agent_answer": "The design heat transfer area of heat exchanger H1007 is 46.8 m\u00b2.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2041,
+      "completion_tokens": 50,
+      "total_tokens": 2091
+    },
+    "cost_usd": 0.000336,
+    "latency_seconds": 3.91,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer directly and accurately provides the requested information about the design heat transfer area of heat exchanger H1007."
+    },
+    "semantic_similarity": 0.3872
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The design pressure of pump P4711 is 10.0 m.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2028,
+      "completion_tokens": 43,
+      "total_tokens": 2071
+    },
+    "cost_usd": 0.00033,
+    "latency_seconds": 3.76,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer accurately and completely reflects the design pressure of pump P4711 as stated in the reference answer."
+    },
+    "semantic_similarity": 0.673
+  },
+  {
+    "id": 4,
+    "category": "graph_query_single",
+    "question": "What is the design shaft power of pump P4711?",
+    "reference_answer": "60.0 kW",
+    "agent_answer": "The design shaft power of pump P4711 is 60.0 kW.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2033,
+      "completion_tokens": 46,
+      "total_tokens": 2079
+    },
+    "cost_usd": 0.000333,
+    "latency_seconds": 4.32,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer is complete, well-structured, factually accurate, and directly relevant to the question."
+    },
+    "semantic_similarity": 0.6604
+  },
+  {
+    "id": 5,
+    "category": "graph_query_single",
+    "question": "What is the design volume flow rate of pump P4712?",
+    "reference_answer": "420.0 m\u00b3/h",
+    "agent_answer": "The design volume flow rate of pump P4712 is 420.0 m\u00b3/h.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2038,
+      "completion_tokens": 49,
+      "total_tokens": 2087
+    },
+    "cost_usd": 0.000335,
+    "latency_seconds": 3.69,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer fully and accurately addresses the question regarding the design volume flow rate of pump P4712."
+    },
+    "semantic_similarity": 0.5788
+  },
+  {
+    "id": 6,
+    "category": "graph_query_single",
+    "question": "What is the nominal diameter of valve 66KL21?",
+    "reference_answer": "DN 80",
+    "agent_answer": "The nominal diameter of valve 66KL21, which is a Butterfly Valve, is not explicitly provided in the retrieved data. For precise specifications like nominal diameter, further detailed documentation or a direct query to the P&ID database may be necessary.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 14925,
+      "completion_tokens": 277,
+      "total_tokens": 15202
+    },
+    "cost_usd": 0.002405,
+    "latency_seconds": 29.78,
+    "llm_judge": {
+      "completeness": 2,
+      "coherence": 3,
+      "correctness": 1,
+      "relatedness": 3,
+      "verdict": "incorrect",
+      "explanation": "The answer fails to provide the nominal diameter of valve 66KL21, which is explicitly stated in the reference answer."
+    },
+    "semantic_similarity": 0.1654
+  },
+  {
+    "id": 7,
+    "category": "graph_query_single",
+    "question": "What is the set pressure of safety valve SV 104.01?",
+    "reference_answer": "6.0 bar",
+    "agent_answer": "The set pressure of safety valve SV 104.01 is 6.0 bar.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2040,
+      "completion_tokens": 49,
+      "total_tokens": 2089
+    },
+    "cost_usd": 0.000335,
+    "latency_seconds": 3.87,
+    "llm_judge": {
+      "completeness": 5,
+      "coherence": 5,
+      "correctness": 5,
+      "relatedness": 5,
+      "verdict": "correct",
+      "explanation": "The agent's answer directly and accurately provides the set pressure of the safety valve as specified in the reference answer."
+    },
+    "semantic_similarity": 0.5164
+  },
+  {
+    "id": 8,
+    "category": "graph_query_single",
+    "question": "What is the upper design temperature of tank T4750?",
+    "reference_answer": "100.0 \u00b0C",
+    "agent_answer": "The design specifications for tank T4750 include a cylinder length of 4.0 m, but the upper design temperature is not available in the data retrieved. The tank is described as a vessel intended to contain fluid for storage, typically with a vertical and cylindrical shape.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 3288,
+      "completion_tokens": 110,
+      "total_tokens": 3398
+    },
+    "cost_usd": 0.000559,
+    "latency_seconds": 8.36,
+    "llm_judge": {
+      "completeness": 1,
+      "coherence": 3,
+      "correctness": 1,
+      "relatedness": 2,
+      "verdict": "incorrect",
+      "explanation": "The answer fails to provide the upper design temperature of tank T4750 and does not address the question directly."
+    },
+    "semantic_similarity": 0.2259
+  },
+  {
+    "id": 9,
+    "category": "graph_query_multi",
+    "question": "List all valves in the P&ID along with their specification.",
+    "reference_answer": "11 valves total: 3 Globe Valves (C1, actuated by HV4750.01/PV4712.02/TV4750.03), 1 Butterfly Valve (66KL21), 1 Swing Check Valve (75SA21/C2), 5 Ball Valves (73KH12, C4/C2/C5/C7/C10), 1 Spring Loaded Globe Safety Valve (SV 104.01). Key specs: nominal diameters DN 25-80, piping classes 73HG12/75HB13, fluid codes MNb/MNc/QSb.",
+    "agent_answer": "Here are the valves in the P&ID along with their specifications:\n\n1. **Ball Valve**\n   - Tag: C4, Nominal Diameter: DN 50, Piping Class Code: 73HG12, Fluid Code: MNc\n   - Tag: C2, Nominal Diameter: DN 25, Piping Class Code: 75HB13, Fluid Code: MNc\n   - Tag: C5, Nominal Diameter: DN 25, Piping Class Code: 75HB13, Fluid Code: MNc\n   - Tag: C7, Nominal Diameter: DN 50, Piping Class Code: 75HB13, Fluid Code: MNc\n   - Tag: C10, Nominal Diameter: DN 25, Piping Class Code: 75HB13, Fluid Code: MNc\n\n2. **Butterfly Valve**\n   - Tag: C1, Nominal Diameter: DN 80, Piping Class Code: 75HB13, Fluid Code: MNc\n\n3. **Swing Check Valve**\n   - Tag: C2, Nominal Diameter: DN 80, Piping Class Code: 75HB13, Fluid Code: MNc\n\n4. **Globe Valve**\n   - Tag: C1, Nominal Diameter: DN 80, Piping Class Code: 75HB13, Fluid Code: MNb\n   - Tag: C1, Nominal Diameter: DN 50, Piping Class Code: 75HB13, Fluid Code: MNc\n   - Tag: C1, Nominal Diameter: DN 50, Piping Class Code: 75HB13, Fluid Code: QSb\n\n5. **Spring Loaded Globe Safety Valve**\n   - Tag: SV 104.01, Nominal Diameter: DN 25, Piping Class Code: 73HG12, Fluid Code: MNc",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2399,
+      "completion_tokens": 416,
+      "total_tokens": 2815
+    },
+    "cost_usd": 0.000609,
+    "latency_seconds": 13.76,
+    "llm_judge": {
+      "completeness": 3,
+      "coherence": 4,
+      "correctness": 2,
+      "relatedness": 4,
+      "verdict": "partially_correct",
+      "explanation": "The answer lists some valves but contains inaccuracies in specifications and does not include all valves mentioned in the reference answer."
+    },
+    "semantic_similarity": 0.6057
+  },
+  {
+    "id": 10,
+    "category": "graph_query_multi",
+    "question": "List all pipe fittings in the P&ID along with their specification.",
+    "reference_answer": "Pipe Reducers (C3, DN50, 73HG12), Pipe Tees (C3/C1/C4/C8/C9, DN25-50, 75HB13), Blind Flanges (C6/C11, DN25, 75HB13). All fluid code MNc, line 47124/47126.",
+    "agent_answer": "Here is a list of pipe fittings along with their specifications:\n\n1. **PipeReducer (Tag: C3)**\n   - **Description:** Connects pipes of different nominal sizes.\n   - **Nominal Diameter:** DN 80\n   - **Nominal Diameter Standard:** DN 80 (DIN 2448)\n   - **Piping Class Code:** 73HG12\n   - **Proteus ID:** PipeReducer-1\n\n2. **PipeTee (Tag: C1)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-2\n\n3. **PipeTee (Tag: C3)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-1\n\n4. **PipeTee (Tag: C4)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-3\n\n5. **BlindFlange (Tag: C6)**\n   - **Description:** Flange without a central opening, used to shut off a flanged pipe end.\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** BlindFlange-1\n\n6. **PipeTee (Tag: C8)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-4\n\n7. **PipeTee (Tag: C9)**\n   - **Description:** T-shaped fitting with three ends, including a branch at 90 degrees.\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** PipeTee-5\n\n8. **BlindFlange (Tag: C11)**\n   - **Description:** Flange without a central opening, used to shut off a flanged pipe end.\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Proteus ID:** BlindFlange-2\n\nThis list includes various types of pipe fittings, their tags, and specifications.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2962,
+      "completion_tokens": 742,
+      "total_tokens": 3704
+    },
+    "cost_usd": 0.000889,
+    "latency_seconds": 23.66,
+    "llm_judge": {
+      "completeness": 4,
+      "coherence": 5,
+      "correctness": 3,
+      "relatedness": 5,
+      "verdict": "partially_correct",
+      "explanation": "The answer includes most fittings and specifications but incorrectly lists the nominal diameters and tags for some items compared to the reference answer."
+    },
+    "semantic_similarity": 0.5086
+  },
+  {
+    "id": 11,
+    "category": "path_exploration",
+    "question": "If heat exchanger H1007 needs maintenance, can flow still reach tank T4750? Describe the alternative path.",
+    "reference_answer": "If H1007 is bypassed, flow can potentially reach T4750 via H1008 (tubular heat exchanger) if a tie-in point exists on line MNb47123 or via N3 of T4750. However, H1008 controls tank temperature, so using it as an alternative path is not recommended. Currently no bypass tie-in exists.",
+    "agent_answer": "If heat exchanger H1007 requires maintenance, flow can still reach tank T4750 through an alternative path. The flow can bypass H1007 and proceed through the following route:\n\n1. **FlowInPipeOffPageConnector** connects to **P4711**.\n2. From **P4711**, the flow goes to **C1**.\n3. The flow then continues from **C1** to **C2**.\n4. Finally, it reaches **C3**.\n\nThis alternative path allows the flow to bypass the maintenance on H1007 and still reach the downstream components.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2617,
+      "completion_tokens": 158,
+      "total_tokens": 2775
+    },
+    "cost_usd": 0.000487,
+    "latency_seconds": 2.93,
+    "llm_judge": {
+      "completeness": 2,
+      "coherence": 3,
+      "correctness": 2,
+      "relatedness": 3,
+      "verdict": "partially_correct",
+      "explanation": "The answer provides an alternative path but lacks specific mention of H1008 and does not address the recommendation against using it."
+    },
+    "semantic_similarity": 0.8376
+  },
+  {
+    "id": 12,
+    "category": "path_exploration",
+    "question": "If you need to isolate tank T4750 from all upstream equipment, which valves would you need to close?",
+    "reference_answer": "Shut the main DN80 feed globe valve (HV4750.01). Close the DN50 globe valve on the recirculation line (PV4712.02).",
+    "agent_answer": "To isolate tank T4750 from all upstream equipment, you would need to close the following valves:\n\n1. **Valve C1**\n2. **Valve C2**\n3. **Valve C3**\n\nThese valves are part of the flow path leading to tank T4750.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2581,
+      "completion_tokens": 83,
+      "total_tokens": 2664
+    },
+    "cost_usd": 0.000437,
+    "latency_seconds": 2.51,
+    "llm_judge": {
+      "completeness": 2,
+      "coherence": 3,
+      "correctness": 1,
+      "relatedness": 3,
+      "verdict": "incorrect",
+      "explanation": "The answer does not specify the correct valves needed to isolate tank T4750 as per the reference answer."
+    },
+    "semantic_similarity": 0.363
+  },
+  {
+    "id": 13,
+    "category": "path_exploration",
+    "question": "Trace the flow path from tank T4750 to pump P4712.",
+    "reference_answer": "T4750 (Tank) \u2192 66KL21 (Butterfly valve) \u2192 75SA21 (Swing check valve) \u2192 Pipe reducer (DN80 to DN50) \u2192 73KH12 (Ball valve) \u2192 P4712 (Reciprocating pump)",
+    "agent_answer": "The flow path from tank T4750 to pump P4712 can be traced as follows:\n\n1. **Pump P4712**\n2. **Pipe C1**\n3. **Tank T4750**\n4. **Shutoff Valve SV 104.01**\n\nThis path indicates that the flow moves from pump P4712 through pipe C1 to tank T4750, and is also connected to shutoff valve SV 104.01.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2573,
+      "completion_tokens": 120,
+      "total_tokens": 2693
+    },
+    "cost_usd": 0.000458,
+    "latency_seconds": 2.5,
+    "llm_judge": {
+      "completeness": 1,
+      "coherence": 2,
+      "correctness": 1,
+      "relatedness": 2,
+      "verdict": "incorrect",
+      "explanation": "The answer does not accurately trace the flow path from tank T4750 to pump P4712 and includes incorrect components."
+    },
+    "semantic_similarity": 0.6927
+  },
+  {
+    "id": 14,
+    "category": "path_exploration",
+    "question": "Working backwards from tank T4750, what are the two possible inlet paths and their source equipment?",
+    "reference_answer": "Path 1: T4750 \u2190 Globe Valve (HV4750.01) \u2190 H1007 (Plate Heat Exchanger) \u2190 P4711 (Centrifugal Pump). Path 2: T4750 \u2190 Globe Valve (TV4712.02/PV4712.02) \u2190 H1008 (Tubular Heat Exchanger).",
+    "agent_answer": "The two possible inlet paths to tank T4750 and their source equipment are as follows:\n\n1. **Path 1**: \n   - **Source Equipment**: C3\n   - **Flow Path**: T4750 \u2192 C1 \u2192 C2 \u2192 C3\n\n2. **Path 2**: \n   - **Source Equipment**: H1007\n   - **Flow Path**: FlowInPipeOffPageConnector \u2192 P4711 \u2192 H1007 \u2192 C1\n\nThese paths indicate the routes through which fluid can enter tank T4750.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 3204,
+      "completion_tokens": 191,
+      "total_tokens": 3395
+    },
+    "cost_usd": 0.000595,
+    "latency_seconds": 3.67,
+    "llm_judge": {
+      "completeness": 2,
+      "coherence": 3,
+      "correctness": 2,
+      "relatedness": 3,
+      "verdict": "partially_correct",
+      "explanation": "The answer provides some paths but does not accurately reflect the reference answer's details and includes incorrect source equipment."
+    },
+    "semantic_similarity": 0.6913
+  },
+  {
+    "id": 15,
+    "category": "path_exploration",
+    "question": "What is the flow path from pump P4711 to tank T4750?",
+    "reference_answer": "P4711 (Centrifugal Pump) \u2192 H1007 (Plate Heat Exchanger) \u2192 HV4750.01 (Globe Valve) \u2192 T4750 (Tank)",
+    "agent_answer": "The flow path from pump P4711 to tank T4750 is as follows:\n\n1. **P4711** (Pump)\n2. **H1007** (Heat Exchanger)\n3. **C1** (Piping Node)\n4. **T4750** (Tank)\n\nThis path indicates that the fluid flows from pump P4711 to heat exchanger H1007, then through piping node C1, and finally into tank T4750.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2544,
+      "completion_tokens": 123,
+      "total_tokens": 2667
+    },
+    "cost_usd": 0.000455,
+    "latency_seconds": 2.9,
+    "llm_judge": {
+      "completeness": 4,
+      "coherence": 5,
+      "correctness": 4,
+      "relatedness": 5,
+      "verdict": "partially_correct",
+      "explanation": "The answer is mostly correct but omits the globe valve HV4750.01, which is a key component in the flow path."
+    },
+    "semantic_similarity": 0.7244
+  },
+  {
+    "id": 16,
+    "category": "knowledge_inference",
+    "question": "Analyze the flowsheet and give recommendations regarding process safety.",
+    "reference_answer": "Key findings: (1) Safety valve SV104.01 set at 6.0 bar but T4750 design pressure is only 0.1/0.05 bar \u2014 PSV provides no effective protection. (2) Missing pressure relief for P4711/P4712/H1007/H1008 (design pressure up to 60 bar). (3) Fluid codes MNb/MNc/QSb not defined. (4) Blind flanges without clear isolation points. (5) TV4750.03 fail-open may be unsafe if fluid is heating.",
+    "agent_answer": "To provide recommendations regarding process safety based on the flowsheet analysis, consider the following key aspects:\n\n1. **Hazard Identification**: Ensure that all potential hazards associated with the process are identified. This includes chemical hazards, physical hazards, and operational hazards.\n\n2. **Safety Equipment**: Verify the presence and functionality of safety equipment such as pressure relief valves, emergency shutdown systems, and fire suppression systems. Ensure they are regularly tested and maintained.\n\n3. **Isolation Procedures**: Implement clear isolation procedures for equipment during maintenance or in case of emergencies. This includes the use of lockout/tagout (LOTO) practices to prevent accidental startup.\n\n4. **Training and Procedures**: Ensure that all personnel are adequately trained in safety procedures and emergency response. Regular drills should be conducted to prepare for potential incidents.\n\n5. **Monitoring and Alarms**: Install monitoring systems to detect abnormal conditions (e.g., pressure, temperature) and ensure that alarms are in place to alert operators of potential issues.\n\n6. **Risk Assessment**: Conduct regular risk assessments to evaluate the effectiveness of existing safety measures and identify areas for improvement.\n\n7. **Documentation**: Maintain thorough documentation of all safety procedures, training records, and maintenance activities to ensure compliance and facilitate audits.\n\n8. **Emergency Response Plan**: Develop and regularly update an emergency response plan that includes evacuation routes, communication protocols, and coordination with local emergency services.\n\nBy focusing on these areas, you can enhance the safety of the process and mitigate risks associated with the operations depicted in the flowsheet.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2004,
+      "completion_tokens": 330,
+      "total_tokens": 2334
+    },
+    "cost_usd": 0.000499,
+    "latency_seconds": 5.94,
+    "llm_judge": {
+      "completeness": 3,
+      "coherence": 4,
+      "correctness": 3,
+      "relatedness": 4,
+      "verdict": "partially_correct",
+      "explanation": "The answer provides general safety recommendations but lacks specific analysis and findings related to the flowsheet as outlined in the reference answer."
+    },
+    "semantic_similarity": 0.3094
+  },
+  {
+    "id": 17,
+    "category": "knowledge_inference",
+    "question": "List all control valves along with its control philosophy, why and what ifs fail.",
+    "reference_answer": "3 control valves: HV4750.01 (flow control, fail-close \u2014 prevents uncontrolled flow into T4750); PV4712.02 (pressure control via PICSA 4712.02, fail-close \u2014 prevents return to T4750, may increase downstream pressure); TV4750.03 (temperature control via TICSA 4750.03 for H1008, fail-open \u2014 ensures continuous cooling/heating medium flow, may cause overcooling/overheating).",
+    "agent_answer": "Here are the control valves along with their control philosophy, failure reasons, and what-if scenarios:\n\n1. **Control Valve Tag: C1**\n   - Control Philosophy: Globe Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n2. **Control Valve Tag: C1**\n   - Control Philosophy: Butterfly Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n3. **Control Valve Tag: C4**\n   - Control Philosophy: Ball Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n4. **Control Valve Tag: C2**\n   - Control Philosophy: Ball Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n5. **Control Valve Tag: C5**\n   - Control Philosophy: Ball Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n6. **Control Valve Tag: C7**\n   - Control Philosophy: Ball Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\n7. **Control Valve Tag: C10**\n   - Control Philosophy: Ball Valve\n   - Failure Reasons: None\n   - What-If Scenarios: None\n\nNote: Control Valve C1 has multiple control philosophies (Globe Valve and Butterfly Valve) listed. All valves have no failure reasons or what-if scenarios noted.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2326,
+      "completion_tokens": 329,
+      "total_tokens": 2655
+    },
+    "cost_usd": 0.000546,
+    "latency_seconds": 10.04,
+    "llm_judge": {
+      "completeness": 1,
+      "coherence": 2,
+      "correctness": 1,
+      "relatedness": 2,
+      "verdict": "incorrect",
+      "explanation": "The answer fails to accurately list the control valves, their control philosophies, and the associated failure reasons and what-if scenarios as required by the question."
+    },
+    "semantic_similarity": 0.5586
+  },
+  {
+    "id": 18,
+    "category": "knowledge_inference",
+    "question": "What would be the effect if the heating fluid temperature in Heat Exchanger H1007 increased from the design temperature to 120\u00b0C?",
+    "reference_answer": "H1007 design: 313 kW, 46.8 m\u00b2, chamber design temp 100\u00b0C. Effects: (1) Increased heat transfer rate, potentially exceeding 313 kW design. (2) Exceeds chamber design temperature by 20\u00b0C \u2014 thermal stress and equipment damage risk. (3) Downstream T4750 affected, TV4750.03 control loop would need to compensate. (4) TV4750.03 might need to throttle more.",
+    "agent_answer": "Increasing the heating fluid temperature in Heat Exchanger H1007 from the design temperature to 120\u00b0C would enhance the heat transfer efficiency. This is because a higher temperature typically increases the temperature gradient between the heating and cooling fluids, leading to a more effective heat transfer process. \n\nHowever, it's important to consider that this change could also lead to potential issues such as increased thermal stress on the heat exchanger materials, which may affect their integrity and lifespan. Additionally, if the temperature exceeds the design limits, it could trigger safety mechanisms or lead to operational failures.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 3329,
+      "completion_tokens": 171,
+      "total_tokens": 3500
+    },
+    "cost_usd": 0.000602,
+    "latency_seconds": 9.11,
+    "llm_judge": {
+      "completeness": 3,
+      "coherence": 4,
+      "correctness": 4,
+      "relatedness": 4,
+      "verdict": "partially_correct",
+      "explanation": "The answer addresses some effects of increased temperature but lacks specific details about the design parameters and downstream impacts mentioned in the reference answer."
+    },
+    "semantic_similarity": 0.6067
+  },
+  {
+    "id": 19,
+    "category": "graph_summarization",
+    "question": "Based on the P&ID, make a narrative to describe the process flow from the inlet to the final outlet, identifying all major equipment, intermediate streams, and control points in sequence.",
+    "reference_answer": "Inlet \u2192 P4711 (centrifugal pump) \u2192 H1007 (plate heat exchanger) \u2192 HV4750.01 (globe valve, flow control) \u2192 T4750 (tank, temp monitored by TICSA4750.03) \u2192 66KL21 (butterfly valve) \u2192 75SA21 (check valve) \u2192 pipe reducer DN80\u2192DN50 \u2192 73KH12 (ball valve) \u2192 P4712 (reciprocating pump) \u2192 tee with SV104.01 (safety valve, 6 bar) \u2192 H1008 (tubular heat exchanger, temp control via TV4750.03) \u2192 PV4712.02 (return to T4750, pressure control via PICSA 4712.02) \u2192 outlet. Three control loops: flow (HV4750.01), pressure (PV4712.02), temperature (TV4750.03).",
+    "agent_answer": "The process flow begins at the **inlet**, where raw material enters the system. This material is directed to a **pre-treatment unit**, which may include filtration or separation processes to remove impurities.\n\nFrom the pre-treatment unit, the stream flows into a **mixing tank** where it is combined with additives or other components. This mixture is then pumped to a **reactor** where the main chemical reaction occurs. The reactor is equipped with temperature and pressure control systems to ensure optimal reaction conditions.\n\nAfter the reaction, the product stream exits the reactor and enters a **heat exchanger**. Here, the stream is cooled or heated as necessary before moving to the next stage. The heat exchanger is a critical control point, often monitored for temperature and flow rate.\n\nFollowing the heat exchanger, the stream is directed to a **separator** where the product is separated from by-products or unreacted materials. This step may involve phase separation (liquid-liquid or gas-liquid) depending on the nature of the process.\n\nThe separated product is then sent to a **storage tank** for temporary holding. From the storage tank, the product is pumped to a **filtration unit** to remove any remaining solids or impurities.\n\nFinally, the purified product is directed to the **outlet**, where it is either packaged for distribution or sent to further processing, depending on the operational requirements.\n\nThroughout this process, various control points are established, including flow meters, pressure gauges, and temperature sensors, to monitor and adjust the conditions as necessary to ensure product quality and safety.",
+    "model": "gpt-4o-mini",
+    "level": "conceptual",
+    "tokens": {
+      "prompt_tokens": 2056,
+      "completion_tokens": 329,
+      "total_tokens": 2385
+    },
+    "cost_usd": 0.000506,
+    "latency_seconds": 5.09,
+    "llm_judge": {
+      "completeness": 3,
+      "coherence": 4,
+      "correctness": 2,
+      "relatedness": 4,
+      "verdict": "partially_correct",
+      "explanation": "The answer provides a general process flow but lacks specific equipment names and control points as outlined in the reference answer."
+    },
+    "semantic_similarity": 0.4514
+  }
+]
