@@ -1,0 +1,9 @@
+{
+    "Connector labels": [
+        "Main_out",
+        "Main_in"
+    ],
+    "Probabilities": {
+        "column_pattern_1": 1.0
+    }
+}

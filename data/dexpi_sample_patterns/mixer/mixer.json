@@ -1,0 +1,10 @@
+{
+    "Connector labels": [
+        "Main_out",
+        "Main_in"
+    ],
+    "Probabilities": {
+        "mixer_pattern_1": 0.5,
+        "mixer_pattern_2": 0.5
+    }
+}
