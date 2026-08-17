@@ -46,7 +46,7 @@ Configured via `LLM_PROVIDER` env var in `.env`:
 | SCRUM-372 | Done | Re-ran 19Q benchmark with all fixes. Final: 19/19 completed, 6/19 correct, 8/19 partial, 5/19 incorrect, $0.011 total. See benchmark results below. |
 | SCRUM-398 | Done | Scaling benchmark: VectorRAG/PathRAG on 1x/3x/5x graphs. PathRAG scales O(1), VectorRAG O(log n), ContextRAG O(n). |
 | SCRUM-374 | To Do | Ingest denser P&ID at scale, repeat graph-level comparison |
-| SCRUM-392 | To Do | Scaffold chatpid/frontend as Next.js app |
+| SCRUM-392 | Done | Scaffolded chatpid/frontend as Next.js 16 app (App Router, React 19, Tailwind 4, lucide-react). Ported ade's semantic design-token system with light/dark themes. Build passes, dev server runs on localhost:3000. |
 
 ### SCRUM-398 Scaling Results (2026-08-17)
 
