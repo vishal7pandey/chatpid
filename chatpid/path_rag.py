@@ -89,9 +89,9 @@ def find_starting_nodes(
         nodes = []
         for record in session.run(cypher, level=level):
             props = dict(record["props"])
-            # Remove internal metadata
-            props.pop("level", None)
-            props.pop("element_id", None)
+            # Remove internal metadata and embeddings (not needed for path traversal)
+            for key in ("level", "element_id", "global_semantic_embedding", "local_semantic_embedding"):
+                props.pop(key, None)
             label = [l for l in (record["labels"] or []) if l != "Node"]
             props["label"] = label[0] if label else ""
             text = _node_text(props)
@@ -126,8 +126,8 @@ def get_neighbors(
         neighbors = []
         for record in session.run(cypher, tag=node_tag, level=level):
             props = dict(record["props"])
-            props.pop("level", None)
-            props.pop("element_id", None)
+            for key in ("level", "element_id", "global_semantic_embedding", "local_semantic_embedding"):
+                props.pop(key, None)
             label = [l for l in (record["labels"] or []) if l != "Node"]
             props["label"] = label[0] if label else ""
             neighbors.append({
@@ -139,6 +139,37 @@ def get_neighbors(
         return neighbors
 
 
+# Properties that are internal metadata or embeddings, not engineering content.
+# Must not be serialized into PathRAG output (embeddings are 384-dim float arrays
+# that would waste thousands of tokens per node).
+_NON_CONTENT_PROPS = {
+    "tag",
+    "label",
+    "_score",
+    "rel_type",
+    "direction",
+    "level",
+    "element_id",
+    "proteusId",
+    "tagNamePrefix",
+    "tagNameSequenceNumber",
+    "tagNameSuffix",
+    "nominalDiameterTypeRepresentation",
+    "nominalDiameterNumericalValueRepresentation",
+    "nominalDiameterStandard",
+    "primarySecondaryPipingNetworkSegment",
+    "collapsed_from",
+    "collapsed_node_id",
+    "stitched_from",
+    "labels",
+    "label_description",
+    "global_semantic_embedding",
+    "local_semantic_embedding",
+    "global_semantic",
+    "local_semantic",
+}
+
+
 def _format_node_context(node: dict) -> str:
     """Format a node's properties as readable context text."""
     tag = node.get("tag", "Node")
@@ -146,9 +177,8 @@ def _format_node_context(node: dict) -> str:
     parts = [f"[{tag}]"]
     if label:
         parts.append(f"({label})")
-    # Include key engineering properties
-    skip = {"tag", "label", "_score", "rel_type", "direction"}
-    eng_props = {k: v for k, v in node.items() if k not in skip and v is not None}
+    # Include key engineering properties (exclude embeddings, semantic text, metadata)
+    eng_props = {k: v for k, v in node.items() if k not in _NON_CONTENT_PROPS and v is not None}
     if eng_props:
         prop_str = ", ".join(f"{k}={v}" for k, v in sorted(eng_props.items()))
         parts.append(prop_str)
