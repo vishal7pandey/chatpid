@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import {
   ReactFlow,
   Background,
@@ -11,16 +11,25 @@ import {
   type NodeTypes,
   Position,
   Handle,
+  Panel,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { Loader2, Network } from 'lucide-react';
+import dagre from '@dagrejs/dagre';
+import { Loader2, Network, Search, X, Info } from 'lucide-react';
 import { getGraph, type GraphResponse, type GraphNode } from '@/lib/api';
 
 // Node type colors based on label
 const NODE_COLORS: Record<string, string> = {
   CentrifugalPump: '#0071CE',
+  Pump: '#0071CE',
   HeatExchanger: '#F47C6D',
+  Heater: '#F47C6D',
   Tank: '#4DB848',
+  Vessel: '#4DB848',
+  ProcessColumn: '#2E86AB',
+  Compressor: '#E36B6B',
+  Mixer: '#9B59B6',
+  OperatedValve: '#A27CC9',
   Valve: '#A27CC9',
   BallValve: '#A27CC9',
   GlobeValve: '#A27CC9',
@@ -36,14 +45,56 @@ const NODE_COLORS: Record<string, string> = {
   FlowOutPipeOffPageConnector: '#00B5E2',
 };
 
+// Group labels for the legend (collapses valve variants into one entry)
+const LEGEND_GROUPS: { label: string; color: string; aliases: string[] }[] = [
+  { label: 'Pump', color: NODE_COLORS.Pump, aliases: ['CentrifugalPump', 'Pump'] },
+  { label: 'Heat Exchanger', color: NODE_COLORS.HeatExchanger, aliases: ['HeatExchanger', 'Heater'] },
+  { label: 'Tank / Vessel', color: NODE_COLORS.Tank, aliases: ['Tank', 'Vessel'] },
+  { label: 'Process Column', color: NODE_COLORS.ProcessColumn, aliases: ['ProcessColumn'] },
+  { label: 'Compressor', color: NODE_COLORS.Compressor, aliases: ['Compressor'] },
+  { label: 'Mixer', color: NODE_COLORS.Mixer, aliases: ['Mixer'] },
+  { label: 'Valve', color: NODE_COLORS.OperatedValve, aliases: ['OperatedValve', 'Valve', 'BallValve', 'GlobeValve', 'SwingCheckValve', 'ControlValve'] },
+  { label: 'Safety Valve', color: NODE_COLORS.SafetyValve, aliases: ['SafetyValve'] },
+  { label: 'Pipe Fitting', color: NODE_COLORS.PipeTee, aliases: ['PipeTee', 'PipeReducer'] },
+  { label: 'Connector', color: NODE_COLORS.OffPageConnector, aliases: ['OffPageConnector', 'FlowInPipeOffPageConnector', 'FlowOutPipeOffPageConnector'] },
+  { label: 'Other', color: '#64748B', aliases: [] },
+];
+
+function getNodeColor(label: string): string {
+  return NODE_COLORS[label] || '#64748B';
+}
+
+// Dagre layout — hierarchical, flow-direction-aware (left to right)
+function layoutGraph(nodes: Node[], edges: Edge[], direction: 'LR' | 'TB' = 'LR'): { nodes: Node[]; edges: Edge[] } {
+  const g = new dagre.graphlib.Graph();
+  g.setDefaultEdgeLabel(() => ({}));
+  g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 80, marginx: 20, marginy: 20 });
+
+  nodes.forEach((node) => {
+    g.setNode(node.id, { width: 120, height: 40 });
+  });
+  edges.forEach((edge) => {
+    g.setEdge(edge.source, edge.target);
+  });
+
+  dagre.layout(g);
+
+  const layoutedNodes = nodes.map((node) => {
+    const pos = g.node(node.id);
+    return { ...node, position: { x: pos.x - 60, y: pos.y - 20 } };
+  });
+
+  return { nodes: layoutedNodes, edges };
+}
+
 interface GraphPanelProps {
-  highlightedNodes?: string[]; // tags touched by last answer
+  highlightedNodes?: string[];
   level?: string;
 }
 
 // Custom node component
-function PidNode({ data }: { data: { label: string; tag: string; highlighted: boolean } }) {
-  const color = NODE_COLORS[data.label] || '#64748B';
+function PidNode({ data }: { data: { label: string; tag: string; highlighted: boolean; properties?: Record<string, unknown> } }) {
+  const color = getNodeColor(data.label);
   return (
     <>
       <Handle type="target" position={Position.Left} style={{ opacity: 0 }} />
@@ -58,8 +109,9 @@ function PidNode({ data }: { data: { label: string; tag: string; highlighted: bo
           fontWeight: 500,
           minWidth: '60px',
           textAlign: 'center',
-          boxShadow: data.highlighted ? `0 0 8px ${color}80` : 'none',
+          boxShadow: data.highlighted ? `0 0 12px ${color}80` : 'none',
           transition: 'all 0.2s',
+          cursor: 'pointer',
         }}
       >
         {data.tag || data.label}
@@ -77,6 +129,9 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalNodes, setTotalNodes] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedNode, setSelectedNode] = useState<Node | null>(null);
+  const [showLegend, setShowLegend] = useState(true);
 
   const loadGraph = useCallback(async () => {
     setLoading(true);
@@ -85,34 +140,40 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
       const data: GraphResponse = await getGraph(level, 200);
       setTotalNodes(data.total_nodes);
 
-      // Build a tag-to-nodeId map for highlighting
       const highlightSet = new Set(highlightedNodes.map((t) => t.toLowerCase()));
 
-      const flowNodes: Node[] = data.nodes.map((n: GraphNode, i) => {
+      const flowNodes: Node[] = data.nodes.map((n: GraphNode) => {
         const tag = n.tags[0] || '';
         const isHighlighted = highlightSet.has(tag.toLowerCase());
         return {
           id: n.id,
           type: 'pidNode',
-          position: {
-            // Circular layout
-            x: Math.cos((i / data.nodes.length) * 2 * Math.PI) * 250 + 300,
-            y: Math.sin((i / data.nodes.length) * 2 * Math.PI) * 250 + 300,
-          },
-          data: { label: n.label, tag, highlighted: isHighlighted },
+          position: { x: 0, y: 0 }, // will be set by dagre
+          data: { label: n.label, tag, highlighted: isHighlighted, properties: n.properties },
         };
       });
+
+      // Only show edge labels if there are multiple distinct relationship types
+      // (if all edges are the same type, e.g. all PIPE, labels add noise without info)
+      const edgeTypes = new Set(data.edges.map((e) => e.type));
+      const showEdgeLabels = edgeTypes.size > 1;
 
       const flowEdges: Edge[] = data.edges.map((e) => ({
         id: `${e.source}-${e.target}`,
         source: e.source,
         target: e.target,
         animated: false,
+        label: showEdgeLabels ? (e.type || undefined) : undefined,
+        labelStyle: { fill: 'var(--muted-text)', fontSize: 9, fontWeight: 500 },
+        labelBgStyle: { fill: 'var(--card-bg)', fillOpacity: 0.8 },
+        labelBgPadding: [4, 2] as [number, number],
         style: { stroke: 'var(--muted-text)', strokeWidth: 1.5 },
       }));
 
-      setNodes(flowNodes);
-      setEdges(flowEdges);
+      // Apply dagre layout
+      const { nodes: laidOutNodes, edges: laidOutEdges } = layoutGraph(flowNodes, flowEdges);
+      setNodes(laidOutNodes);
+      setEdges(laidOutEdges);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load graph');
     } finally {
@@ -141,6 +202,35 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
     );
   }, [highlightedNodes]);
 
+  // Filter nodes by search query — dims non-matching nodes
+  const displayNodes = useMemo(() => {
+    if (!searchQuery.trim()) return nodes;
+    const q = searchQuery.toLowerCase();
+    return nodes.map((n) => {
+      const tag = ((n.data as { tag?: string }).tag || '').toLowerCase();
+      const label = ((n.data as { label?: string }).label || '').toLowerCase();
+      const matches = tag.includes(q) || label.includes(q);
+      return {
+        ...n,
+        style: matches ? undefined : { opacity: 0.15 },
+      };
+    });
+  }, [nodes, searchQuery]);
+
+  // Equipment type counts for legend
+  const equipmentCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    nodes.forEach((n) => {
+      const label = (n.data as { label?: string }).label || 'Unknown';
+      counts[label] = (counts[label] || 0) + 1;
+    });
+    return counts;
+  }, [nodes]);
+
+  const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
+    setSelectedNode(node);
+  }, []);
+
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: 'var(--pane-bg)' }}>
       {/* Header */}
@@ -151,9 +241,27 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
             P&amp;ID Graph
           </h2>
         </div>
-        <span className="text-xs" style={{ color: 'var(--muted-text)' }}>
-          {totalNodes} nodes · {level}
-        </span>
+        <div className="flex items-center gap-3">
+          {/* Search box */}
+          <div className="relative">
+            <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2" style={{ color: 'var(--muted-text)' }} />
+            <input
+              type="text"
+              placeholder="Search tag..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-32 rounded-md border py-1 pl-7 pr-2 text-xs outline-none"
+              style={{
+                backgroundColor: 'var(--card-bg)',
+                borderColor: 'var(--pane-border)',
+                color: 'var(--primary-text)',
+              }}
+            />
+          </div>
+          <span className="text-xs" style={{ color: 'var(--muted-text)' }}>
+            {totalNodes} nodes · {level}
+          </span>
+        </div>
       </div>
 
       {/* Graph */}
@@ -175,9 +283,10 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
         )}
         {!loading && !error && (
           <ReactFlow
-            nodes={nodes}
+            nodes={displayNodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            onNodeClick={onNodeClick}
             fitView
             fitViewOptions={{ padding: 0.2 }}
             proOptions={{ hideAttribution: true }}
@@ -197,6 +306,141 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
                 backgroundColor: 'var(--card-bg)',
               }}
             />
+
+            {/* Legend */}
+            {showLegend && (
+              <Panel position="top-left">
+                <div
+                  className="rounded-lg border p-3"
+                  style={{
+                    backgroundColor: 'var(--card-bg)',
+                    borderColor: 'var(--pane-border)',
+                    maxWidth: '200px',
+                  }}
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--primary-text)' }}>
+                      Equipment Types
+                    </span>
+                    <button
+                      onClick={() => setShowLegend(false)}
+                      className="opacity-50 hover:opacity-100"
+                      style={{ color: 'var(--muted-text)' }}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    {LEGEND_GROUPS.filter((g) => {
+                      // Only show groups that have nodes in this graph
+                      return g.aliases.some((a) => equipmentCounts[a]) || (g.label === 'Other' && Object.keys(equipmentCounts).some((k) => !NODE_COLORS[k]));
+                    }).map((group) => {
+                      const count = group.aliases.reduce((sum, a) => sum + (equipmentCounts[a] || 0), 0);
+                      return (
+                        <div key={group.label} className="flex items-center gap-2">
+                          <div
+                            className="h-3 w-3 flex-shrink-0 rounded"
+                            style={{ backgroundColor: group.color }}
+                          />
+                          <span className="text-xs" style={{ color: 'var(--primary-text)' }}>
+                            {group.label}
+                          </span>
+                          {count > 0 && (
+                            <span className="ml-auto text-xs opacity-50" style={{ color: 'var(--muted-text)' }}>
+                              {count}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              </Panel>
+            )}
+            {!showLegend && (
+              <Panel position="top-left">
+                <button
+                  onClick={() => setShowLegend(true)}
+                  className="flex items-center gap-1 rounded-lg border px-2 py-1 text-xs"
+                  style={{
+                    backgroundColor: 'var(--card-bg)',
+                    borderColor: 'var(--pane-border)',
+                    color: 'var(--muted-text)',
+                  }}
+                >
+                  <Info className="h-3 w-3" /> Legend
+                </button>
+              </Panel>
+            )}
+
+            {/* Node properties panel */}
+            {selectedNode && (
+              <Panel position="top-right">
+                <div
+                  className="rounded-lg border p-3"
+                  style={{
+                    backgroundColor: 'var(--card-bg)',
+                    borderColor: 'var(--pane-border)',
+                    maxWidth: '260px',
+                  }}
+                >
+                  <div className="mb-2 flex items-center justify-between">
+                    <span className="text-xs font-semibold" style={{ color: 'var(--primary-text)' }}>
+                      Node Properties
+                    </span>
+                    <button
+                      onClick={() => setSelectedNode(null)}
+                      className="opacity-50 hover:opacity-100"
+                      style={{ color: 'var(--muted-text)' }}
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    {(() => {
+                      const props = selectedNode.data.properties as Record<string, unknown> | undefined;
+                      const propEntries = props && typeof props === 'object'
+                        ? Object.entries(props)
+                            .filter(([k]) => !['embedding', 'embedding_vector'].includes(k))
+                            .slice(0, 12)
+                        : [];
+                      return (
+                        <>
+                    <div className="flex items-center gap-2">
+                      <div
+                        className="h-3 w-3 flex-shrink-0 rounded"
+                        style={{ backgroundColor: getNodeColor((selectedNode.data as { label?: string }).label || '') }}
+                      />
+                      <span className="text-xs font-medium" style={{ color: 'var(--primary-text)' }}>
+                        {(selectedNode.data as { tag?: string }).tag || (selectedNode.data as { label?: string }).label}
+                      </span>
+                    </div>
+                    <div className="text-xs opacity-60" style={{ color: 'var(--muted-text)' }}>
+                      Type: {(selectedNode.data as { label?: string }).label}
+                    </div>
+                    {propEntries.length > 0 && (
+                      <div className="mt-1 flex flex-col gap-0.5">
+                        {propEntries.map(([key, value]) => (
+                            <div key={key} className="flex justify-between gap-2 text-xs">
+                              <span className="opacity-50" style={{ color: 'var(--muted-text)' }}>{key}:</span>
+                              <span className="text-right" style={{ color: 'var(--primary-text)' }}>
+                                {typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean'
+                                  ? String(value)
+                                  : Array.isArray(value)
+                                    ? `${value.length} items`
+                                    : '...'}
+                              </span>
+                            </div>
+                          ))}
+                      </div>
+                    )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                </div>
+              </Panel>
+            )}
           </ReactFlow>
         )}
       </div>
