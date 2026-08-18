@@ -39,6 +39,10 @@ def main() -> None:
                         help="Ingest the generated P&ID into Neo4j after generation")
     parser.add_argument("--clear", action="store_true",
                         help="Clear existing Neo4j data before ingesting (use with --ingest)")
+    parser.add_argument("--persist", action="store_true",
+                        help="Persist generated graphs to disk as GraphML in data/synthetic/")
+    parser.add_argument("--persist-dir", default="data/synthetic",
+                        help="Directory to persist graphs to (default: data/synthetic)")
     args = parser.parse_args()
 
     import random
@@ -124,6 +128,49 @@ def main() -> None:
     print(f"  Reference conceptual: 36 nodes, 36 edges")
     print(f"  Synthetic conceptual: {graphs.conceptual.number_of_nodes()} nodes, "
           f"{graphs.conceptual.number_of_edges()} edges")
+
+    # Persist graphs to disk as GraphML so they survive Neo4j restarts
+    if args.persist:
+        import json
+        import networkx as nx
+        persist_dir = Path(args.persist_dir)
+        persist_dir.mkdir(parents=True, exist_ok=True)
+
+        # Save metadata
+        meta = {
+            "seed": args.seed,
+            "max_steps": max_steps,
+            "target_nodes": args.target_nodes,
+            "equipment_types": equipment_types,
+            "node_counts": {
+                "complete": graphs.complete.number_of_nodes(),
+                "process": graphs.process.number_of_nodes(),
+                "conceptual": graphs.conceptual.number_of_nodes(),
+            },
+            "edge_counts": {
+                "complete": graphs.complete.number_of_edges(),
+                "process": graphs.process.number_of_edges(),
+                "conceptual": graphs.conceptual.number_of_edges(),
+            },
+        }
+        meta_path = persist_dir / "metadata.json"
+        with open(meta_path, "w") as f:
+            json.dump(meta, f, indent=2)
+        print(f"\nSaved metadata: {meta_path}")
+
+        # Save each level as GraphML
+        for level in ["complete", "process", "conceptual"]:
+            g = getattr(graphs, level)
+            # GraphML doesn't support all Python types; convert non-primitive to str
+            for n, data in g.nodes(data=True):
+                for k, v in list(data.items()):
+                    if not isinstance(v, (str, int, float, bool, type(None))):
+                        data[k] = str(v)
+            graphml_path = persist_dir / f"{level}.graphml"
+            nx.write_graphml(g, graphml_path)
+            print(f"Saved {level}: {graphml_path} ({g.number_of_nodes()} nodes)")
+        print(f"\nAll graphs persisted to {persist_dir}/")
+        print("To re-ingest from disk: uv run python scripts/23_ingest_synthetic.py")
 
     if args.ingest:
         print("\n--- Ingesting into Neo4j ---")

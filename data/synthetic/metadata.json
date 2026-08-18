@@ -1,0 +1,27 @@
+{
+  "seed": 123,
+  "max_steps": 50,
+  "target_nodes": 400,
+  "equipment_types": {
+    "OperatedValve": 29,
+    "PipeTee": 7,
+    "HeatExchanger": 9,
+    "Tank": 2,
+    "ProcessColumn": 2,
+    "Mixer": 7,
+    "Compressor": 4,
+    "Vessel": 3,
+    "Heater": 1,
+    "Pump": 1
+  },
+  "node_counts": {
+    "complete": 555,
+    "process": 156,
+    "conceptual": 65
+  },
+  "edge_counts": {
+    "complete": 1008,
+    "process": 159,
+    "conceptual": 68
+  }
+}
