@@ -117,6 +117,12 @@ docker compose up --build
 #    http://localhost:7474  — Neo4j browser (neo4j / chatpid_dev_pw)
 ```
 
+> **Security note:** `docker compose config` interpolates variables from `.env`
+> and will print your `OPENAI_API_KEY` in plaintext. If you need to inspect the
+> resolved compose config (e.g. for debugging), use `docker compose config
+> --no-interpolate` to avoid leaking secrets. Never paste `docker compose
+> config` output into issues, chats, or logs.
+
 On first boot, the API container automatically:
 1. Waits for Neo4j to be ready
 2. Fetches the DEXPI reference P&ID (`C01V04-VER.EX01.xml`)

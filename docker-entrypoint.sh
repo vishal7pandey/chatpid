@@ -37,7 +37,7 @@ d.close()
 if [ "$COUNT" = "0" ]; then
   echo "Graph is empty — running seed ingestion..."
   uv run python scripts/00_fetch_sample_dexpi.py || echo "Fetch skipped (may already exist)"
-  uv run python scripts/01_ingest.py
+  uv run python scripts/01_ingest.py --levels complete,process,conceptual
   echo "Seed ingestion complete!"
 else
   echo "Graph already has $COUNT nodes — skipping ingestion."
