@@ -123,7 +123,9 @@ function PidNode({ data }: { data: { label: string; tag: string; highlighted: bo
 
 const nodeTypes: NodeTypes = { pidNode: PidNode };
 
-export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: GraphPanelProps) {
+export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conceptual' }: GraphPanelProps) {
+  const [currentLevel, setCurrentLevel] = useState<string>(initialLevel);
+  const [selectedDoc, setSelectedDoc] = useState<string>('');
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -137,7 +139,7 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
     setLoading(true);
     setError(null);
     try {
-      const data: GraphResponse = await getGraph(level, 200);
+      const data: GraphResponse = await getGraph(currentLevel, 500, selectedDoc);
       setTotalNodes(data.total_nodes);
 
       const highlightSet = new Set(highlightedNodes.map((t) => t.toLowerCase()));
@@ -179,7 +181,7 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
     } finally {
       setLoading(false);
     }
-  }, [level, highlightedNodes.join(',')]);
+  }, [currentLevel, selectedDoc, highlightedNodes.join(',')]);
 
   useEffect(() => {
     loadGraph();
@@ -233,15 +235,50 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
 
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: 'var(--pane-bg)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--pane-border)' }}>
+      {/* Header with Level Switcher & P&ID selector */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--pane-border)' }}>
         <div className="flex items-center gap-2">
           <Network className="h-4 w-4" style={{ color: 'var(--brand-primary)' }} />
           <h2 className="text-sm font-semibold" style={{ color: 'var(--primary-text)' }}>
             P&amp;ID Graph
           </h2>
+
+          {/* Document selector */}
+          <select
+            value={selectedDoc}
+            onChange={(e) => setSelectedDoc(e.target.value)}
+            className="text-xs border rounded px-2 py-1 outline-none"
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--pane-border)',
+              color: 'var(--primary-text)',
+            }}
+          >
+            <option value="">All P&amp;IDs</option>
+            <option value="C01V04">C01 (Reference P&amp;ID)</option>
+            <option value="C02V03">C02 (BASF Column)</option>
+            <option value="C03V04">C03 (Equinor Piping)</option>
+          </select>
         </div>
-        <div className="flex items-center gap-3">
+
+        {/* Level Switcher (Conceptual / Process / Complete) */}
+        <div className="flex items-center gap-1 rounded-md p-0.5 border" style={{ borderColor: 'var(--pane-border)', backgroundColor: 'var(--card-bg)' }}>
+          {(['conceptual', 'process', 'complete'] as const).map((lvl) => (
+            <button
+              key={lvl}
+              onClick={() => setCurrentLevel(lvl)}
+              className="px-2.5 py-0.5 text-xs rounded font-medium capitalize transition-colors"
+              style={{
+                backgroundColor: currentLevel === lvl ? 'var(--brand-primary)' : 'transparent',
+                color: currentLevel === lvl ? 'var(--inverse-text)' : 'var(--muted-text)',
+              }}
+            >
+              {lvl}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-2">
           {/* Search box */}
           <div className="relative">
             <Search className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2" style={{ color: 'var(--muted-text)' }} />
@@ -250,7 +287,7 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
               placeholder="Search tag..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-32 rounded-md border py-1 pl-7 pr-2 text-xs outline-none"
+              className="w-28 rounded-md border py-1 pl-7 pr-2 text-xs outline-none"
               style={{
                 backgroundColor: 'var(--card-bg)',
                 borderColor: 'var(--pane-border)',
@@ -258,8 +295,8 @@ export function GraphPanel({ highlightedNodes = [], level = 'conceptual' }: Grap
               }}
             />
           </div>
-          <span className="text-xs" style={{ color: 'var(--muted-text)' }}>
-            {totalNodes} nodes · {level}
+          <span className="text-xs font-mono" style={{ color: 'var(--muted-text)' }}>
+            {totalNodes} nodes
           </span>
         </div>
       </div>
