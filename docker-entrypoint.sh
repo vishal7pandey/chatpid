@@ -3,36 +3,14 @@ set -e
 
 # Wait for Neo4j to be ready
 echo "Waiting for Neo4j..."
-until python -c "
-from neo4j import GraphDatabase
-import os
-uri = os.environ.get('NEO4J_URI', 'bolt://neo4j:7687')
-auth = ('neo4j', os.environ.get('NEO4J_PASSWORD', 'chatpid_dev_pw'))
-try:
-    d = GraphDatabase.driver(uri, auth=auth)
-    d.verify_connectivity()
-    d.close()
-    exit(0)
-except:
-    exit(1)
-" 2>/dev/null; do
+until uv run python /app/scripts/_wait_neo4j.py 2>/dev/null; do
   echo "  Neo4j not ready, retrying in 2s..."
   sleep 2
 done
 echo "Neo4j is ready!"
 
 # Check if graph is already ingested (skip if so)
-COUNT=$(python -c "
-from neo4j import GraphDatabase
-import os
-uri = os.environ.get('NEO4J_URI', 'bolt://neo4j:7687')
-auth = ('neo4j', os.environ.get('NEO4J_PASSWORD', 'chatpid_dev_pw'))
-d = GraphDatabase.driver(uri, auth=auth)
-with d.session() as s:
-    r = s.run('MATCH (n) RETURN count(n) as c')
-    print(r.single()['c'])
-d.close()
-" 2>/dev/null || echo "0")
+COUNT=$(uv run python /app/scripts/_count_nodes.py 2>/dev/null || echo "0")
 
 if [ "$COUNT" = "0" ]; then
   echo "Graph is empty — running seed ingestion..."
