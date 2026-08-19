@@ -131,6 +131,7 @@ def _get_label_list(driver: Driver, level: str = "conceptual") -> list[str]:
         result = session.run("""
             MATCH (n {level: $level})
             UNWIND labels(n) AS label
+            WITH label
             WHERE label <> 'Node'
             RETURN DISTINCT label
             ORDER BY label
@@ -160,19 +161,57 @@ def generate_cypher(driver: Driver, question: str, level: str = "conceptual") ->
 
 # --- Cypher execution ---
 
+import re
+
+# Cypher write-clause patterns — matched against the full query with
+# whitespace normalization, case-insensitive, and word-boundary aware.
+# This replaces the old naive `kw in cypher_upper.split()` check which
+# missed SET, FOREACH, LOAD CSV, +=, and was trivially bypassable via
+# whitespace/case tricks.
+_WRITE_PATTERNS: list[re.Pattern] = [
+    re.compile(p, re.IGNORECASE)
+    for p in [
+        r'\bSET\b',
+        r'\bCREATE\b',
+        r'\bDELETE\b',
+        r'\bDETACH\s+DELETE\b',
+        r'\bMERGE\b',
+        r'\bDROP\b',
+        r'\bREMOVE\b',
+        r'\bFOREACH\b',
+        r'\bLOAD\s+CSV\b',
+        r'\+=',
+        r'\bCALL\s+DB\b',
+        r'\bCALL\s+db\.index\b',
+        r'\bCALL\s+dbms\b',
+        r'\bCALL\s+apoc\b',
+        r'\bSHORTESTPATH\b',
+    ]
+]
+
+
+def _validate_read_only(cypher: str) -> None:
+    """Raise ValueError if the Cypher query contains write operations.
+
+    Uses regex patterns with word boundaries instead of naive token splitting
+    to catch SET, FOREACH, LOAD CSV, +=, CALL DB.*, and other write clauses
+    regardless of whitespace or case tricks.
+    """
+    # Normalize: collapse multiple spaces/newlines to single space
+    normalized = re.sub(r'\s+', ' ', cypher).strip()
+    for pattern in _WRITE_PATTERNS:
+        if pattern.search(normalized):
+            raise ValueError(
+                f"Write operation not allowed in CypherRAG: matched pattern {pattern.pattern!r}"
+            )
+
+
 def execute_cypher(driver: Driver, cypher: str) -> list[dict]:
     """Execute a Cypher query and return results as a list of dicts.
 
     Raises ValueError if the query contains write operations.
     """
-    # Safety check: reject write operations
-    cypher_upper = cypher.upper()
-    forbidden = ["CREATE", "DELETE", "SET ", "MERGE", "DROP", "REMOVE", "CALL DB." "SHORTESTPATH"]
-    # Allow "CREATE" only inside square brackets (e.g., [CREATE VECTOR INDEX...])
-    # but for safety, just reject any CREATE at the start of a statement
-    for kw in ["CREATE", "DELETE", "MERGE", "DROP", "REMOVE"]:
-        if kw in cypher_upper.split():
-            raise ValueError(f"Write operation '{kw}' not allowed in CypherRAG")
+    _validate_read_only(cypher)
 
     with driver.session() as session:
         result = session.run(cypher)
@@ -264,8 +303,8 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
         results = execute_cypher(driver, cypher)
     except Exception as exc:
         # Retry on syntax error: feed error + schema back to LLM
-        cypher = _retry_with_schema(driver, query, level, f"failed with error: {exc}")
         try:
+            cypher = _retry_with_schema(driver, query, level, f"failed with error: {exc}")
             results = execute_cypher(driver, cypher)
         except Exception:
             # Both attempts failed — fall back to ContextRAG
@@ -275,8 +314,8 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
 
     # Step 3: If 0 results, retry once with explicit label hints
     if not results:
-        cypher = _retry_with_schema(driver, query, level, "returned 0 results — the label names were likely wrong")
         try:
+            cypher = _retry_with_schema(driver, query, level, "returned 0 results — the label names were likely wrong")
             results = execute_cypher(driver, cypher)
         except Exception:
             results = []

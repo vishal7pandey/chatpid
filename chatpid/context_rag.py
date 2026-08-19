@@ -11,6 +11,7 @@ from __future__ import annotations
 from neo4j import Driver
 
 VALID_MODES = ("graph", "topology")
+VALID_LEVELS = ("complete", "process", "conceptual")
 
 # Properties that are internal metadata, not engineering content.
 _NON_CONTENT_PROPS = {
@@ -47,6 +48,8 @@ def context_rag(driver: Driver, level: str = "conceptual", mode: str = "graph") 
             type) for detailed reasoning; "topology" keeps only labels and
             connectivity for a lightweight structural overview.
     """
+    if level not in VALID_LEVELS:
+        raise ValueError(f"level must be one of {VALID_LEVELS}, got {level!r}")
     if mode not in VALID_MODES:
         raise ValueError(f"mode must be one of {VALID_MODES}, got {mode!r}")
 
