@@ -34,11 +34,19 @@ export interface GraphResponse {
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
 
-export async function askQuestion(question: string): Promise<AskResponse> {
+export async function askQuestion(
+  question: string,
+  level: string = 'conceptual',
+  documentId: string = ''
+): Promise<AskResponse> {
   const res = await fetch(`${API_BASE}/ask`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ question }),
+    body: JSON.stringify({
+      question,
+      level,
+      document_id: documentId,
+    }),
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();

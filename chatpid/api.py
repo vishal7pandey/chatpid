@@ -107,6 +107,7 @@ def _extract_touched_nodes(messages: list) -> list[str]:
 class AskRequest(BaseModel):
     question: str
     level: str = "conceptual"
+    document_id: str = ""
 
 
 class AskResponse(BaseModel):
@@ -145,9 +146,18 @@ def ask(req: AskRequest) -> AskResponse:
 
     agent, _ = _ensure_agent()
 
+    # Prefix user question with requested scope if provided
+    context_prefixes = []
+    if req.document_id:
+        context_prefixes.append(f"[Target P&ID: {req.document_id}]")
+    if req.level:
+        context_prefixes.append(f"[Graph abstraction level: {req.level}]")
+
+    prompt_content = f"{' '.join(context_prefixes)} {req.question}" if context_prefixes else req.question
+
     t0 = time.time()
     result = agent.invoke(
-        {"messages": [{"role": "user", "content": req.question}]},
+        {"messages": [{"role": "user", "content": prompt_content}]},
         config={"recursion_limit": 25},
     )
     elapsed = time.time() - t0
