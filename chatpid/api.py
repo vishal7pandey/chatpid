@@ -10,6 +10,7 @@ Run:
 
 from __future__ import annotations
 
+import threading
 import time
 from typing import Any
 
@@ -34,6 +35,10 @@ app.add_middleware(
 # Module-level singletons — built once on startup, reused across requests.
 _driver = None
 _agent = None
+
+# Per-request state for /graph highlighting — protected by a lock to
+# prevent concurrent /ask requests from overwriting each other.
+_state_lock = threading.Lock()
 _last_question: str = ""
 _last_answer: str = ""
 _last_tools: list[dict] = []
@@ -62,6 +67,19 @@ def _extract_tool_usage(messages: list) -> list[dict]:
                     "args": tc.get("args", {}),
                 })
     return tools_used
+
+
+def _extract_final_answer(messages: list) -> str:
+    """Walk backward through the message chain to find the last AIMessage.
+
+    Returns its content. If no AIMessage is found (e.g., chain ended on a
+    ToolMessage due to an error), returns a clear error message instead of
+    surfacing raw tool output as the answer.
+    """
+    for msg in reversed(messages):
+        if "AIMessage" in type(msg).__name__:
+            return msg.content if isinstance(msg.content, str) else str(msg.content)
+    return "The agent did not produce a final answer. The last step may have failed — try rephrasing your question."
 
 
 def _extract_touched_nodes(messages: list) -> list[str]:
@@ -129,15 +147,16 @@ def ask(req: AskRequest) -> AskResponse:
     elapsed = time.time() - t0
 
     messages = result.get("messages", [])
-    answer = messages[-1].content if messages else "No response."
+    answer = _extract_final_answer(messages)
     tools_used = _extract_tool_usage(messages)
     touched = _extract_touched_nodes(messages)
 
-    # Cache for /graph endpoint
-    _last_question = req.question
-    _last_answer = answer
-    _last_tools = tools_used
-    _last_graph_nodes = touched
+    # Cache for /graph endpoint (locked to prevent race between concurrent requests)
+    with _state_lock:
+        _last_question = req.question
+        _last_answer = answer
+        _last_tools = tools_used
+        _last_graph_nodes = touched
 
     return AskResponse(
         answer=answer,
