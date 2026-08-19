@@ -39,6 +39,8 @@ export function ChatPanel({ onTouchedNodes, demoQuestions }: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agentLevel, setAgentLevel] = useState<string>('conceptual');
+  const [agentDoc, setAgentDoc] = useState<string>('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -53,7 +55,7 @@ export function ChatPanel({ onTouchedNodes, demoQuestions }: ChatPanelProps) {
     setLoading(true);
 
     try {
-      const res = await askQuestion(question);
+      const res = await askQuestion(question, agentLevel, agentDoc);
       setMessages((m) => [
         ...m,
         {
@@ -79,7 +81,7 @@ export function ChatPanel({ onTouchedNodes, demoQuestions }: ChatPanelProps) {
     } finally {
       setLoading(false);
     }
-  }, [loading]);
+  }, [loading, agentLevel, agentDoc]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,14 +90,55 @@ export function ChatPanel({ onTouchedNodes, demoQuestions }: ChatPanelProps) {
 
   return (
     <div className="flex h-full flex-col" style={{ backgroundColor: 'var(--pane-bg)' }}>
-      {/* Header */}
-      <div className="flex items-center justify-between border-b px-4 py-3" style={{ borderColor: 'var(--pane-border)' }}>
-        <h2 className="text-sm font-semibold" style={{ color: 'var(--primary-text)' }}>
-          ChatP&amp;ID
-        </h2>
-        <span className="text-xs" style={{ color: 'var(--muted-text)' }}>
-          GraphRAG Agent
-        </span>
+      {/* Header with Agent Target Controls */}
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-2.5" style={{ borderColor: 'var(--pane-border)' }}>
+        <div className="flex items-center gap-2">
+          <h2 className="text-sm font-semibold" style={{ color: 'var(--primary-text)' }}>
+            ChatP&amp;ID
+          </h2>
+          <span className="text-[10px] font-semibold tracking-wide uppercase px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+            Agent Target
+          </span>
+        </div>
+
+        {/* Agent Scope Controls */}
+        <div className="flex items-center gap-2">
+          {/* Target P&ID document */}
+          <select
+            value={agentDoc}
+            onChange={(e) => setAgentDoc(e.target.value)}
+            className="text-xs border rounded px-2 py-1 outline-none font-medium"
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--pane-border)',
+              color: 'var(--primary-text)',
+            }}
+            title="Select which P&ID document the Agent should query"
+          >
+            <option value="">Auto (All P&amp;IDs)</option>
+            <option value="C01V04">C01 (Reference)</option>
+            <option value="C02V03">C02 (BASF Column)</option>
+            <option value="C03V04">C03 (Equinor Piping)</option>
+          </select>
+
+          {/* Abstraction Level pills */}
+          <div className="flex items-center gap-1 rounded-md p-0.5 border" style={{ borderColor: 'var(--pane-border)', backgroundColor: 'var(--card-bg)' }}>
+            {(['conceptual', 'process', 'complete'] as const).map((lvl) => (
+              <button
+                key={lvl}
+                onClick={() => setAgentLevel(lvl)}
+                className="px-2 py-0.5 text-[11px] rounded font-medium capitalize transition-colors"
+                style={{
+                  backgroundColor: agentLevel === lvl ? 'var(--brand-primary)' : 'transparent',
+                  color: agentLevel === lvl ? 'var(--inverse-text)' : 'var(--muted-text)',
+                }}
+                title={`Target graph level: ${lvl}`}
+              >
+                {lvl}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Messages */}
