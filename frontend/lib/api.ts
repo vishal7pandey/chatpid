@@ -44,8 +44,26 @@ export async function askQuestion(question: string): Promise<AskResponse> {
   return res.json();
 }
 
-export async function getGraph(level = 'conceptual', limit = 200): Promise<GraphResponse> {
-  const res = await fetch(`${API_BASE}/graph?level=${level}&limit=${limit}`);
+export async function getGraph(level = 'conceptual', limit = 200, documentId = ''): Promise<GraphResponse> {
+  const params = new URLSearchParams({ level, limit: String(limit) });
+  if (documentId) params.set('document_id', documentId);
+  const res = await fetch(`${API_BASE}/graph?${params}`);
   if (!res.ok) throw new Error(`API error: ${res.status}`);
   return res.json();
+}
+
+export interface PidFile {
+  filename: string;
+  directory: string;
+}
+
+export async function listPidFiles(): Promise<PidFile[]> {
+  const res = await fetch(`${API_BASE}/pid/files`);
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  const data = await res.json();
+  return data.files;
+}
+
+export function getPidSvgUrl(filename: string): string {
+  return `${API_BASE}/pid/svg?filename=${encodeURIComponent(filename)}`;
 }
