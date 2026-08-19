@@ -20,43 +20,72 @@ import { getGraph, type GraphResponse, type GraphNode } from '@/lib/api';
 
 // Node type colors based on label
 const NODE_COLORS: Record<string, string> = {
+  // Pumps
   CentrifugalPump: '#0071CE',
+  ReciprocatingPump: '#0071CE',
   Pump: '#0071CE',
+
+  // Heat Exchangers
+  PlateHeatExchanger: '#F47C6D',
+  TubularHeatExchanger: '#F47C6D',
   HeatExchanger: '#F47C6D',
   Heater: '#F47C6D',
+
+  // Tanks & Columns
   Tank: '#4DB848',
   Vessel: '#4DB848',
+  PressureVessel: '#4DB848',
   ProcessColumn: '#2E86AB',
   Compressor: '#E36B6B',
   Mixer: '#9B59B6',
+
+  // Valves
   OperatedValve: '#A27CC9',
   Valve: '#A27CC9',
   BallValve: '#A27CC9',
-  GlobeValve: '#A27CC9',
-  SwingCheckValve: '#A27CC9',
-  SafetyValve: '#DC3545',
+  GlobeValve: '#8E44AD',
+  ButterflyValve: '#9B59B6',
+  SwingCheckValve: '#6C5CE7',
+  CheckValve: '#6C5CE7',
   ControlValve: '#A27CC9',
+
+  // Safety Valves
+  SafetyValveOrFitting: '#DC3545',
+  SpringLoadedGlobeSafetyValve: '#DC3545',
+  SafetyValve: '#DC3545',
+
+  // Pipe Fittings
   PipeTee: '#F5BD1E',
-  PipeReducer: '#F5BD1E',
+  PipeReducer: '#E67E22',
   BlindFlange: '#A7A9AC',
-  PipingNodeOwner: '#374785',
+  Flange: '#B2BEC3',
+  PipeFitting: '#F5BD1E',
+  RestrictionOrifice: '#D35400',
+
+  // Instrumentation & Controls
+  ProcessInstrumentationFunction: '#10B981',
+  ProcessSignalGeneratingFunction: '#059669',
+  ActuatingFunction: '#047857',
+
+  // Connectors
   OffPageConnector: '#00B5E2',
   FlowInPipeOffPageConnector: '#00B5E2',
-  FlowOutPipeOffPageConnector: '#00B5E2',
+  FlowOutPipeOffPageConnector: '#0984E3',
+  PipeOffPageConnectorReferenceByNumber: '#74B9FF',
+  PipeOffPageConnectorReference: '#74B9FF',
 };
 
-// Group labels for the legend (collapses valve variants into one entry)
+// Group labels for the legend
 const LEGEND_GROUPS: { label: string; color: string; aliases: string[] }[] = [
-  { label: 'Pump', color: NODE_COLORS.Pump, aliases: ['CentrifugalPump', 'Pump'] },
-  { label: 'Heat Exchanger', color: NODE_COLORS.HeatExchanger, aliases: ['HeatExchanger', 'Heater'] },
-  { label: 'Tank / Vessel', color: NODE_COLORS.Tank, aliases: ['Tank', 'Vessel'] },
-  { label: 'Process Column', color: NODE_COLORS.ProcessColumn, aliases: ['ProcessColumn'] },
-  { label: 'Compressor', color: NODE_COLORS.Compressor, aliases: ['Compressor'] },
-  { label: 'Mixer', color: NODE_COLORS.Mixer, aliases: ['Mixer'] },
-  { label: 'Valve', color: NODE_COLORS.OperatedValve, aliases: ['OperatedValve', 'Valve', 'BallValve', 'GlobeValve', 'SwingCheckValve', 'ControlValve'] },
-  { label: 'Safety Valve', color: NODE_COLORS.SafetyValve, aliases: ['SafetyValve'] },
-  { label: 'Pipe Fitting', color: NODE_COLORS.PipeTee, aliases: ['PipeTee', 'PipeReducer'] },
-  { label: 'Connector', color: NODE_COLORS.OffPageConnector, aliases: ['OffPageConnector', 'FlowInPipeOffPageConnector', 'FlowOutPipeOffPageConnector'] },
+  { label: 'Pump', color: '#0071CE', aliases: ['CentrifugalPump', 'ReciprocatingPump', 'Pump'] },
+  { label: 'Heat Exchanger', color: '#F47C6D', aliases: ['PlateHeatExchanger', 'TubularHeatExchanger', 'HeatExchanger', 'Heater'] },
+  { label: 'Tank / Vessel', color: '#4DB848', aliases: ['Tank', 'Vessel', 'PressureVessel'] },
+  { label: 'Process Column', color: '#2E86AB', aliases: ['ProcessColumn'] },
+  { label: 'Valve', color: '#A27CC9', aliases: ['OperatedValve', 'Valve', 'BallValve', 'GlobeValve', 'ButterflyValve', 'SwingCheckValve', 'CheckValve', 'ControlValve'] },
+  { label: 'Safety Valve', color: '#DC3545', aliases: ['SafetyValveOrFitting', 'SpringLoadedGlobeSafetyValve', 'SafetyValve'] },
+  { label: 'Pipe Fitting', color: '#F5BD1E', aliases: ['PipeTee', 'PipeReducer', 'BlindFlange', 'Flange', 'PipeFitting', 'RestrictionOrifice'] },
+  { label: 'Instrumentation', color: '#10B981', aliases: ['ProcessInstrumentationFunction', 'ProcessSignalGeneratingFunction', 'ActuatingFunction'] },
+  { label: 'Connector', color: '#00B5E2', aliases: ['OffPageConnector', 'FlowInPipeOffPageConnector', 'FlowOutPipeOffPageConnector', 'PipeOffPageConnectorReferenceByNumber', 'PipeOffPageConnectorReference'] },
   { label: 'Other', color: '#64748B', aliases: [] },
 ];
 
