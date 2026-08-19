@@ -41,8 +41,9 @@ P&ID (DEXPI / Proteus XML)
    +----+----+----+----+
    |    |    |    |
 Context Vector Path Cypher                <- chatpid/context_rag.py
- RAG    RAG   RAG   RAG                      chatpid/tools_todo.py
-   |    |    |    |
+ RAG    RAG   RAG   RAG                      chatpid/vector_rag.py
+   |    |    |    |                          chatpid/path_rag.py
+   |    |    |    |                          chatpid/cypher_rag.py
    +----+----+----+
         |
         v
@@ -51,10 +52,9 @@ Context Vector Path Cypher                <- chatpid/context_rag.py
 
 **Flat layout.** This project runs Principal-Data-Scientist-style: a handful
 of flat modules you iterate on directly, not a package with clean import
-boundaries. `chatpid/ingest.py` (pyDEXPI + Neo4j loader), `chatpid/context_rag.py`
-(the implemented tool), `chatpid/agent.py` (ReAct agent + prompt), and
-`chatpid/tools_todo.py` (collapsed unimplemented stubs). Structure gets added
-only when duplication actually hurts.
+boundaries. `chatpid/ingest.py` (pyDEXPI + Neo4j loader), `chatpid/context_rag.py`,
+`chatpid/vector_rag.py`, `chatpid/path_rag.py`, `chatpid/cypher_rag.py` (the four
+GraphRAG tools), and `chatpid/agent.py` (ReAct agent + prompt).
 
 **Input source.** The DEXPI standard is the format; `pyDEXPI` (from the same
 research group as the paper) is the Python library that reads it and already
