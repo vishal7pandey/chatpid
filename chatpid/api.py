@@ -102,6 +102,23 @@ def _extract_touched_nodes(messages: list) -> list[str]:
     return list(touched)
 
 
+GENERIC_LABELS = {
+    "Node", "CustomAttributeOwner", "TechnicalItem", "PipingNodeOwner",
+    "PipingSourceItem", "PipingTargetItem", "PipingNetworkSegmentItem",
+    "PipingComponent", "SensingLocation", "SignalConveyingFunctionSource",
+    "SignalConveyingFunctionTarget", "PlantSystemLocatedStructure",
+    "PlantAreaLocatedStructure", "PlantTrainLocatedStructure",
+    "ChamberOwner", "TaggedPlantItem", "NozzleOwner", "Equipment",
+    "PipeFitting", "PipeOffPageConnector"
+}
+
+
+def _select_primary_label(labels: list[str]) -> str:
+    """Pick the most specific domain label from a node's label hierarchy."""
+    specific = [l for l in labels if l not in GENERIC_LABELS]
+    return specific[-1] if specific else (labels[0] if labels else "Node")
+
+
 # --- Request/Response models ---
 
 class AskRequest(BaseModel):
@@ -231,7 +248,7 @@ def get_graph(level: str = "conceptual", limit: int = 200, document_id: str = ""
 
             nodes.append(GraphNode(
                 id=node_id,
-                label=labels[0] if labels else "Node",
+                label=_select_primary_label(labels),
                 tags=[tag] if tag else [],
                 properties={"name": name, **props} if name else props,
             ))
