@@ -1,0 +1,198 @@
+[
+  {
+    "id": 1,
+    "category": "graph_query_single",
+    "question": "What is the cylinder length of tank T4750?",
+    "reference_answer": "4.0 m",
+    "agent_answer": "The cylinder length of tank T4750 is 4.0 m.",
+    "cypher": "MATCH (t:Tank {tag: \"T4750\", level: \"conceptual\"}) \nRETURN t.cylinderLength",
+    "results_count": 1,
+    "latency_seconds": 6.04
+  },
+  {
+    "id": 2,
+    "category": "graph_query_single",
+    "question": "What is the design heat transfer area of heat exchanger H1007?",
+    "reference_answer": "46.8 m²",
+    "agent_answer": "The design heat transfer area of heat exchanger H1007 is 46.8 m².",
+    "cypher": "MATCH (h:HeatExchanger {tag: \"H1007\", level: \"conceptual\"}) \nRETURN h.designHeatTransferArea",
+    "results_count": 1,
+    "latency_seconds": 1.97
+  },
+  {
+    "id": 3,
+    "category": "graph_query_single",
+    "question": "What is the design pressure of pump P4711?",
+    "reference_answer": "10.0 m (pressure head)",
+    "agent_answer": "The design pressure of pump P4711 is 10.0 m.",
+    "cypher": "MATCH (p:Pump {tag: \"P4711\", level: \"conceptual\"}) \nRETURN p.designPressureHead AS designPressure",
+    "results_count": 1,
+    "latency_seconds": 2.3
+  },
+  {
+    "id": 4,
+    "category": "graph_query_single",
+    "question": "What is the design shaft power of pump P4711?",
+    "reference_answer": "60.0 kW",
+    "agent_answer": "The design shaft power of pump P4711 is 60.0 kW.",
+    "cypher": "MATCH (p:Pump {tag: \"P4711\", level: \"conceptual\"}) \nRETURN p.designShaftPower",
+    "results_count": 1,
+    "latency_seconds": 2.38
+  },
+  {
+    "id": 5,
+    "category": "graph_query_single",
+    "question": "What is the design volume flow rate of pump P4712?",
+    "reference_answer": "420.0 m³/h",
+    "agent_answer": "The design volume flow rate of pump P4712 is 420.0 m³/h.",
+    "cypher": "MATCH (p:Pump {tag: \"P4712\", level: \"conceptual\"}) \nRETURN p.designVolumeFlowRate",
+    "results_count": 1,
+    "latency_seconds": 3.93
+  },
+  {
+    "id": 6,
+    "category": "graph_query_single",
+    "question": "What is the nominal diameter of valve 66KL21?",
+    "reference_answer": "DN 80",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  },
+  {
+    "id": 7,
+    "category": "graph_query_single",
+    "question": "What is the set pressure of safety valve SV 104.01?",
+    "reference_answer": "6.0 bar",
+    "agent_answer": "The set pressure of safety valve SV 104.01 is 6.0 bar.",
+    "cypher": "MATCH (s:SafetyValveOrFitting {tag: \"SV 104.01\", level: \"conceptual\"}) \nRETURN s.setPressureHigh",
+    "results_count": 1,
+    "latency_seconds": 1.85
+  },
+  {
+    "id": 8,
+    "category": "graph_query_single",
+    "question": "What is the upper design temperature of tank T4750?",
+    "reference_answer": "100.0 °C",
+    "agent_answer": "The query results do not provide the upper design temperature of tank T4750. The relevant attributes returned include the tank's label, description, and design heat flow rate, but there is no information regarding the upper design temperature.",
+    "cypher": "MATCH (t:Tank {tag: \"T4750\", level: \"conceptual\"}) \nRETURN t.label, t.label_description, t.proteusId, t.tag, t.tagName, t.tagNamePrefix, t.tagNameSequenceNumber, t.tagNameSuffix, t.designHeatFlowRate, t.designHeatTransferArea",
+    "results_count": 1,
+    "latency_seconds": 3.3
+  },
+  {
+    "id": 9,
+    "category": "graph_query_multi",
+    "question": "List all valves in the P&ID along with their specification.",
+    "reference_answer": "11 valves total: 3 Globe Valves (C1, actuated by HV4750.01/PV4712.02/TV4750.03), 1 Butterfly Valve (66KL21), 1 Swing Check Valve (75SA21/C2), 5 Ball Valves (73KH12, C4/C2/C5/C7/C10), 1 Spring Loaded Globe Safety Valve (SV 104.01). Key specs: nominal diameters DN 25-80, piping classes 73HG12/75HB13, fluid codes MNb/MNc/QSb.",
+    "agent_answer": "Here is the list of valves in the P&ID along with their specifications:\n\n1. **Ball Valve**\n   - Tag: C4\n     - Description: A rotary valve that has a ball closure member.\n     - Nominal Diameter: DN 50\n     - Piping Class Code: 73HG12\n   - Tag: C2\n     - Description: A rotary valve that has a ball closure member.\n     - Nominal Diameter: DN 25\n     - Piping Class Code: 75HB13\n   - Tag: C5\n     - Description: A rotary valve that has a ball closure member.\n     - Nominal Diameter: DN 25\n     - Piping Class Code: 75HB13\n   - Tag: C7\n     - Description: A rotary valve that has a ball closure member.\n     - Nominal Diameter: DN 50\n     - Piping Class Code: 75HB13\n   - Tag: C10\n     - Description: A rotary valve that has a ball closure member.\n     - Nominal Diameter: DN 25\n     - Piping Class Code: 75HB13\n\n2. **Butterfly Valve**\n   - Tag: C1\n     - Description: A rotary valve that has a closure member of a disc type with a shaft parallel to the plane of the disc.\n     - Nominal Diameter: DN 80\n     - Piping Class Code: 75HB13\n\n3. **Swing Check Valve**\n   - Tag: C2\n     - Description: A check valve where the closure member is a disc which swings freely on a hinge.\n     - Nominal Diameter: DN 80\n     - Piping Class Code: 75HB13\n\n4. **Globe Valve**\n   - Tag: C1 (two entries)\n     - Description: A valve where the closure member is a disc or piston operating with linear motion normal to the flat or shaped seat.\n     - Nominal Diameter: DN 80\n     - Piping Class Code: 75HB13\n   - Tag: C1\n     - Description: A valve where the closure member is a disc or piston operating with linear motion normal to the flat or shaped seat.\n     - Nominal Diameter: DN 50\n     - Piping Class Code: 75HB13\n\n5. **Spring Loaded Globe Safety Valve**\n   - Tag: SV 104.01\n     - Description: A spring-loaded globe safety valve.\n     - Nominal Diameter: DN 25\n     - Piping Class Code: 73HG12",
+    "cypher": "MATCH (v:BallValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:ButterflyValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:CheckValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:GlobeValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:OperatedValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:SafetyValveOrFitting {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:SpringLoadedGlobeSafetyValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode\nUNION\nMATCH (v:SwingCheckValve {level: \"conceptual\"}) \nRETURN v.tag, v.label, v.label_description, v.nominalDiameterRepresentation, v.pipingClassCode",
+    "results_count": 10,
+    "latency_seconds": 10.82
+  },
+  {
+    "id": 10,
+    "category": "graph_query_multi",
+    "question": "List all pipe fittings in the P&ID along with their specification.",
+    "reference_answer": "Pipe Reducers (C3, DN50, 73HG12), Pipe Tees (C3/C1/C4/C8/C9, DN25-50, 75HB13), Blind Flanges (C6/C11, DN25, 75HB13). All fluid code MNc, line 47124/47126.",
+    "agent_answer": "Here is the list of pipe fittings in the P&ID along with their specifications:\n\n1. **PipeReducer**\n   - **Tag:** C3\n   - **Description:** An ‘artefact’ that has different nominal pipe size at the two ends, intended to connect pipes or piping components.\n   - **Line Number:** 47124\n   - **Nominal Diameter:** DN 80\n   - **Nominal Diameter Standard:** DN 80 (DIN 2448)\n   - **Piping Class Code:** 73HG12\n   - **Primary/Secondary Segment:** Primary segment\n   - **Proteus ID:** PipeReducer-1\n   - **Segment Number:** S2\n\n2. **PipeTee**\n   - **Tag:** C1\n   - **Description:** An ‘artefact’ that has three piping ends in T-shape, including a branch at 90 degrees.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Primary segment\n   - **Proteus ID:** PipeTee-2\n   - **Segment Number:** S1\n\n3. **PipeTee**\n   - **Tag:** C3\n   - **Description:** An ‘artefact’ that has three piping ends in T-shape, including a branch at 90 degrees.\n   - **Line Number:** 47125\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Secondary segment\n   - **Proteus ID:** PipeTee-1\n   - **Segment Number:** S1\n\n4. **PipeTee**\n   - **Tag:** C4\n   - **Description:** An ‘artefact’ that has three piping ends in T-shape, including a branch at 90 degrees.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Primary segment\n   - **Proteus ID:** PipeTee-3\n   - **Segment Number:** S4\n\n5. **BlindFlange**\n   - **Tag:** C6\n   - **Description:** A pipe flange that is without a central opening and used to shut off a flanged pipe end.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Secondary segment\n   - **Proteus ID:** BlindFlange-1\n   - **Segment Number:** S5\n\n6. **PipeTee**\n   - **Tag:** C8\n   - **Description:** An ‘artefact’ that has three piping ends in T-shape, including a branch at 90 degrees.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Primary segment\n   - **Proteus ID:** PipeTee-4\n   - **Segment Number:** S6\n\n7. **PipeTee**\n   - **Tag:** C9\n   - **Description:** An ‘artefact’ that has three piping ends in T-shape, including a branch at 90 degrees.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 50\n   - **Nominal Diameter Standard:** DN 50 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Primary segment\n   - **Proteus ID:** PipeTee-5\n   - **Segment Number:** S8\n\n8. **BlindFlange**\n   - **Tag:** C11\n   - **Description:** A pipe flange that is without a central opening and used to shut off a flanged pipe end.\n   - **Line Number:** 47126\n   - **Nominal Diameter:** DN 25\n   - **Nominal Diameter Standard:** DN 25 (DIN 2448)\n   - **Piping Class Code:** 75HB13\n   - **Primary/Secondary Segment:** Secondary segment\n   - **Proteus ID:** BlindFlange-2\n   - **Segment Number:** S9",
+    "cypher": "MATCH (f:PipeFitting {level: \"conceptual\"}) \nRETURN f.tag, f.label, f.label_description, f.lineNumber, f.nominalDiameterNumericalValueRepresentation, f.nominalDiameterRepresentation, f.nominalDiameterStandard, f.nominalDiameterTypeRepresentation, f.pipingClassCode, f.pipingComponentNumber, f.primarySecondaryPipingNetworkSegment, f.proteusId, f.segmentNumber",
+    "results_count": 8,
+    "latency_seconds": 12.99
+  },
+  {
+    "id": 11,
+    "category": "path_exploration",
+    "question": "If heat exchanger H1007 needs maintenance, can flow still reach tank T4750? Describe the alternative path.",
+    "reference_answer": "If H1007 is bypassed, flow can potentially reach T4750 via H1008 (tubular heat exchanger) if a tie-in point exists on line MNb47123 or via N3 of T4750. However, H1008 controls tank temperature, so using it as an alternative path is not recommended. Currently no bypass tie-in exists.",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  },
+  {
+    "id": 12,
+    "category": "path_exploration",
+    "question": "If you need to isolate tank T4750 from all upstream equipment, which valves would you need to close?",
+    "reference_answer": "Shut the main DN80 feed globe valve (HV4750.01). Close the DN50 globe valve on the recirculation line (PV4712.02).",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  },
+  {
+    "id": 13,
+    "category": "path_exploration",
+    "question": "Trace the flow path from tank T4750 to pump P4712.",
+    "reference_answer": "T4750 (Tank) → 66KL21 (Butterfly valve) → 75SA21 (Swing check valve) → Pipe reducer (DN80 to DN50) → 73KH12 (Ball valve) → P4712 (Reciprocating pump)",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  },
+  {
+    "id": 14,
+    "category": "path_exploration",
+    "question": "Working backwards from tank T4750, what are the two possible inlet paths and their source equipment?",
+    "reference_answer": "Path 1: T4750 ← Globe Valve (HV4750.01) ← H1007 (Plate Heat Exchanger) ← P4711 (Centrifugal Pump). Path 2: T4750 ← Globe Valve (TV4712.02/PV4712.02) ← H1008 (Tubular Heat Exchanger).",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  },
+  {
+    "id": 15,
+    "category": "path_exploration",
+    "question": "What is the flow path from pump P4711 to tank T4750?",
+    "reference_answer": "P4711 (Centrifugal Pump) → H1007 (Plate Heat Exchanger) → HV4750.01 (Globe Valve) → T4750 (Tank)",
+    "agent_answer": "The flow path from pump P4711 to tank T4750 goes through the intermediate node H1007, which is a Plate Heat Exchanger.",
+    "cypher": "MATCH (p:Pump {tag: \"P4711\", level: \"conceptual\"})-[:PIPE]->(n)-[:PIPE*]->(t:Tank {tag: \"T4750\", level: \"conceptual\"})\nRETURN p.tag AS Pump, n.tag AS IntermediateNode, t.tag AS Tank, n.label AS IntermediateNodeLabel",
+    "results_count": 3,
+    "latency_seconds": 3.9
+  },
+  {
+    "id": 16,
+    "category": "knowledge_inference",
+    "question": "Analyze the flowsheet and give recommendations regarding process safety.",
+    "reference_answer": "Key findings: (1) Safety valve SV104.01 set at 6.0 bar but T4750 design pressure is only 0.1/0.05 bar — PSV provides no effective protection. (2) Missing pressure relief for P4711/P4712/H1007/H1008 (design pressure up to 60 bar). (3) Fluid codes MNb/MNc/QSb not defined. (4) Blind flanges without clear isolation points. (5) TV4750.03 fail-open may be unsafe if fluid is heating.",
+    "agent_answer": "Based on the analysis of the flowsheet and the provided equipment data, here are some recommendations regarding process safety:\n\n1. **Heat Exchangers (H1007 and H1008)**: Both the Plate Heat Exchanger (H1007) and the Tubular Heat Exchanger (H1008) lack specified design pressure heads and fail actions. It is crucial to establish these parameters to ensure safe operation under varying conditions. Implementing pressure relief systems and regular maintenance checks can mitigate risks associated with overpressure scenarios.\n\n2. **Pumps (P4711 and P4712)**: The Centrifugal Pump (P4711) has a design pressure head of 10.0 m and a volume flow rate of 200.0 m³/h, while the Reciprocating Pump (P4712) has a higher design pressure head of 40.0 m and a flow rate of 420.0 m³/h. The significant difference in pressure heads suggests that the system may experience varying stress levels. It is recommended to install pressure monitoring devices and ensure that both pumps have appropriate fail-safe mechanisms to prevent overpressure and potential failure.\n\n3. **Tank (T4750)**: The Tank (T4750) is designed for fluid storage but lacks specific design pressure and flow rate data. To enhance safety, it is advisable to assess the tank's structural integrity and incorporate level monitoring systems to prevent overfilling, which could lead to spills or leaks.\n\nOverall, establishing clear design parameters, implementing monitoring systems, and ensuring regular maintenance for all equipment will significantly enhance process safety in this flowsheet.",
+    "cypher": "MATCH (e:Equipment {level: \"conceptual\"}) \nRETURN e.tag, e.label, e.label_description, e.proteusId, e.designPressureHead, e.designVolumeFlowRate, e.failAction, e.failActionRepresentation",
+    "results_count": 5,
+    "latency_seconds": 4.67
+  },
+  {
+    "id": 17,
+    "category": "knowledge_inference",
+    "question": "List all control valves along with its control philosophy, why and what ifs fail.",
+    "reference_answer": "3 control valves: HV4750.01 (flow control, fail-close — prevents uncontrolled flow into T4750); PV4712.02 (pressure control via PICSA 4712.02, fail-close — prevents return to T4750, may increase downstream pressure); TV4750.03 (temperature control via TICSA 4750.03 for H1008, fail-open — ensures continuous cooling/heating medium flow, may cause overcooling/overheating).",
+    "agent_answer": "The control valves listed along with their control philosophy and failure scenarios are as follows:\n\n1. **Control Valve Tag: C1**\n   - **Label:** GlobeValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n2. **Control Valve Tag: C1**\n   - **Label:** ButterflyValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n3. **Control Valve Tag: C4**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n4. **Control Valve Tag: C2**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n5. **Control Valve Tag: C5**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n6. **Control Valve Tag: C7**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\n7. **Control Valve Tag: C10**\n   - **Label:** BallValve\n   - **Control Philosophy:** None\n   - **Fail What If:** None\n\nNote: All control valves listed have a control philosophy and failure scenario of \"None.\"",
+    "cypher": "MATCH (cv:OperatedValve {level: \"conceptual\"}) \nRETURN cv.tag AS control_valve_tag, \n       cv.label AS control_valve_label, \n       cv.failAction AS control_philosophy, \n       cv.failActionRepresentation AS fail_what_if",
+    "results_count": 9,
+    "latency_seconds": 5.12
+  },
+  {
+    "id": 18,
+    "category": "knowledge_inference",
+    "question": "What would be the effect if the heating fluid temperature in Heat Exchanger H1007 increased from the design temperature to 120°C?",
+    "reference_answer": "H1007 design: 313 kW, 46.8 m², chamber design temp 100°C. Effects: (1) Increased heat transfer rate, potentially exceeding 313 kW design. (2) Exceeds chamber design temperature by 20°C — thermal stress and equipment damage risk. (3) Downstream T4750 affected, TV4750.03 control loop would need to compensate. (4) TV4750.03 might need to throttle more.",
+    "agent_answer": "If the heating fluid temperature in Heat Exchanger H1007 (tag: H1007) increased from the design temperature to 120°C, it could potentially affect the heat transfer efficiency of the Plate Heat Exchanger (label: PlateHeatExchanger). Given its design heat flow rate of 313.0 kW and design heat transfer area of 46.8 m², an increase in temperature may enhance the heat transfer performance, but it could also lead to issues such as thermal stress on the plates or exceed the design limits of the equipment. Therefore, while the heat transfer could improve, careful consideration of the material limits and operational safety is essential.",
+    "cypher": "MATCH (h:HeatExchanger {tag: \"H1007\", level: \"conceptual\"}) \nRETURN h.label, h.label_description, h.designHeatFlowRate, h.designHeatTransferArea, h.plateHeight, h.plateWidth, h.proteusId, h.tag",
+    "results_count": 1,
+    "latency_seconds": 3.37
+  },
+  {
+    "id": 19,
+    "category": "graph_summarization",
+    "question": "Based on the P&ID, make a narrative to describe the process flow from the inlet to the final outlet, identifying all major equipment, intermediate streams, and control points in sequence.",
+    "reference_answer": "Inlet → P4711 (centrifugal pump) → H1007 (plate heat exchanger) → HV4750.01 (globe valve, flow control) → T4750 (tank, temp monitored by TICSA4750.03) → 66KL21 (butterfly valve) → 75SA21 (check valve) → pipe reducer DN80→DN50 → 73KH12 (ball valve) → P4712 (reciprocating pump) → tee with SV104.01 (safety valve, 6 bar) → H1008 (tubular heat exchanger, temp control via TV4750.03) → PV4712.02 (return to T4750, pressure control via PICSA 4712.02) → outlet. Three control loops: flow (HV4750.01), pressure (PV4712.02), temperature (TV4750.03).",
+    "agent_answer": "ERROR: {neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MAT",
+    "cypher": "",
+    "results_count": 0,
+    "latency_seconds": 0.0,
+    "error": "{neo4j_code: Neo.ClientError.Statement.SyntaxError} {message: Invalid input 'WHERE': expected 'FOREACH', 'ORDER BY', 'CALL', 'CREATE', 'LOAD CSV', 'DELETE', 'DETACH', 'FINISH', 'INSERT', 'LIMIT', 'MATCH', 'MERGE', 'NODETACH', 'OFFSET', 'OPTIONAL', 'REMOVE', 'RETURN', 'SET', 'SKIP', 'UNION', 'UNWIND', 'USE', 'WITH' or <EOF> (line 4, column 13 (offset: 89))\n\"            WHERE label <> 'Node'\"\n             ^} {gql_status: 50N42} {gql_status_description: error: general processing exception - unexpected error. Unexpected error has occurred. See debug log for details.}"
+  }
+]
