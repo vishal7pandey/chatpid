@@ -41,8 +41,8 @@ export function PidViewer({ onClose }: PidViewerProps) {
           onChange={(e) => setSelected(e.target.value)}
           className="text-sm border rounded px-2 py-1 bg-white dark:bg-zinc-700 dark:text-zinc-200"
         >
-          {files.map((f) => (
-            <option key={f.filename} value={f.filename}>
+          {files.map((f, idx) => (
+            <option key={`${f.directory}/${f.filename}-${idx}`} value={f.filename}>
               {f.filename}
             </option>
           ))}

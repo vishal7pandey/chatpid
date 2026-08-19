@@ -341,13 +341,17 @@ def list_pid_files() -> dict:
     import glob
 
     files = []
+    seen = set()
     for d in ["data/dexpi_real", "data/raw"]:
         if os.path.isdir(d):
             for f in sorted(glob.glob(os.path.join(d, "*.xml"))):
-                files.append({
-                    "filename": os.path.basename(f),
-                    "directory": d,
-                })
+                filename = os.path.basename(f)
+                if filename not in seen:
+                    seen.add(filename)
+                    files.append({
+                        "filename": filename,
+                        "directory": d,
+                    })
     return {"files": files}
 
 
