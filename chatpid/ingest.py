@@ -90,18 +90,23 @@ def _safe_rel_type(raw: Any) -> str:
     return cleaned or "RELATED_TO"
 
 
-def clear_level(driver: Driver, level: str) -> None:
-    """Delete all nodes/relationships previously loaded for this abstraction level."""
+def clear_level(driver: Driver, level: str, document_id: str = "default") -> None:
+    """Delete all nodes/relationships for this abstraction level and document."""
     with driver.session() as session:
-        session.run("MATCH (n {level: $level}) DETACH DELETE n", level=level)
+        session.run(
+            "MATCH (n {level: $level, document_id: $document_id}) DETACH DELETE n",
+            level=level,
+            document_id=document_id,
+        )
 
 
-def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str) -> None:
+def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str, document_id: str = "default") -> None:
     """Merge a NetworkX graph into Neo4j under the given abstraction level.
 
-    Re-running this for the same `level` first clears prior data for that level,
-    so ingestion is idempotent. Each node/relationship is tagged with a `level`
-    property so all three abstractions coexist in one database.
+    Re-running this for the same `level` + `document_id` first clears prior data
+    for that combination, so ingestion is idempotent per-document. Each node and
+    relationship is tagged with both `level` and `document_id` properties so
+    multiple documents can coexist in the same Neo4j database.
 
     NOTE: pyDEXPI's `labels` attribute is a colon-separated STRING (e.g.
     "GlobeValve:OperatedValve:PipingComponent:..."), not a list — so we split
@@ -111,7 +116,7 @@ def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str) -> None:
     piping components, etc.). We compute a `tag` property from the first
     available identifier so ContextRAG's `n.tag` query works.
     """
-    clear_level(driver, level)
+    clear_level(driver, level, document_id)
 
     # pyDEXPI identifier fields, in priority order — first non-empty wins.
     TAG_FIELDS = (
@@ -143,15 +148,17 @@ def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str) -> None:
             props = {k: _serialize_value(v) for k, v in data.items() if k != "labels"}
             props["element_id"] = str(node_id)
             props["level"] = level
+            props["document_id"] = document_id
             # Compute a human-readable tag from the first available identifier
             props["tag"] = next(
                 (str(data[f]) for f in TAG_FIELDS if data.get(f)), data.get("label") or "Node"
             )
             session.run(
-                f"MERGE (n:{label_str} {{element_id: $element_id, level: $level}}) "
+                f"MERGE (n:{label_str} {{element_id: $element_id, level: $level, document_id: $document_id}}) "
                 f"SET n += $props",
                 element_id=str(node_id),
                 level=level,
+                document_id=document_id,
                 props=props,
             )
 
@@ -159,15 +166,17 @@ def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str) -> None:
             rel_type = _safe_rel_type(data.get("type") or data.get("label"))
             props = {k: _serialize_value(v) for k, v in data.items()}
             props["level"] = level
+            props["document_id"] = document_id
             session.run(
                 f"""
-                MATCH (a {{element_id: $source, level: $level}})
-                MATCH (b {{element_id: $target, level: $level}})
+                MATCH (a {{element_id: $source, level: $level, document_id: $document_id}})
+                MATCH (b {{element_id: $target, level: $level, document_id: $document_id}})
                 MERGE (a)-[r:{rel_type}]->(b)
                 SET r += $props
                 """,
                 source=str(source),
                 target=str(target),
                 level=level,
+                document_id=document_id,
                 props=props,
             )

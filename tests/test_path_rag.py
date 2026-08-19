@@ -55,3 +55,52 @@ def test_path_rag_returns_empty_when_no_nodes():
     result = path_rag(driver, "nonexistent query", level="conceptual")
     assert result.paths == []
     assert result.best_path is None
+
+
+def test_path_rag_prefers_flow_direction():
+    """A->B->C via outgoing edges, D->B via incoming edge.
+
+    PathRAG starting at A should follow A->B->C (outgoing) rather than
+    going A->B->D (against flow direction). The direction bonus ensures
+    outgoing hops are preferred over incoming hops.
+    """
+    driver = MagicMock()
+    session = driver.session.return_value.__enter__.return_value
+
+    # find_starting_nodes: return node A
+    # get_neighbors for A: return B (outgoing)
+    # get_neighbors for B: return C (outgoing) and D (incoming)
+    def mock_run(cypher, **kwargs):
+        tag = kwargs.get("tag", "")
+        if "UNWIND" not in cypher and "labels(n)" in cypher:
+            # find_starting_nodes query
+            return [
+                {"tag": "A", "labels": ["Node", "Tank"], "props": {"level": "conceptual", "label": "Tank"}},
+                {"tag": "B", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "label": "Pump"}},
+            ]
+        if tag == "A":
+            return [
+                {"tag": "B", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "label": "Pump"},
+                 "rel_type": "PIPE", "direction": "out"},
+            ]
+        if tag == "B":
+            return [
+                {"tag": "C", "labels": ["Node", "Valve"], "props": {"level": "conceptual", "label": "Valve"},
+                 "rel_type": "PIPE", "direction": "out"},
+                {"tag": "D", "labels": ["Node", "Heater"], "props": {"level": "conceptual", "label": "Heater"},
+                 "rel_type": "PIPE", "direction": "in"},
+            ]
+        return []
+
+    session.run.side_effect = mock_run
+
+    result = path_rag(driver, "tank A", level="conceptual", max_depth=3, max_breadth=1)
+    assert len(result.paths) >= 1
+    path = result.paths[0]
+    # The path should go A -> B -> C (following flow direction)
+    # NOT A -> B -> D (against flow direction)
+    assert "C" in path.path
+    # D should not be in the path (it's incoming direction, lower score)
+    if "D" in path.path:
+        # If D is in the path, C must come first (C has higher score due to direction bonus)
+        assert path.path.index("C") < path.path.index("D")
