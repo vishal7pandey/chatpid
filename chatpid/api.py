@@ -321,13 +321,7 @@ def get_pid_svg(filename: str = "") -> Any:
     try:
         model = ProteusSerializer().load(found_path, filename)
         drawer = DrawDiagram(model.diagram, padding=5.0, pretty=True)
-        # Render to in-memory SVG string
-        import io
-        import xml.etree.ElementTree as ET
-
-        buf = io.StringIO()
-        drawer.save_svg(os.path.splitext(filename)[0], buf)
-        svg_content = buf.getvalue()
+        svg_content = drawer.draw_svg()
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"SVG rendering failed: {exc}")
 
