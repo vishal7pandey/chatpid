@@ -14,12 +14,16 @@ import threading
 import time
 from typing import Any
 
-from fastapi import FastAPI
+import tempfile
+import uuid
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from chatpid.agent import build_agent
-from chatpid.ingest import get_driver
+from chatpid.ingest import build_graph_abstractions, get_driver, load_dexpi_model, load_graph
 
 app = FastAPI(title="ChatP&ID API", version="0.1.0")
 
@@ -49,9 +53,27 @@ def _ensure_agent():
     global _driver, _agent
     if _driver is None:
         _driver = get_driver()
+        _migrate_document_ids(_driver)
     if _agent is None:
         _agent = build_agent(_driver)
     return _agent, _driver
+
+
+def _migrate_document_ids(driver):
+    """Set document_id='default' on all nodes/relationships that lack one.
+
+    One-time migration for data ingested before per-document scoping existed.
+    Idempotent — safe to run on every startup.
+    """
+    with driver.session() as session:
+        session.run("""
+            MATCH (n) WHERE n.document_id IS NULL
+            SET n.document_id = 'default'
+        """)
+        session.run("""
+            MATCH ()-[r]->() WHERE r.document_id IS NULL
+            SET r.document_id = 'default'
+        """)
 
 
 def _extract_tool_usage(messages: list) -> list[dict]:
@@ -167,29 +189,38 @@ def ask(req: AskRequest) -> AskResponse:
 
 
 @app.get("/graph", response_model=GraphResponse)
-def get_graph(level: str = "conceptual", limit: int = 200) -> GraphResponse:
+def get_graph(level: str = "conceptual", limit: int = 200, document_id: str = "") -> GraphResponse:
     """Return node/edge data for graph visualization.
 
     If the /ask endpoint was called recently, highlights nodes touched by
     the last answer. Otherwise returns a level-filtered slice of the graph.
+    Pass document_id to scope to a specific uploaded document.
     """
     _, driver = _ensure_agent()
 
     with driver.session() as session:
-        # Get nodes
-        node_result = session.run(
+        # Get nodes — filter by document_id if provided
+        if document_id:
+            node_query = """
+                MATCH (n {level: $level, document_id: $document_id})
+                WITH n LIMIT $limit
+                RETURN elementId(n) AS id,
+                       labels(n) AS labels,
+                       n.tag AS tag,
+                       n.name AS name,
+                       properties(n) AS props
             """
-            MATCH (n {level: $level})
-            WITH n LIMIT $limit
-            RETURN elementId(n) AS id,
-                   labels(n) AS labels,
-                   n.tag AS tag,
-                   n.name AS name,
-                   properties(n) AS props
-            """,
-            level=level,
-            limit=limit,
-        )
+        else:
+            node_query = """
+                MATCH (n {level: $level})
+                WITH n LIMIT $limit
+                RETURN elementId(n) AS id,
+                       labels(n) AS labels,
+                       n.tag AS tag,
+                       n.name AS name,
+                       properties(n) AS props
+            """
+        node_result = session.run(node_query, level=level, limit=limit, document_id=document_id or None)
 
         nodes = []
         node_ids = []
@@ -233,6 +264,45 @@ def get_graph(level: str = "conceptual", limit: int = 200) -> GraphResponse:
         level=level,
         total_nodes=len(nodes),
     )
+
+
+class IngestResponse(BaseModel):
+    document_id: str
+    levels: dict  # level -> {"nodes": int, "edges": int}
+
+
+@app.post("/ingest", response_model=IngestResponse)
+async def ingest_document(file: UploadFile) -> IngestResponse:
+    """Ingest a DEXPI/Proteus XML file into the knowledge graph.
+
+    Accepts a .xml file upload, parses it with pyDEXPI, builds all 3
+    graph abstraction levels, and loads them into Neo4j scoped by a
+    unique document_id so multiple documents can coexist.
+    """
+    if not file.filename or not file.filename.endswith(".xml"):
+        raise HTTPException(status_code=400, detail="File must be a .xml (DEXPI/Proteus) file")
+
+    _, driver = _ensure_agent()
+    document_id = str(uuid.uuid4())[:8]
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmp_path = Path(tmpdir) / file.filename
+        content = await file.read()
+        tmp_path.write_bytes(content)
+
+        try:
+            model = load_dexpi_model(tmpdir, file.filename)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Failed to parse DEXPI file: {exc}")
+
+        graphs = build_graph_abstractions(model)
+        levels_info = {}
+        for level in ("complete", "process", "conceptual"):
+            g = getattr(graphs, level)
+            load_graph(driver, g, level, document_id=document_id)
+            levels_info[level] = {"nodes": g.number_of_nodes(), "edges": g.number_of_edges()}
+
+    return IngestResponse(document_id=document_id, levels=levels_info)
 
 
 @app.get("/health")

@@ -223,7 +223,8 @@ def path_rag(
         current = start_node
 
         for depth in range(max_depth):
-            # Get unvisited neighbors
+            # Get unvisited neighbors — prefer outgoing edges (flow direction)
+            # but fall back to incoming if no outgoing neighbors exist
             neighbors = get_neighbors(driver, current["tag"], level)
             neighbors = [n for n in neighbors if n["tag"] not in visited]
 
@@ -234,7 +235,13 @@ def path_rag(
             for n in neighbors:
                 n["_score"] = _text_similarity(query_tokens, _node_text(n))
 
-            # Pick the most relevant neighbor
+            # Prefer flow-direction (outgoing) hops: give them a score bonus
+            # so they're chosen over equally-relevant incoming (against-flow) hops
+            for n in neighbors:
+                if n["direction"] == "out":
+                    n["_score"] += 0.5
+
+            # Pick the most relevant neighbor (flow-direction preferred)
             neighbors.sort(key=lambda n: n["_score"], reverse=True)
             next_node = neighbors[0]
 
