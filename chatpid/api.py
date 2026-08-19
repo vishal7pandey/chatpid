@@ -55,27 +55,9 @@ def _ensure_agent():
     global _driver, _agent
     if _driver is None:
         _driver = get_driver()
-        _migrate_document_ids(_driver)
     if _agent is None:
         _agent = build_agent(_driver)
     return _agent, _driver
-
-
-def _migrate_document_ids(driver):
-    """Set document_id='default' on all nodes/relationships that lack one.
-
-    One-time migration for data ingested before per-document scoping existed.
-    Idempotent — safe to run on every startup.
-    """
-    with driver.session() as session:
-        session.run("""
-            MATCH (n) WHERE n.document_id IS NULL
-            SET n.document_id = 'default'
-        """)
-        session.run("""
-            MATCH ()-[r]->() WHERE r.document_id IS NULL
-            SET r.document_id = 'default'
-        """)
 
 
 def _extract_tool_usage(messages: list) -> list[dict]:

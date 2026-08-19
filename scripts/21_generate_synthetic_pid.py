@@ -177,14 +177,14 @@ def main() -> None:
         driver = get_driver()
         try:
             if args.clear:
-                print("Clearing existing data...")
+                print("Clearing existing synthetic data...")
                 with driver.session() as session:
-                    session.run("MATCH (n) DETACH DELETE n")
+                    session.run("MATCH (n {document_id: 'synthetic'}) DETACH DELETE n")
 
             for level in ["complete", "process", "conceptual"]:
                 g = getattr(graphs, level)
                 print(f"  Loading {level} ({g.number_of_nodes()} nodes)...")
-                load_graph(driver, g, level)
+                load_graph(driver, g, level, document_id="synthetic")
             print("Ingestion complete!")
         finally:
             driver.close()

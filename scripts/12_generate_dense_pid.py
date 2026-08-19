@@ -78,10 +78,11 @@ def main() -> None:
 
     # Load to Neo4j with a special level name to avoid clobbering the original
     level_name = f"dense_{args.copies}x_{args.level}"
-    print(f"Loading to Neo4j as level='{level_name}' ...")
+    document_id = f"dense_{args.copies}x"
+    print(f"Loading to Neo4j as level='{level_name}', document_id='{document_id}' ...")
     driver = get_driver()
     try:
-        load_graph(driver, dense, level_name)
+        load_graph(driver, dense, level_name, document_id=document_id)
     finally:
         driver.close()
 
