@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ChatPanel } from '@/components/ChatPanel';
 import { GraphPanel } from '@/components/GraphPanel';
+import { PidViewer } from '@/components/PidViewer';
 
 // Scripted demo walkthrough — 4 questions chosen to hit different GraphRAG tools.
 // Each question has a description of which tool it should trigger and why.
@@ -25,8 +26,11 @@ const DEMO_QUESTIONS = [
   },
 ];
 
+type RightPanelView = 'graph' | 'pid';
+
 export default function Home() {
   const [highlightedNodes, setHighlightedNodes] = useState<string[]>([]);
+  const [rightPanel, setRightPanel] = useState<RightPanelView>('graph');
 
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden" style={{ backgroundColor: 'var(--app-bg)' }}>
@@ -43,15 +47,43 @@ export default function Home() {
         </div>
         <span className="text-sm font-semibold">ChatP&amp;ID</span>
         <span className="text-xs opacity-50">GraphRAG Demo</span>
+
+        {/* Right panel view toggle */}
+        <div className="ml-auto flex items-center gap-1 text-xs">
+          <button
+            onClick={() => setRightPanel('graph')}
+            className="px-2 py-1 rounded font-medium transition-colors"
+            style={{
+              backgroundColor: rightPanel === 'graph' ? 'var(--brand-primary)' : 'transparent',
+              color: rightPanel === 'graph' ? 'var(--inverse-text)' : 'var(--sidebar-text)',
+            }}
+          >
+            Graph
+          </button>
+          <button
+            onClick={() => setRightPanel('pid')}
+            className="px-2 py-1 rounded font-medium transition-colors"
+            style={{
+              backgroundColor: rightPanel === 'pid' ? 'var(--brand-primary)' : 'transparent',
+              color: rightPanel === 'pid' ? 'var(--inverse-text)' : 'var(--sidebar-text)',
+            }}
+          >
+            P&amp;ID Diagram
+          </button>
+        </div>
       </header>
 
-      {/* Main content — chat + graph panels side by side */}
+      {/* Main content — chat + right panel side by side */}
       <main className="flex flex-1 overflow-hidden">
         <div className="flex-1 overflow-hidden border-r" style={{ borderColor: 'var(--pane-border)' }}>
           <ChatPanel onTouchedNodes={setHighlightedNodes} demoQuestions={DEMO_QUESTIONS.map((q) => q.question)} />
         </div>
         <div className="flex-1 overflow-hidden">
-          <GraphPanel highlightedNodes={highlightedNodes} />
+          {rightPanel === 'graph' ? (
+            <GraphPanel highlightedNodes={highlightedNodes} />
+          ) : (
+            <PidViewer />
+          )}
         </div>
       </main>
     </div>

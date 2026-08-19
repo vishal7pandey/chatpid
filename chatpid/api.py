@@ -24,6 +24,8 @@ from pydantic import BaseModel
 
 from chatpid.agent import build_agent
 from chatpid.ingest import build_graph_abstractions, get_driver, load_dexpi_model, load_graph
+from pydexpi.loaders import ProteusSerializer
+from pydexpi.loaders.svg_loader import DrawDiagram
 
 app = FastAPI(title="ChatP&ID API", version="0.1.0")
 
@@ -303,6 +305,68 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
             levels_info[level] = {"nodes": g.number_of_nodes(), "edges": g.number_of_edges()}
 
     return IngestResponse(document_id=document_id, levels=levels_info)
+
+
+@app.get("/pid/svg")
+def get_pid_svg(filename: str = "") -> Any:
+    """Render a DEXPI P&ID diagram to SVG.
+
+    Looks for the file in data/dexpi_real/ (downloaded test cases) or
+    data/raw/ (original reference P&ID). Returns the SVG as
+    image/svg+xml.
+
+    Uses pyDEXPI's DrawDiagram renderer, which converts DEXPI graphical
+    primitives (polylines, polygons, ellipses, arcs, text) to SVG elements
+    with proper coordinate conversion (DEXPI Y-up → SVG Y-down).
+    """
+    import os
+    from fastapi import Response
+
+    search_dirs = ["data/dexpi_real", "data/raw"]
+    found_path = None
+    for d in search_dirs:
+        candidate = os.path.join(d, filename)
+        if os.path.isfile(candidate):
+            found_path = d
+            break
+
+    if not found_path:
+        raise HTTPException(
+            status_code=404,
+            detail=f"File '{filename}' not found in data/dexpi_real/ or data/raw/",
+        )
+
+    try:
+        model = ProteusSerializer().load(found_path, filename)
+        drawer = DrawDiagram(model.diagram, padding=5.0, pretty=True)
+        # Render to in-memory SVG string
+        import io
+        import xml.etree.ElementTree as ET
+
+        buf = io.StringIO()
+        drawer.save_svg(os.path.splitext(filename)[0], buf)
+        svg_content = buf.getvalue()
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"SVG rendering failed: {exc}")
+
+    return Response(content=svg_content, media_type="image/svg+xml")
+
+
+@app.get("/pid/files")
+def list_pid_files() -> dict:
+    """List available DEXPI P&ID files that can be rendered."""
+    import os
+    import glob
+
+    files = []
+    for d in ["data/dexpi_real", "data/raw"]:
+        if os.path.isdir(d):
+            for f in sorted(glob.glob(os.path.join(d, "*.xml"))):
+                files.append({
+                    "filename": os.path.basename(f),
+                    "directory": d,
+                })
+    return {"files": files}
 
 
 @app.get("/health")
