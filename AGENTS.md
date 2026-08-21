@@ -1,5 +1,11 @@
 # ChatP&ID — Project Notes
 
+## Python / pydexpi
+
+**Python 3.12+ required.** `pyproject.toml` pins `requires-python = ">=3.12"` and `pydexpi>=1.2`.
+- pydexpi 1.2.0 requires Python >=3.12 (1.1.0 has a different API: `NXGraphLoader.dexpi_to_graph` instead of `GraphLoader.parse_dexpi_to_graph`, and no `GraphAbstractor`).
+- The venv was created with Python 3.13.14. If `uv sync` fails with a pydexpi resolution error, ensure a 3.12+ interpreter is available (`uv python list`).
+
 ## Neo4j Setup
 
 **Decision:** Neo4j runs via Docker Compose (`docker-compose.yml` in repo root).

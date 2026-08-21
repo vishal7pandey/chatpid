@@ -234,12 +234,12 @@ def print_score_summary(scored: list[dict]) -> None:
 def save_scored_results(scored: list[dict], filepath: str | Path) -> None:
     """Save scored results to a JSON file."""
     Path(filepath).parent.mkdir(parents=True, exist_ok=True)
-    with open(filepath, "w") as f:
-        json.dump(scored, f, indent=2, default=str)
+    with open(filepath, "w", encoding="utf-8") as f:
+        json.dump(scored, f, indent=2, ensure_ascii=False, default=str)
     print(f"\nSaved scored results to {filepath}")
 
 
 def load_results(filepath: str | Path) -> list[dict]:
     """Load benchmark results from a JSON file."""
-    with open(filepath) as f:
+    with open(filepath, encoding="utf-8") as f:
         return json.load(f)
