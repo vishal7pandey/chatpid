@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import {
   ReactFlow,
   Background,
@@ -9,12 +9,26 @@ import {
   type Node,
   type Edge,
   type NodeTypes,
+  type NodeChange,
+  type OnNodesChange,
   Position,
   Handle,
   Panel,
+  useNodesState,
+  useEdgesState,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import dagre from '@dagrejs/dagre';
+import {
+  forceSimulation,
+  forceLink,
+  forceManyBody,
+  forceCenter,
+  forceCollide,
+  forceX,
+  forceY,
+  type Simulation,
+  type SimulationNodeDatum,
+} from 'd3-force';
 import { Loader2, Network, Search, X, Info } from 'lucide-react';
 import { getGraph, type GraphResponse, type GraphNode } from '@/lib/api';
 
@@ -93,27 +107,13 @@ function getNodeColor(label: string): string {
   return NODE_COLORS[label] || '#64748B';
 }
 
-// Dagre layout — hierarchical, flow-direction-aware (left to right)
-function layoutGraph(nodes: Node[], edges: Edge[], direction: 'LR' | 'TB' = 'LR'): { nodes: Node[]; edges: Edge[] } {
-  const g = new dagre.graphlib.Graph();
-  g.setDefaultEdgeLabel(() => ({}));
-  g.setGraph({ rankdir: direction, nodesep: 40, ranksep: 80, marginx: 20, marginy: 20 });
-
-  nodes.forEach((node) => {
-    g.setNode(node.id, { width: 120, height: 40 });
-  });
-  edges.forEach((edge) => {
-    g.setEdge(edge.source, edge.target);
-  });
-
-  dagre.layout(g);
-
-  const layoutedNodes = nodes.map((node) => {
-    const pos = g.node(node.id);
-    return { ...node, position: { x: pos.x - 60, y: pos.y - 20 } };
-  });
-
-  return { nodes: layoutedNodes, edges };
+// --- d3-force types ---
+interface SimNode extends SimulationNodeDatum {
+  id: string;
+}
+interface SimLink {
+  source: string | SimNode;
+  target: string | SimNode;
 }
 
 interface GraphPanelProps {
@@ -139,8 +139,8 @@ function PidNode({ data }: { data: { label: string; tag: string; highlighted: bo
           minWidth: '60px',
           textAlign: 'center',
           boxShadow: data.highlighted ? `0 0 12px ${color}80` : 'none',
-          transition: 'all 0.2s',
-          cursor: 'pointer',
+          transition: 'background-color 0.2s, box-shadow 0.2s',
+          cursor: 'grab',
         }}
       >
         {data.tag || data.label}
@@ -155,8 +155,8 @@ const nodeTypes: NodeTypes = { pidNode: PidNode };
 export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conceptual' }: GraphPanelProps) {
   const [currentLevel, setCurrentLevel] = useState<string>(initialLevel);
   const [selectedDoc, setSelectedDoc] = useState<string>('');
-  const [nodes, setNodes] = useState<Node[]>([]);
-  const [edges, setEdges] = useState<Edge[]>([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<Node>([]);
+  const [edges, setEdges] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [totalNodes, setTotalNodes] = useState(0);
@@ -164,6 +164,17 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
   const [selectedNode, setSelectedNode] = useState<Node | null>(null);
   const [showLegend, setShowLegend] = useState(true);
 
+  // d3-force simulation ref — kept across renders, cleaned up on unmount/data change
+  const simulationRef = useRef<Simulation<SimNode, SimLink> | null>(null);
+  // Sim node array ref — mutable objects d3-force updates in-place
+  const simNodesRef = useRef<SimNode[]>([]);
+  const simLinksRef = useRef<SimLink[]>([]);
+  // Map from ReactFlow node id -> index in simNodesRef for fast lookups
+  const idToIndexRef = useRef<Map<string, number>>(new Map());
+  // Track whether the user is actively dragging a node
+  const draggingRef = useRef<string | null>(null);
+
+  const highlightedKey = highlightedNodes.join(',');
   const loadGraph = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -179,13 +190,12 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
         return {
           id: n.id,
           type: 'pidNode',
-          position: { x: 0, y: 0 }, // will be set by dagre
+          position: { x: 0, y: 0 },
           data: { label: n.label, tag, highlighted: isHighlighted, properties: n.properties },
         };
       });
 
       // Only show edge labels if there are multiple distinct relationship types
-      // (if all edges are the same type, e.g. all PIPE, labels add noise without info)
       const edgeTypes = new Set(data.edges.map((e) => e.type));
       const showEdgeLabels = edgeTypes.size > 1;
 
@@ -201,22 +211,108 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
         style: { stroke: 'var(--muted-text)', strokeWidth: 1.5 },
       }));
 
-      // Apply dagre layout
-      const { nodes: laidOutNodes, edges: laidOutEdges } = layoutGraph(flowNodes, flowEdges);
-      setNodes(laidOutNodes);
-      setEdges(laidOutEdges);
+      setNodes(flowNodes);
+      setEdges(flowEdges);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load graph');
     } finally {
       setLoading(false);
     }
-  }, [currentLevel, selectedDoc, highlightedNodes.join(',')]);
+  }, [currentLevel, selectedDoc, highlightedKey]);
 
   useEffect(() => {
     loadGraph();
   }, [loadGraph]);
 
-  // Update highlighted nodes when they change
+  // --- d3-force simulation: start/restart whenever nodes or edges change ---
+  useEffect(() => {
+    if (nodes.length === 0) return;
+
+    // Stop any previous simulation
+    if (simulationRef.current) {
+      simulationRef.current.stop();
+    }
+
+    // Build mutable sim node objects. Seed positions in a circle to avoid
+    // everything starting at (0,0) and exploding outward.
+    const simNodes: SimNode[] = nodes.map((n, i) => {
+      const angle = (i / nodes.length) * 2 * Math.PI;
+      const radius = 200 + Math.random() * 50;
+      return {
+        id: n.id,
+        x: Math.cos(angle) * radius + (Math.random() - 0.5) * 40,
+        y: Math.sin(angle) * radius + (Math.random() - 0.5) * 40,
+      };
+    });
+
+    const idMap = new Map<string, number>();
+    simNodes.forEach((sn, i) => idMap.set(sn.id, i));
+
+    const simLinks: SimLink[] = edges.map((e) => ({
+      source: e.source,
+      target: e.target,
+    }));
+
+    simNodesRef.current = simNodes;
+    simLinksRef.current = simLinks;
+    idToIndexRef.current = idMap;
+
+    // Tuned forces for a "bouncy / fluid" feel:
+    //  - charge: strong negative repulsion so nodes spread out
+    //  - link: medium-distance springs
+    //  - center: gentle pull toward origin so the graph doesn't drift away
+    //  - collide: prevents overlap
+    //  - forceX/forceY: very mild centering to keep graph centered
+    const nodeCount = simNodes.length;
+    const chargeStrength = nodeCount > 100 ? -400 : -250;
+    const linkDistance = nodeCount > 100 ? 60 : 90;
+
+    const sim = forceSimulation<SimNode>(simNodes)
+      .force(
+        'link',
+        forceLink<SimNode, SimLink>(simLinks)
+          .id((d) => d.id)
+          .distance(linkDistance)
+          .strength(0.3)
+      )
+      .force('charge', forceManyBody().strength(chargeStrength).distanceMax(500))
+      .force('center', forceCenter(0, 0).strength(0.05))
+      .force('collide', forceCollide(45))
+      .force('x', forceX(0).strength(0.02))
+      .force('y', forceY(0).strength(0.02))
+      .alpha(1)
+      .alphaDecay(0.015) // slower decay = longer bouncy animation
+      .velocityDecay(0.3) // lower = more bouncy/springy
+      .on('tick', () => {
+        // Sync sim positions back to ReactFlow nodes on every tick.
+        // We use setNodes with a functional update to avoid stale closures.
+        setNodes((prev) =>
+          prev.map((n) => {
+            const idx = idMap.get(n.id);
+            if (idx === undefined) return n;
+            const sn = simNodes[idx];
+            // Don't override position for the node being dragged — ReactFlow
+            // manages its position during drag.
+            if (draggingRef.current === n.id && sn.fx !== undefined) {
+              return n;
+            }
+            return {
+              ...n,
+              position: { x: sn.x ?? 0, y: sn.y ?? 0 },
+            };
+          })
+        );
+      });
+
+    simulationRef.current = sim;
+
+    return () => {
+      sim.stop();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nodes.length, edges.length]);
+
+  // Update highlighted nodes when they change (without restarting sim)
   useEffect(() => {
     const highlightSet = new Set(highlightedNodes.map((t) => t.toLowerCase()));
     setNodes((nds) =>
@@ -232,6 +328,58 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
       })
     );
   }, [highlightedNodes]);
+
+  // --- Custom onNodesChange: intercept position changes to sync with d3-force ---
+  // When a user drags a node, we fix that node's position in the simulation
+  // (set fx/fy), which reheats the sim so connected nodes follow organically.
+  const onNodesChangeIntercepted = useCallback<OnNodesChange<Node>>(
+    (changes: NodeChange<Node>[]) => {
+      changes.forEach((change) => {
+        if (change.type !== 'position' || !change.position) return;
+        const isDragging = change.dragging === true;
+
+        // Drag started: dragging is true and we weren't already tracking this node
+        if (isDragging && draggingRef.current !== change.id) {
+          draggingRef.current = change.id;
+        }
+
+        if (isDragging) {
+          // Fix the node's position in the sim
+          const idx = idToIndexRef.current.get(change.id);
+          if (idx !== undefined) {
+            const sn = simNodesRef.current[idx];
+            if (sn) {
+              sn.fx = change.position.x;
+              sn.fy = change.position.y;
+              // Reheat the simulation so neighbors adjust
+              if (simulationRef.current) {
+                simulationRef.current.alpha(0.3).restart();
+              }
+            }
+          }
+        }
+
+        // Drag ended: dragging is false/undefined and we were tracking this node
+        if (!isDragging && draggingRef.current === change.id) {
+          const idx = idToIndexRef.current.get(change.id);
+          if (idx !== undefined) {
+            const sn = simNodesRef.current[idx];
+            if (sn) {
+              sn.fx = undefined;
+              sn.fy = undefined;
+            }
+          }
+          draggingRef.current = null;
+          // Gentle reheat so the graph settles after drag release
+          if (simulationRef.current) {
+            simulationRef.current.alpha(0.2).restart();
+          }
+        }
+      });
+      onNodesChange(changes);
+    },
+    [onNodesChange]
+  );
 
   // Filter nodes by search query — dims non-matching nodes
   const displayNodes = useMemo(() => {
@@ -260,6 +408,18 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
 
   const onNodeClick = useCallback((_: React.MouseEvent, node: Node) => {
     setSelectedNode(node);
+  }, []);
+
+  // Reheat simulation when user clicks the "re-layout" button
+  const reheatSimulation = useCallback(() => {
+    if (simulationRef.current) {
+      // Unfix all nodes and reheat fully
+      simNodesRef.current.forEach((sn) => {
+        sn.fx = undefined;
+        sn.fy = undefined;
+      });
+      simulationRef.current.alpha(1).restart();
+    }
   }, []);
 
   return (
@@ -324,6 +484,19 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
               }}
             />
           </div>
+          {/* Reheat / re-layout button */}
+          <button
+            onClick={reheatSimulation}
+            className="flex items-center gap-1 rounded-md border px-2 py-1 text-xs font-medium transition-colors hover:opacity-80"
+            style={{
+              backgroundColor: 'var(--card-bg)',
+              borderColor: 'var(--pane-border)',
+              color: 'var(--muted-text)',
+            }}
+            title="Re-layout graph (physics re-simulation)"
+          >
+            <Network className="h-3 w-3" /> Re-layout
+          </button>
           <span className="text-xs font-mono" style={{ color: 'var(--muted-text)' }}>
             {totalNodes} nodes
           </span>
@@ -352,14 +525,28 @@ export function GraphPanel({ highlightedNodes = [], level: initialLevel = 'conce
             nodes={displayNodes}
             edges={edges}
             nodeTypes={nodeTypes}
+            onNodesChange={onNodesChangeIntercepted}
             onNodeClick={onNodeClick}
             fitView
             fitViewOptions={{ padding: 0.2 }}
             proOptions={{ hideAttribution: true }}
             style={{ backgroundColor: 'var(--app-bg)' }}
+            // Enhanced pan/zoom for a fluid feel
+            minZoom={0.05}
+            maxZoom={4}
+            zoomOnScroll
+            zoomOnPinch
+            panOnScroll={false}
+            zoomOnDoubleClick
+            panOnDrag
+            selectionOnDrag={false}
+            // Smooth node dragging
+            nodesDraggable
+            nodesConnectable={false}
           >
             <Background color="var(--pane-border)" gap={20} />
             <Controls
+              showInteractive={false}
               style={{
                 backgroundColor: 'var(--card-bg)',
                 borderColor: 'var(--pane-border)',
