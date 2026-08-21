@@ -5,6 +5,7 @@ Used by scripts/04_run_benchmark.py and scripts/05_compare_levels.py.
 
 from __future__ import annotations
 
+import sys
 import time
 
 from chatpid.agent import build_agent
@@ -145,7 +146,8 @@ def run_benchmark(
                     "tools_used": tools_used,
                 }
                 results.append(entry)
-                print(f"  Answer: {answer[:120]}...")
+                safe_ans = str(answer)[:120].encode(sys.stdout.encoding or 'utf-8', errors='replace').decode(sys.stdout.encoding or 'utf-8', errors='replace')
+                print(f"  Answer: {safe_ans}...")
                 print(f"  Tools: {tools_used}")
                 print(f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
             except Exception as exc:

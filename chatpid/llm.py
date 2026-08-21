@@ -44,11 +44,17 @@ def get_llm(
     if prov == "openai":
         from langchain_openai import ChatOpenAI
 
-        return ChatOpenAI(
-            model=mdl,
-            temperature=temperature,
-            api_key=settings.openai_api_key,
-        )
+        # If OPENAI_BASE_URL is set, point ChatOpenAI at it — this enables
+        # Azure OpenAI (and any other OpenAI-compatible endpoint) via the
+        # same "openai" provider, matching the jeeves/sddforge pattern.
+        kwargs: dict[str, object] = {
+            "model": mdl,
+            "temperature": temperature,
+            "api_key": settings.openai_api_key,
+        }
+        if settings.openai_base_url:
+            kwargs["base_url"] = settings.openai_base_url
+        return ChatOpenAI(**kwargs)
 
     # Default: groq (or any OpenAI-compatible endpoint via base_url)
     from langchain_openai import ChatOpenAI

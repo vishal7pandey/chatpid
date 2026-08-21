@@ -3,9 +3,9 @@ name = "chatpid"
 version = "0.1.0"
 description = "GraphRAG for P&IDs: DEXPI -> knowledge graph -> LangGraph ReAct agent over ContextRAG/VectorRAG/PathRAG/CypherRAG"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
-    "pydexpi>=0.1",
+    "pydexpi>=1.2",
     "networkx>=3.3",
     "neo4j>=5.22",
     "langgraph>=0.2",
