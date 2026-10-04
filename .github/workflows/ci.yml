@@ -1,0 +1,25 @@
+# Starter CI for a uv-based Python project. Adapt to your project (e.g. drop ruff if you don't use it).
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: astral-sh/setup-uv@v5
+      # pytest lives in the [dev] optional extra here, which a plain `uv sync` skips (CPID-2).
+      - run: uv sync --all-extras --all-groups
+      # ruff is not enforced yet: it reports 84 lint errors and 40 unformatted files (see Jira CPID-1).
+      # Re-enable `uv run ruff check .` and `uv run ruff format --check .` once that is cleaned up.
+      - run: uv run pytest -q
