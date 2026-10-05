@@ -1,0 +1,17 @@
+id: CPID-15
+type: feature
+title: Add logging to the core modules
+slug: core-logging
+status: in-review
+risk: low
+jira: CPID-15
+branch: feature/cpid-15-core-logging
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: null
