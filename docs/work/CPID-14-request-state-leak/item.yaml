@@ -1,0 +1,17 @@
+id: CPID-14
+type: bug
+title: Request state leaks between users - _last_question, _last_answer, _last_tools, _last_graph_nodes are process-wide globals
+slug: request-state-leak
+status: in-review
+risk: medium
+jira: CPID-14
+branch: fix/cpid-14-request-state-leak
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: null
