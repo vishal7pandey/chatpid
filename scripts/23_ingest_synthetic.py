@@ -1,4 +1,4 @@
-"""SCRUM-474: Ingest persisted synthetic P&ID from GraphML into Neo4j.
+"""Ingest persisted synthetic P&ID from GraphML into Neo4j.
 
 Loads the synthetic P&ID graphs (previously persisted by scripts/21_generate_synthetic_pid.py --persist)
 from data/synthetic/*.graphml and ingests them into Neo4j.

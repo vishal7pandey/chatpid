@@ -1,4 +1,4 @@
-"""SCRUM-357: Generate a denser P&ID graph by duplicating the reference graph N times.
+"""Generate a denser P&ID graph by duplicating the reference graph N times.
 
 The DEXPI 1.2 test case files are incompatible with pyDEXPI (only supports 1.3),
 and combine_dexpi_models deduplicates by proteusId. Instead, we duplicate the

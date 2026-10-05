@@ -1,4 +1,4 @@
-"""SCRUM-412: Neo4j-backed KnowledgeStore adapter for platform's capability registry.
+"""Neo4j-backed KnowledgeStore adapter for platform's capability registry.
 
 This adapter wraps chatpid's Neo4j driver to satisfy platform's KnowledgeStore
 protocol, allowing platform's GraphRAG capabilities (ContextRAG, VectorRAG,

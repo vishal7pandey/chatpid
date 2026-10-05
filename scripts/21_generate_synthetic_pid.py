@@ -1,4 +1,4 @@
-"""SCRUM-411: Generate a genuinely large, structurally-realistic synthetic P&ID.
+"""Generate a genuinely large, structurally-realistic synthetic P&ID.
 
 Uses pyDEXPI's built-in synthetic generation framework with the official DEXPI
 sample patterns (pump, heat exchanger, column, reactor, compressor, mixer,

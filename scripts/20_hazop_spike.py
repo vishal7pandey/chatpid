@@ -1,4 +1,4 @@
-"""SCRUM-377: Stretch — attempt one real 'does engineering work' task end-to-end.
+"""Stretch — attempt one real 'does engineering work' task end-to-end.
 
 The paper's Section 7 future direction: flowsheet modification, automated P&ID
 correction, AI-assisted HAZOP. This spike picks the smallest slice: an AI-assisted
