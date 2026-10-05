@@ -29,44 +29,70 @@ RAW_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--target-nodes", type=int, default=150,
-                        help="Target number of nodes (default: 150)")
-    parser.add_argument("--seed", type=int, default=42,
-                        help="Random seed for reproducibility")
-    parser.add_argument("--max-steps", type=int, default=None,
-                        help="Max generation steps (default: target_nodes // 8)")
-    parser.add_argument("--ingest", action="store_true",
-                        help="Ingest the generated P&ID into Neo4j after generation")
-    parser.add_argument("--clear", action="store_true",
-                        help="Clear existing Neo4j data before ingesting (use with --ingest)")
-    parser.add_argument("--persist", action="store_true",
-                        help="Persist generated graphs to disk as GraphML in data/synthetic/")
-    parser.add_argument("--persist-dir", default="data/synthetic",
-                        help="Directory to persist graphs to (default: data/synthetic)")
+    parser.add_argument(
+        "--target-nodes",
+        type=int,
+        default=150,
+        help="Target number of nodes (default: 150)",
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42, help="Random seed for reproducibility"
+    )
+    parser.add_argument(
+        "--max-steps",
+        type=int,
+        default=None,
+        help="Max generation steps (default: target_nodes // 8)",
+    )
+    parser.add_argument(
+        "--ingest",
+        action="store_true",
+        help="Ingest the generated P&ID into Neo4j after generation",
+    )
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Clear existing Neo4j data before ingesting (use with --ingest)",
+    )
+    parser.add_argument(
+        "--persist",
+        action="store_true",
+        help="Persist generated graphs to disk as GraphML in data/synthetic/",
+    )
+    parser.add_argument(
+        "--persist-dir",
+        default="data/synthetic",
+        help="Directory to persist graphs to (default: data/synthetic)",
+    )
     args = parser.parse_args()
 
     import random
+
     random.seed(args.seed)
     import numpy as np
+
     np.random.seed(args.seed)
 
     # Load all pattern distributions
-    from pydexpi.syndata import SyntheticPIDGenerator, PatternDistribution
-    from pydexpi.syndata.generator_function import RandomGeneratorFunction, CappingFunction
+    from pydexpi.syndata import PatternDistribution, SyntheticPIDGenerator
     from pydexpi.syndata.connector_renaming import ConnectorRenamingConvention
+    from pydexpi.syndata.generator_function import (
+        CappingFunction,
+        RandomGeneratorFunction,
+    )
 
     print("Loading DEXPI sample pattern distributions...")
     pattern_distr_names = [
-        name for name in os.listdir(PATTERNS_DIR)
-        if (PATTERNS_DIR / name).is_dir()
+        name for name in os.listdir(PATTERNS_DIR) if (PATTERNS_DIR / name).is_dir()
     ]
     distributions = [
-        PatternDistribution.load(PATTERNS_DIR, name)
-        for name in pattern_distr_names
+        PatternDistribution.load(PATTERNS_DIR, name) for name in pattern_distr_names
     ]
     distribution_dict = {d.name: d for d in distributions}
     for d in distributions:
-        print(f"  {d.name}: {len(d.patterns)} patterns, connectors={d.connector_labels}")
+        print(
+            f"  {d.name}: {len(d.patterns)} patterns, connectors={d.connector_labels}"
+        )
 
     # Create generator function with random pattern selection
     generator_function = RandomGeneratorFunction(
@@ -96,6 +122,7 @@ def main() -> None:
     except Exception as e:
         print(f"Generation error: {e}")
         import traceback
+
         traceback.print_exc()
         return
 
@@ -104,8 +131,11 @@ def main() -> None:
     print(f"DexpiModel type: {type(model).__name__}")
 
     # Build graph abstractions directly from the model
-    from chatpid.ingest import build_graph_abstractions, get_driver, load_graph
-    from chatpid.ingest import FlowsheetGraphs
+    from chatpid.ingest import (
+        build_graph_abstractions,
+        get_driver,
+        load_graph,
+    )
 
     print("\nBuilding graph abstractions...")
     graphs = build_graph_abstractions(model)
@@ -125,14 +155,18 @@ def main() -> None:
 
     # Compare with reference P&ID
     print("\n--- Comparison with reference P&ID (C01V04-VER.EX01) ---")
-    print(f"  Reference conceptual: 36 nodes, 36 edges")
-    print(f"  Synthetic conceptual: {graphs.conceptual.number_of_nodes()} nodes, "
-          f"{graphs.conceptual.number_of_edges()} edges")
+    print("  Reference conceptual: 36 nodes, 36 edges")
+    print(
+        f"  Synthetic conceptual: {graphs.conceptual.number_of_nodes()} nodes, "
+        f"{graphs.conceptual.number_of_edges()} edges"
+    )
 
     # Persist graphs to disk as GraphML so they survive Neo4j restarts
     if args.persist:
         import json
+
         import networkx as nx
+
         persist_dir = Path(args.persist_dir)
         persist_dir.mkdir(parents=True, exist_ok=True)
 

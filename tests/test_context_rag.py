@@ -19,7 +19,11 @@ def test_context_rag_topology_mode_formats_nodes_and_edges():
     session.run.side_effect = [
         # Nodes
         [
-            {"tag": "P1", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "element_id": "1"}},
+            {
+                "tag": "P1",
+                "labels": ["Node", "Pump"],
+                "props": {"level": "conceptual", "element_id": "1"},
+            },
         ],
         # Edges
         [

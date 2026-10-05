@@ -16,7 +16,6 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass
 
-from langchain_core.messages import HumanMessage
 from neo4j import Driver
 
 from chatpid.context_rag import context_rag
@@ -77,12 +76,14 @@ def _get_all_nodes(driver: Driver, level: str) -> list[dict]:
             props.pop("level", None)
             props.pop("element_id", None)
             labels = [l for l in record["labels"] if l != "Node"]
-            nodes.append({
-                "element_id": record["eid"],
-                "tag": record["tag"],
-                "labels": labels,
-                "properties": props,
-            })
+            nodes.append(
+                {
+                    "element_id": record["eid"],
+                    "tag": record["tag"],
+                    "labels": labels,
+                    "properties": props,
+                }
+            )
         return nodes
 
 
@@ -96,12 +97,15 @@ def _get_neighbors_text(driver: Driver, tag: str, level: str) -> tuple[str, str]
             RETURN m.tag AS neighbor_tag, labels(m) AS neighbor_labels,
                    type(r) AS rel_type, m AS neighbor_props
             """,
-            tag=tag, level=level,
+            tag=tag,
+            level=level,
         )
         out_lines = []
         for record in out_result:
             nlabels = [l for l in record["neighbor_labels"] if l != "Node"]
-            out_lines.append(f"  -> [{record['neighbor_tag']}] ({', '.join(nlabels)}) via {record['rel_type']}")
+            out_lines.append(
+                f"  -> [{record['neighbor_tag']}] ({', '.join(nlabels)}) via {record['rel_type']}"
+            )
 
         # Incoming
         in_result = session.run(
@@ -110,19 +114,24 @@ def _get_neighbors_text(driver: Driver, tag: str, level: str) -> tuple[str, str]
             RETURN m.tag AS neighbor_tag, labels(m) AS neighbor_labels,
                    type(r) AS rel_type, m AS neighbor_props
             """,
-            tag=tag, level=level,
+            tag=tag,
+            level=level,
         )
         in_lines = []
         for record in in_result:
             nlabels = [l for l in record["neighbor_labels"] if l != "Node"]
-            in_lines.append(f"  <- [{record['neighbor_tag']}] ({', '.join(nlabels)}) via {record['rel_type']}")
+            in_lines.append(
+                f"  <- [{record['neighbor_tag']}] ({', '.join(nlabels)}) via {record['rel_type']}"
+            )
 
         incoming = "\n".join(in_lines) if in_lines else "  (none)"
         outgoing = "\n".join(out_lines) if out_lines else "  (none)"
         return incoming, outgoing
 
 
-def _write_semantics(driver: Driver, element_id: str, global_sem: str, local_sem: str) -> None:
+def _write_semantics(
+    driver: Driver, element_id: str, global_sem: str, local_sem: str
+) -> None:
     """Write semantic descriptions back onto a node."""
     with driver.session() as session:
         session.run(
@@ -131,7 +140,9 @@ def _write_semantics(driver: Driver, element_id: str, global_sem: str, local_sem
             SET n.global_semantic = $global_sem,
                 n.local_semantic = $local_sem
             """,
-            eid=element_id, global_sem=global_sem, local_sem=local_sem,
+            eid=element_id,
+            global_sem=global_sem,
+            local_sem=local_sem,
         )
 
 
@@ -170,7 +181,11 @@ def enrich_all_nodes(
         props = node["properties"]
 
         if verbose:
-            print(f"  [{i+1}/{len(nodes)}] {tag} ({', '.join(labels)})...", end=" ", flush=True)
+            print(
+                f"  [{i + 1}/{len(nodes)}] {tag} ({', '.join(labels)})...",
+                end=" ",
+                flush=True,
+            )
 
         try:
             # Global semantic
@@ -197,12 +212,14 @@ def enrich_all_nodes(
             # Write back to Neo4j
             _write_semantics(driver, node["element_id"], global_sem, local_sem)
 
-            results.append(NodeSemantics(
-                element_id=node["element_id"],
-                tag=tag,
-                global_semantic=global_sem,
-                local_semantic=local_sem,
-            ))
+            results.append(
+                NodeSemantics(
+                    element_id=node["element_id"],
+                    tag=tag,
+                    global_semantic=global_sem,
+                    local_semantic=local_sem,
+                )
+            )
 
             if verbose:
                 print(f"OK ({len(global_sem)} + {len(local_sem)} chars)")
@@ -210,18 +227,24 @@ def enrich_all_nodes(
         except Exception as exc:
             if verbose:
                 print(f"ERROR: {exc!s:.100}")
-            results.append(NodeSemantics(
-                element_id=node["element_id"],
-                tag=tag,
-                global_semantic="",
-                local_semantic=f"ERROR: {exc}",
-            ))
+            results.append(
+                NodeSemantics(
+                    element_id=node["element_id"],
+                    tag=tag,
+                    global_semantic="",
+                    local_semantic=f"ERROR: {exc}",
+                )
+            )
 
         if delay > 0:
             time.sleep(delay)
 
     if verbose:
-        ok = sum(1 for r in results if r.global_semantic and not r.local_semantic.startswith("ERROR"))
+        ok = sum(
+            1
+            for r in results
+            if r.global_semantic and not r.local_semantic.startswith("ERROR")
+        )
         print(f"Done: {ok}/{len(nodes)} nodes enriched successfully")
 
     return results

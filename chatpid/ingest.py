@@ -29,7 +29,6 @@ from pydexpi.loaders import GraphAbstractor, GraphLoader, ProteusSerializer
 
 from chatpid.config import get_settings
 
-
 # --- Step 1: DEXPI/Proteus XML -> pyDEXPI model -----------------------------
 
 
@@ -100,7 +99,9 @@ def clear_level(driver: Driver, level: str, document_id: str = "default") -> Non
         )
 
 
-def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str, document_id: str = "default") -> None:
+def load_graph(
+    driver: Driver, graph: nx.MultiDiGraph, level: str, document_id: str = "default"
+) -> None:
     """Merge a NetworkX graph into Neo4j under the given abstraction level.
 
     Re-running this for the same `level` + `document_id` first clears prior data
@@ -151,7 +152,8 @@ def load_graph(driver: Driver, graph: nx.MultiDiGraph, level: str, document_id: 
             props["document_id"] = document_id
             # Compute a human-readable tag from the first available identifier
             props["tag"] = next(
-                (str(data[f]) for f in TAG_FIELDS if data.get(f)), data.get("label") or "Node"
+                (str(data[f]) for f in TAG_FIELDS if data.get(f)),
+                data.get("label") or "Node",
             )
             session.run(
                 f"MERGE (n:{label_str} {{element_id: $element_id, level: $level, document_id: $document_id}}) "

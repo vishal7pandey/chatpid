@@ -64,24 +64,41 @@ Instructions:
 
 def run_all_tools_parallel(driver, question: str) -> dict[str, dict]:
     """Run all 4 GraphRAG tools in parallel. Returns tool_name -> {context, error, elapsed}."""
+
     def _call_tool(name: str, fn):
         t0 = time.time()
         try:
             ctx = fn()
-            return {"context": ctx, "error": None, "elapsed": round(time.time() - t0, 2), "tokens": len(ctx) // 4}
+            return {
+                "context": ctx,
+                "error": None,
+                "elapsed": round(time.time() - t0, 2),
+                "tokens": len(ctx) // 4,
+            }
         except Exception as e:
-            return {"context": "", "error": str(e)[:200], "elapsed": round(time.time() - t0, 2), "tokens": 0}
+            return {
+                "context": "",
+                "error": str(e)[:200],
+                "elapsed": round(time.time() - t0, 2),
+                "tokens": 0,
+            }
 
     tools = {
         "ContextRAG": lambda: context_rag(driver, level=LEVEL, mode="graph"),
-        "VectorRAG": lambda: vector_rag_text(driver, question, index="global_semantic_index", top_k=5, level=LEVEL),
-        "PathRAG": lambda: path_rag_text(driver, question, level=LEVEL, max_depth=3, max_breadth=2),
+        "VectorRAG": lambda: vector_rag_text(
+            driver, question, index="global_semantic_index", top_k=5, level=LEVEL
+        ),
+        "PathRAG": lambda: path_rag_text(
+            driver, question, level=LEVEL, max_depth=3, max_breadth=2
+        ),
         "CypherRAG": lambda: cypher_rag_text(driver, question, level=LEVEL),
     }
 
     results = {}
     with ThreadPoolExecutor(max_workers=4) as executor:
-        futures = {executor.submit(_call_tool, name, fn): name for name, fn in tools.items()}
+        futures = {
+            executor.submit(_call_tool, name, fn): name for name, fn in tools.items()
+        }
         for future in as_completed(futures):
             name = futures[future]
             results[name] = future.result()
@@ -99,7 +116,9 @@ def synthesize_answer(llm, question: str, tool_results: dict) -> tuple[str, dict
         if err:
             tool_parts.append(f"--- {name} (ERROR: {err}) ---\n[no data]")
         elif ctx:
-            tool_parts.append(f"--- {name} ({result['tokens']} tokens, {result['elapsed']}s) ---\n{ctx[:8000]}")
+            tool_parts.append(
+                f"--- {name} ({result['tokens']} tokens, {result['elapsed']}s) ---\n{ctx[:8000]}"
+            )
         else:
             tool_parts.append(f"--- {name} (empty) ---\n[no data]")
 
@@ -107,7 +126,9 @@ def synthesize_answer(llm, question: str, tool_results: dict) -> tuple[str, dict
     prompt = SUPERVISOR_PROMPT.format(tool_outputs=tool_outputs, question=question)
 
     messages = [
-        SystemMessage(content="You are ChatP&ID Supervisor, coordinating multiple retrieval tools."),
+        SystemMessage(
+            content="You are ChatP&ID Supervisor, coordinating multiple retrieval tools."
+        ),
         HumanMessage(content=prompt),
     ]
 
@@ -122,7 +143,9 @@ def synthesize_answer(llm, question: str, tool_results: dict) -> tuple[str, dict
     tt = usage.get("total_tokens", 0)
 
     return answer, {
-        "prompt_tokens": pt, "completion_tokens": ct, "total_tokens": tt,
+        "prompt_tokens": pt,
+        "completion_tokens": ct,
+        "total_tokens": tt,
         "latency": round(elapsed, 2),
     }
 
@@ -133,7 +156,7 @@ def main() -> None:
     parser.add_argument("--delay", type=float, default=1.0)
     args = parser.parse_args()
 
-    questions = BENCHMARK_QUESTIONS[:args.limit] if args.limit else BENCHMARK_QUESTIONS
+    questions = BENCHMARK_QUESTIONS[: args.limit] if args.limit else BENCHMARK_QUESTIONS
     driver = get_driver()
     llm = get_llm(temperature=0)  # supervisor LLM
 
@@ -158,7 +181,9 @@ def main() -> None:
             # Step 2: Supervisor synthesizes answer
             print("  Supervisor synthesizing...", end=" ", flush=True)
             answer, usage = synthesize_answer(llm, q["question"], tool_results)
-            cost = estimate_cost("gpt-4o-mini", usage["prompt_tokens"], usage["completion_tokens"])
+            cost = estimate_cost(
+                "gpt-4o-mini", usage["prompt_tokens"], usage["completion_tokens"]
+            )
 
             print(f"{usage['total_tokens']} tok, ${cost:.6f}, {usage['latency']}s")
             print(f"  Answer: {answer[:120]}...")
@@ -181,7 +206,11 @@ def main() -> None:
                 "fanout_seconds": round(fanout_time, 2),
                 "synthesis_seconds": usage["latency"],
                 "tool_results": {
-                    name: {"tokens": r["tokens"], "elapsed": r["elapsed"], "error": r["error"]}
+                    name: {
+                        "tokens": r["tokens"],
+                        "elapsed": r["elapsed"],
+                        "error": r["error"],
+                    }
                     for name, r in tool_results.items()
                 },
             }
@@ -191,7 +220,9 @@ def main() -> None:
             RESULTS_DIR.mkdir(exist_ok=True)
             timestamp = "latest"
             outpath = RESULTS_DIR / f"supervisor_benchmark_{timestamp}.json"
-            outpath.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+            outpath.write_text(
+                json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8"
+            )
 
             if args.delay > 0:
                 time.sleep(args.delay)
@@ -199,9 +230,9 @@ def main() -> None:
         driver.close()
 
     # Summary
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print("SUPERVISOR SPIKE SUMMARY")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
     n = len(results)
     total_cost = sum(r["cost_usd"] for r in results)
     total_tokens = sum(r["tokens"]["total_tokens"] for r in results)
@@ -210,23 +241,30 @@ def main() -> None:
     avg_total = sum(r["latency_seconds"] for r in results) / n
 
     print(f"  Questions: {n}")
-    print(f"  Total cost: ${total_cost:.4f} (${total_cost/n:.6f}/Q)")
-    print(f"  Total tokens: {total_tokens:,} ({total_tokens/n:,.0f}/Q)")
+    print(f"  Total cost: ${total_cost:.4f} (${total_cost / n:.6f}/Q)")
+    print(f"  Total tokens: {total_tokens:,} ({total_tokens / n:,.0f}/Q)")
     print(f"  Avg fanout time: {avg_fanout:.1f}s")
     print(f"  Avg synthesis time: {avg_synth:.1f}s")
     print(f"  Avg total latency: {avg_total:.1f}s")
 
     # Tool usage stats
-    print(f"\n  Tool availability (non-error):")
+    print("\n  Tool availability (non-error):")
     for tool_name in ["ContextRAG", "VectorRAG", "PathRAG", "CypherRAG"]:
-        success = sum(1 for r in results if not r["tool_results"].get(tool_name, {}).get("error"))
-        avg_tok = sum(r["tool_results"].get(tool_name, {}).get("tokens", 0) for r in results) / n
+        success = sum(
+            1 for r in results if not r["tool_results"].get(tool_name, {}).get("error")
+        )
+        avg_tok = (
+            sum(r["tool_results"].get(tool_name, {}).get("tokens", 0) for r in results)
+            / n
+        )
         print(f"    {tool_name}: {success}/{n} succeeded, avg {avg_tok:.0f} tokens")
 
     # Save final
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"supervisor_benchmark_{timestamp}.json"
-    outpath.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\nResults saved to: {outpath}")
 
 
