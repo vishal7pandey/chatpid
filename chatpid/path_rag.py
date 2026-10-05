@@ -19,9 +19,12 @@ The paper uses max_breadth=2, max_depth=3 for the small DEXPI P&ID.
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 
 from neo4j import Driver
+
+logger = logging.getLogger(__name__)
 
 # --- Text-based similarity (stand-in for VectorRAG) ---
 
