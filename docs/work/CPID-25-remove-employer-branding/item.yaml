@@ -1,0 +1,19 @@
+id: CPID-25
+type: feature
+title: Remove employer branding
+slug: remove-employer-branding
+status: in-review
+risk: low
+jira: CPID-25
+branch: feature/cpid-25-remove-employer-branding
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+    delegated: true
+pr: null
