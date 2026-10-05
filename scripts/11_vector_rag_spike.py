@@ -37,7 +37,9 @@ TEST_QUERIES = [
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--level", default="conceptual", choices=["complete", "process", "conceptual"])
+    parser.add_argument(
+        "--level", default="conceptual", choices=["complete", "process", "conceptual"]
+    )
     parser.add_argument("--top-k", type=int, default=5)
     args = parser.parse_args()
 
@@ -65,7 +67,13 @@ def main() -> None:
 
     for query in TEST_QUERIES:
         print(f"\nQuery: {query}")
-        text = vector_rag_text(driver, query, index="global_semantic_index", top_k=args.top_k, level=args.level)
+        text = vector_rag_text(
+            driver,
+            query,
+            index="global_semantic_index",
+            top_k=args.top_k,
+            level=args.level,
+        )
         print(text)
 
     # Step 4: Test with local index
@@ -75,7 +83,13 @@ def main() -> None:
 
     for query in TEST_QUERIES[:4]:  # fewer queries for local index
         print(f"\nQuery: {query}")
-        text = vector_rag_text(driver, query, index="local_semantic_index", top_k=args.top_k, level=args.level)
+        text = vector_rag_text(
+            driver,
+            query,
+            index="local_semantic_index",
+            top_k=args.top_k,
+            level=args.level,
+        )
         print(text)
 
     driver.close()

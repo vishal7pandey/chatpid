@@ -33,3 +33,14 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["chatpid"]
+
+[tool.ruff]
+# .factory/ holds the factory kit's managed, hash-tracked files (verify.py etc.); never lint or reformat them here.
+extend-exclude = [".factory"]
+
+[tool.ruff.lint]
+# BLE001 (blind except) is ignored on purpose: every `except Exception` here is a boundary that must turn a failure
+# into a result instead of crashing a long run: agent tool wrapper (agent.py), CypherRAG retry/fallback chain
+# (cypher_rag.py), per-question/per-node loops in eval.py, semantic_enrichment.py and the benchmark scripts, and
+# the HTTP handlers in api.py. Narrowing them would need the exception types of three LLM SDKs plus Neo4j.
+ignore = ["BLE001"]

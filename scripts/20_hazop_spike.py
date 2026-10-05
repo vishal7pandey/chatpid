@@ -93,7 +93,7 @@ def main() -> None:
     print("\n[1/4] ContextRAG — full graph context...", end=" ", flush=True)
     t0 = time.time()
     graph_context = context_rag(driver, level=LEVEL, mode="graph")
-    print(f"{len(graph_context)//4} tokens, {time.time()-t0:.1f}s")
+    print(f"{len(graph_context) // 4} tokens, {time.time() - t0:.1f}s")
 
     # Step 2: Get equipment specs via CypherRAG
     print("[2/4] CypherRAG — equipment specs...", end=" ", flush=True)
@@ -104,7 +104,7 @@ def main() -> None:
         "design temperature, and other key specifications",
         level=LEVEL,
     )
-    print(f"{len(equipment_specs)//4} tokens, {time.time()-t0:.1f}s")
+    print(f"{len(equipment_specs) // 4} tokens, {time.time() - t0:.1f}s")
 
     # Step 3: Get flow paths via PathRAG
     print("[3/4] PathRAG — flow paths...", end=" ", flush=True)
@@ -116,7 +116,7 @@ def main() -> None:
         max_depth=5,
         max_breadth=3,
     )
-    print(f"{len(flow_paths)//4} tokens, {time.time()-t0:.1f}s")
+    print(f"{len(flow_paths) // 4} tokens, {time.time() - t0:.1f}s")
 
     # Step 4: Get safety-critical equipment
     print("[4/4] CypherRAG — safety equipment...", end=" ", flush=True)
@@ -127,7 +127,7 @@ def main() -> None:
         "and locations in the flow path",
         level=LEVEL,
     )
-    print(f"{len(safety_equipment)//4} tokens, {time.time()-t0:.1f}s")
+    print(f"{len(safety_equipment) // 4} tokens, {time.time() - t0:.1f}s")
 
     # Step 5: Synthesize HAZOP analysis
     print("\n[5/5] LLM synthesizing HAZOP analysis...", end=" ", flush=True)
@@ -139,7 +139,9 @@ def main() -> None:
     )
 
     messages = [
-        SystemMessage(content="You are a process safety engineer performing HAZOP analysis."),
+        SystemMessage(
+            content="You are a process safety engineer performing HAZOP analysis."
+        ),
         HumanMessage(content=prompt),
     ]
 
@@ -183,7 +185,9 @@ def main() -> None:
     RESULTS_DIR.mkdir(exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"hazop_analysis_{timestamp}.json"
-    outpath.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\nResults saved to: {outpath}")
 
     driver.close()

@@ -30,7 +30,7 @@ def main() -> None:
     args = parser.parse_args()
 
     driver = get_driver()
-    questions = BENCHMARK_QUESTIONS[:args.limit] if args.limit else BENCHMARK_QUESTIONS
+    questions = BENCHMARK_QUESTIONS[: args.limit] if args.limit else BENCHMARK_QUESTIONS
     results = []
 
     print(f"CypherRAG end-to-end: {len(questions)} questions")
@@ -79,7 +79,7 @@ def main() -> None:
             time.sleep(args.delay)
 
     # Summary
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"CYPHERRAG E2E SUMMARY ({len(results)} questions)")
     ok = sum(1 for r in results if not r["agent_answer"].startswith("ERROR"))
     print(f"  Success: {ok}/{len(results)}")
@@ -90,7 +90,9 @@ def main() -> None:
     RESULTS_DIR.mkdir(exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"cypherrag_e2e_{timestamp}.json"
-    outpath.write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"  Results saved to: {outpath}")
 
     driver.close()

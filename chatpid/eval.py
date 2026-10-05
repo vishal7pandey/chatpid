@@ -79,7 +79,11 @@ def extract_tools_used(result: dict) -> list[str]:
         tool_calls = getattr(msg, "tool_calls", None)
         if tool_calls:
             for tc in tool_calls:
-                name = tc.get("name", "?") if isinstance(tc, dict) else getattr(tc, "name", "?")
+                name = (
+                    tc.get("name", "?")
+                    if isinstance(tc, dict)
+                    else getattr(tc, "name", "?")
+                )
                 if name not in tools:
                     tools.append(name)
     return tools
@@ -146,10 +150,16 @@ def run_benchmark(
                     "tools_used": tools_used,
                 }
                 results.append(entry)
-                safe_ans = str(answer)[:120].encode(sys.stdout.encoding or 'utf-8', errors='replace').decode(sys.stdout.encoding or 'utf-8', errors='replace')
+                safe_ans = (
+                    str(answer)[:120]
+                    .encode(sys.stdout.encoding or "utf-8", errors="replace")
+                    .decode(sys.stdout.encoding or "utf-8", errors="replace")
+                )
                 print(f"  Answer: {safe_ans}...")
                 print(f"  Tools: {tools_used}")
-                print(f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
+                print(
+                    f"  Tokens: {usage['total_tokens']} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s"
+                )
             except Exception as exc:
                 # Save partial result with error info so we can resume later
                 entry = {
@@ -160,7 +170,11 @@ def run_benchmark(
                     "agent_answer": f"ERROR: {type(exc).__name__}: {exc!s:.200}",
                     "model": settings.chat_model,
                     "level": level,
-                    "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+                    "tokens": {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                    },
                     "cost_usd": 0.0,
                     "latency_seconds": 0.0,
                     "tools_used": [],
@@ -187,7 +201,7 @@ def print_summary(results: list[dict], level: str = "") -> None:
     total_tokens = sum(r["tokens"]["total_tokens"] for r in results)
     avg_latency = sum(r["latency_seconds"] for r in results) / len(results)
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"BENCHMARK SUMMARY ({len(results)} questions, level={level})")
     print(f"  Total cost: ${total_cost:.4f}")
     print(f"  Total tokens: {total_tokens:,}")
@@ -204,7 +218,7 @@ def print_summary(results: list[dict], level: str = "") -> None:
         categories[cat]["cost"] += r["cost_usd"]
         categories[cat]["tokens"] += r["tokens"]["total_tokens"]
 
-    print(f"\n  Per-category:")
+    print("\n  Per-category:")
     for cat, stats in sorted(categories.items()):
         print(
             f"    {cat}: {stats['count']} Qs, "
@@ -218,7 +232,7 @@ def print_summary(results: list[dict], level: str = "") -> None:
         for t in r.get("tools_used", []):
             tool_counts[t] = tool_counts.get(t, 0) + 1
     if tool_counts:
-        print(f"\n  Tool usage (SCRUM-409):")
+        print("\n  Tool usage (SCRUM-409):")
         for tool, count in sorted(tool_counts.items(), key=lambda x: -x[1]):
             print(f"    {tool}: {count}/{len(results)} questions")
         unique = len(tool_counts)

@@ -10,22 +10,26 @@ Run:
 
 from __future__ import annotations
 
+import tempfile
 import threading
 import time
-from typing import Any
-
-import tempfile
 import uuid
 from pathlib import Path
+from typing import Any
 
 from fastapi import FastAPI, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-
-from chatpid.agent import build_agent
-from chatpid.ingest import build_graph_abstractions, get_driver, load_dexpi_model, load_graph
 from pydexpi.loaders import ProteusSerializer
 from pydexpi.loaders.svg_loader import DrawDiagram
+
+from chatpid.agent import build_agent
+from chatpid.ingest import (
+    build_graph_abstractions,
+    get_driver,
+    load_dexpi_model,
+    load_graph,
+)
 
 app = FastAPI(title="ChatP&ID API", version="0.1.0")
 
@@ -68,10 +72,12 @@ def _extract_tool_usage(messages: list) -> list[dict]:
         tool_calls = getattr(msg, "tool_calls", None)
         if tool_calls:
             for tc in tool_calls:
-                tools_used.append({
-                    "name": tc.get("name", "?"),
-                    "args": tc.get("args", {}),
-                })
+                tools_used.append(
+                    {
+                        "name": tc.get("name", "?"),
+                        "args": tc.get("args", {}),
+                    }
+                )
     return tools_used
 
 
@@ -97,19 +103,36 @@ def _extract_touched_nodes(messages: list) -> list[str]:
             content = msg.content if isinstance(msg.content, str) else str(msg.content)
             # Look for tag patterns like T4750, P4711, H1007, 66KL21, SV 104.01, C1-C4
             import re
-            tags = re.findall(r'\b[TPHV]\d{3,5}\b|\b\d{2}[A-Z]{2}\d{2}\b|\bSV\s?\d+\.\d+\b|\bC[1-9]\b', content)
+
+            tags = re.findall(
+                r"\b[TPHV]\d{3,5}\b|\b\d{2}[A-Z]{2}\d{2}\b|\bSV\s?\d+\.\d+\b|\bC[1-9]\b",
+                content,
+            )
             touched.update(tags)
     return list(touched)
 
 
 GENERIC_LABELS = {
-    "Node", "CustomAttributeOwner", "TechnicalItem", "PipingNodeOwner",
-    "PipingSourceItem", "PipingTargetItem", "PipingNetworkSegmentItem",
-    "PipingComponent", "SensingLocation", "SignalConveyingFunctionSource",
-    "SignalConveyingFunctionTarget", "PlantSystemLocatedStructure",
-    "PlantAreaLocatedStructure", "PlantTrainLocatedStructure",
-    "ChamberOwner", "TaggedPlantItem", "NozzleOwner", "Equipment",
-    "PipeFitting", "PipeOffPageConnector"
+    "Node",
+    "CustomAttributeOwner",
+    "TechnicalItem",
+    "PipingNodeOwner",
+    "PipingSourceItem",
+    "PipingTargetItem",
+    "PipingNetworkSegmentItem",
+    "PipingComponent",
+    "SensingLocation",
+    "SignalConveyingFunctionSource",
+    "SignalConveyingFunctionTarget",
+    "PlantSystemLocatedStructure",
+    "PlantAreaLocatedStructure",
+    "PlantTrainLocatedStructure",
+    "ChamberOwner",
+    "TaggedPlantItem",
+    "NozzleOwner",
+    "Equipment",
+    "PipeFitting",
+    "PipeOffPageConnector",
 }
 
 
@@ -120,6 +143,7 @@ def _select_primary_label(labels: list[str]) -> str:
 
 
 # --- Request/Response models ---
+
 
 class AskRequest(BaseModel):
     question: str
@@ -156,6 +180,7 @@ class GraphResponse(BaseModel):
 
 # --- Endpoints ---
 
+
 @app.post("/ask", response_model=AskResponse)
 def ask(req: AskRequest) -> AskResponse:
     """Ask the ChatP&ID agent a question."""
@@ -170,7 +195,11 @@ def ask(req: AskRequest) -> AskResponse:
     if req.level:
         context_prefixes.append(f"[Graph abstraction level: {req.level}]")
 
-    prompt_content = f"{' '.join(context_prefixes)} {req.question}" if context_prefixes else req.question
+    prompt_content = (
+        f"{' '.join(context_prefixes)} {req.question}"
+        if context_prefixes
+        else req.question
+    )
 
     t0 = time.time()
     result = agent.invoke(
@@ -200,7 +229,9 @@ def ask(req: AskRequest) -> AskResponse:
 
 
 @app.get("/graph", response_model=GraphResponse)
-def get_graph(level: str = "conceptual", limit: int = 200, document_id: str = "") -> GraphResponse:
+def get_graph(
+    level: str = "conceptual", limit: int = 200, document_id: str = ""
+) -> GraphResponse:
     """Return node/edge data for graph visualization.
 
     If the /ask endpoint was called recently, highlights nodes touched by
@@ -231,7 +262,9 @@ def get_graph(level: str = "conceptual", limit: int = 200, document_id: str = ""
                        n.name AS name,
                        properties(n) AS props
             """
-        node_result = session.run(node_query, level=level, limit=limit, document_id=document_id or None)
+        node_result = session.run(
+            node_query, level=level, limit=limit, document_id=document_id or None
+        )
 
         nodes = []
         node_ids = []
@@ -246,12 +279,14 @@ def get_graph(level: str = "conceptual", limit: int = 200, document_id: str = ""
             props.pop("embedding", None)
             props.pop("level", None)
 
-            nodes.append(GraphNode(
-                id=node_id,
-                label=_select_primary_label(labels),
-                tags=[tag] if tag else [],
-                properties={"name": name, **props} if name else props,
-            ))
+            nodes.append(
+                GraphNode(
+                    id=node_id,
+                    label=_select_primary_label(labels),
+                    tags=[tag] if tag else [],
+                    properties={"name": name, **props} if name else props,
+                )
+            )
 
         # Get edges between those nodes
         edge_result = session.run(
@@ -291,7 +326,9 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
     unique document_id so multiple documents can coexist.
     """
     if not file.filename or not file.filename.endswith(".xml"):
-        raise HTTPException(status_code=400, detail="File must be a .xml (DEXPI/Proteus) file")
+        raise HTTPException(
+            status_code=400, detail="File must be a .xml (DEXPI/Proteus) file"
+        )
 
     _, driver = _ensure_agent()
     document_id = str(uuid.uuid4())[:8]
@@ -304,14 +341,19 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
         try:
             model = load_dexpi_model(tmpdir, file.filename)
         except Exception as exc:
-            raise HTTPException(status_code=400, detail=f"Failed to parse DEXPI file: {exc}")
+            raise HTTPException(
+                status_code=400, detail=f"Failed to parse DEXPI file: {exc}"
+            )
 
         graphs = build_graph_abstractions(model)
         levels_info = {}
         for level in ("complete", "process", "conceptual"):
             g = getattr(graphs, level)
             load_graph(driver, g, level, document_id=document_id)
-            levels_info[level] = {"nodes": g.number_of_nodes(), "edges": g.number_of_edges()}
+            levels_info[level] = {
+                "nodes": g.number_of_nodes(),
+                "edges": g.number_of_edges(),
+            }
 
     return IngestResponse(document_id=document_id, levels=levels_info)
 
@@ -329,6 +371,7 @@ def get_pid_svg(filename: str = "") -> Any:
     with proper coordinate conversion (DEXPI Y-up → SVG Y-down).
     """
     import os
+
     from fastapi import Response
 
     search_dirs = ["data/dexpi_real", "data/raw"]
@@ -358,8 +401,8 @@ def get_pid_svg(filename: str = "") -> Any:
 @app.get("/pid/files")
 def list_pid_files() -> dict:
     """List available DEXPI P&ID files that can be rendered."""
-    import os
     import glob
+    import os
 
     files = []
     seen = set()
@@ -369,10 +412,12 @@ def list_pid_files() -> dict:
                 filename = os.path.basename(f)
                 if filename not in seen:
                     seen.add(filename)
-                    files.append({
-                        "filename": filename,
-                        "directory": d,
-                    })
+                    files.append(
+                        {
+                            "filename": filename,
+                            "directory": d,
+                        }
+                    )
     return {"files": files}
 
 

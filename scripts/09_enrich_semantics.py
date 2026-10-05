@@ -24,8 +24,12 @@ RESULTS_DIR = Path(__file__).resolve().parent.parent / "data"
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--level", default="conceptual", choices=["complete", "process", "conceptual"])
-    parser.add_argument("--delay", type=float, default=0.5, help="Delay between LLM calls (seconds)")
+    parser.add_argument(
+        "--level", default="conceptual", choices=["complete", "process", "conceptual"]
+    )
+    parser.add_argument(
+        "--delay", type=float, default=0.5, help="Delay between LLM calls (seconds)"
+    )
     args = parser.parse_args()
 
     driver = get_driver()
@@ -43,7 +47,12 @@ def main() -> None:
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"semantic_enrichment_{args.level}_{timestamp}.json"
     data = [
-        {"element_id": r.element_id, "tag": r.tag, "global_semantic": r.global_semantic, "local_semantic": r.local_semantic}
+        {
+            "element_id": r.element_id,
+            "tag": r.tag,
+            "global_semantic": r.global_semantic,
+            "local_semantic": r.local_semantic,
+        }
         for r in results
     ]
     outpath.write_text(json.dumps(data, indent=2, ensure_ascii=False), encoding="utf-8")

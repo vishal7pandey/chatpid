@@ -70,7 +70,9 @@ def run_benchmark(level_name: str, questions: list[dict], delay: float) -> list[
             print(f"  [Q{q['id']:02d}] {q['question'][:50]}...", end=" ", flush=True)
             try:
                 messages = [
-                    SystemMessage(content=DIRECT_SYSTEM_PROMPT.format(graph_context=graph_context)),
+                    SystemMessage(
+                        content=DIRECT_SYSTEM_PROMPT.format(graph_context=graph_context)
+                    ),
                     HumanMessage(content=q["question"]),
                 ]
                 start = time.time()
@@ -84,24 +86,45 @@ def run_benchmark(level_name: str, questions: list[dict], delay: float) -> list[
                 tt = usage.get("total_tokens", 0)
                 cost = estimate_cost("gpt-4o-mini", pt, ct)
 
-                results.append({
-                    "id": q["id"], "category": q["category"],
-                    "question": q["question"], "reference_answer": q["reference_answer"],
-                    "agent_answer": answer, "level": level_name,
-                    "tokens": {"prompt_tokens": pt, "completion_tokens": ct, "total_tokens": tt},
-                    "cost_usd": round(cost, 6), "latency_seconds": round(elapsed, 2),
-                    "context_tokens": ctx_tokens,
-                })
+                results.append(
+                    {
+                        "id": q["id"],
+                        "category": q["category"],
+                        "question": q["question"],
+                        "reference_answer": q["reference_answer"],
+                        "agent_answer": answer,
+                        "level": level_name,
+                        "tokens": {
+                            "prompt_tokens": pt,
+                            "completion_tokens": ct,
+                            "total_tokens": tt,
+                        },
+                        "cost_usd": round(cost, 6),
+                        "latency_seconds": round(elapsed, 2),
+                        "context_tokens": ctx_tokens,
+                    }
+                )
                 print(f"{tt} tok, ${cost:.6f}, {elapsed:.1f}s")
             except Exception as exc:
-                results.append({
-                    "id": q["id"], "category": q["category"],
-                    "question": q["question"], "reference_answer": q["reference_answer"],
-                    "agent_answer": f"ERROR: {exc!s:.200}", "level": level_name,
-                    "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-                    "cost_usd": 0.0, "latency_seconds": 0.0, "context_tokens": ctx_tokens,
-                    "error": str(exc),
-                })
+                results.append(
+                    {
+                        "id": q["id"],
+                        "category": q["category"],
+                        "question": q["question"],
+                        "reference_answer": q["reference_answer"],
+                        "agent_answer": f"ERROR: {exc!s:.200}",
+                        "level": level_name,
+                        "tokens": {
+                            "prompt_tokens": 0,
+                            "completion_tokens": 0,
+                            "total_tokens": 0,
+                        },
+                        "cost_usd": 0.0,
+                        "latency_seconds": 0.0,
+                        "context_tokens": ctx_tokens,
+                        "error": str(exc),
+                    }
+                )
                 print(f"ERROR: {exc!s:.100}")
 
             if delay > 0:
@@ -118,17 +141,21 @@ def main() -> None:
     parser.add_argument("--delay", type=float, default=1.0)
     args = parser.parse_args()
 
-    questions = BENCHMARK_QUESTIONS[:args.limit] if args.limit else BENCHMARK_QUESTIONS
+    questions = BENCHMARK_QUESTIONS[: args.limit] if args.limit else BENCHMARK_QUESTIONS
     all_results = {}
 
     for graph_label, level_name, expected_nodes in GRAPHS:
-        abstraction = level_name.replace(f"dense_{graph_label.split('x')[0]}x_", "").replace("dense_", "")
+        abstraction = level_name.replace(
+            f"dense_{graph_label.split('x')[0]}x_", ""
+        ).replace("dense_", "")
         if "dense" not in level_name:
             abstraction = level_name
 
-        print(f"\n{'='*60}")
-        print(f"Graph: {graph_label} | Level: {abstraction} ({level_name}, ~{expected_nodes} nodes)")
-        print(f"{'='*60}")
+        print(f"\n{'=' * 60}")
+        print(
+            f"Graph: {graph_label} | Level: {abstraction} ({level_name}, ~{expected_nodes} nodes)"
+        )
+        print(f"{'=' * 60}")
 
         results = run_benchmark(level_name, questions, args.delay)
         all_results[f"{graph_label}_{abstraction}"] = results
@@ -139,14 +166,18 @@ def main() -> None:
         print(f"\n  Summary: {n} Qs, ${total_cost:.4f}, {total_tokens:,} tokens")
 
     # Comparison table
-    print(f"\n{'='*90}")
+    print(f"\n{'=' * 90}")
     print("LEVEL SCALING COMPARISON: Does 'conceptual wins' generalize at scale?")
-    print(f"{'='*90}")
-    print(f"{'Graph':<6} {'Level':<14} {'Nodes':>7} {'Total Cost':>12} {'Cost/Q':>10} {'Tokens/Q':>10} {'Ctx Tok':>8}")
+    print(f"{'=' * 90}")
+    print(
+        f"{'Graph':<6} {'Level':<14} {'Nodes':>7} {'Total Cost':>12} {'Cost/Q':>10} {'Tokens/Q':>10} {'Ctx Tok':>8}"
+    )
     print("-" * 90)
 
     for graph_label, level_name, expected_nodes in GRAPHS:
-        abstraction = level_name.replace(f"dense_{graph_label.split('x')[0]}x_", "").replace("dense_", "")
+        abstraction = level_name.replace(
+            f"dense_{graph_label.split('x')[0]}x_", ""
+        ).replace("dense_", "")
         if "dense" not in level_name:
             abstraction = level_name
 
@@ -162,15 +193,17 @@ def main() -> None:
         err_str = f" ({errors} err)" if errors else ""
         print(
             f"{graph_label:<6} {abstraction:<14} {expected_nodes:>7} "
-            f"${total_cost:>10.4f} ${total_cost/n:>8.6f} "
-            f"{total_tokens/n:>9,.0f} {ctx_tok:>7,}{err_str}"
+            f"${total_cost:>10.4f} ${total_cost / n:>8.6f} "
+            f"{total_tokens / n:>9,.0f} {ctx_tok:>7,}{err_str}"
         )
 
     # Save results
     RESULTS_DIR.mkdir(exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"level_scaling_{timestamp}.json"
-    outpath.write_text(json.dumps(all_results, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(all_results, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\nResults saved to: {outpath}")
 
 
