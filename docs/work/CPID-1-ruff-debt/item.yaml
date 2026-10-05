@@ -2,7 +2,7 @@ id: CPID-1
 type: feature
 title: Clean up ruff lint/format debt, then enforce ruff in CI
 slug: ruff-debt
-status: in-review
+status: done
 risk: medium
 jira: CPID-1
 branch: feature/cpid-1-ruff-debt
