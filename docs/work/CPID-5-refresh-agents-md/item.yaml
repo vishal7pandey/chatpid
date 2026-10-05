@@ -1,0 +1,17 @@
+id: CPID-5
+type: feature
+title: Refresh AGENTS.md - replace the stale Sprint-4 table with a pointer to the CPID board
+slug: refresh-agents-md
+status: in-review
+risk: low
+jira: CPID-5
+branch: feature/cpid-5-refresh-agents-md
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: https://github.com/vishal7pandey/chatpid/pull/5
