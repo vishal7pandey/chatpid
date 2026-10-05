@@ -232,7 +232,7 @@ def print_summary(results: list[dict], level: str = "") -> None:
         for t in r.get("tools_used", []):
             tool_counts[t] = tool_counts.get(t, 0) + 1
     if tool_counts:
-        print("\n  Tool usage (SCRUM-409):")
+        print("\n  Tool usage:")
         for tool, count in sorted(tool_counts.items(), key=lambda x: -x[1]):
             print(f"    {tool}: {count}/{len(results)} questions")
         unique = len(tool_counts)
