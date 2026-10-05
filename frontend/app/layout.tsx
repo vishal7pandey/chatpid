@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 const themeInitScript = `(() => {
   try {
-    const saved = localStorage.getItem('ltts_theme');
+    const saved = localStorage.getItem('chatpid_theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     const isDark = saved === 'dark' || (!saved && prefersDark);
     if (isDark) document.documentElement.classList.add('dark');

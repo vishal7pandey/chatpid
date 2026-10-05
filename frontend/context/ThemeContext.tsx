@@ -22,7 +22,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem('ltts_theme') as Theme | null;
+    const savedTheme = localStorage.getItem('chatpid_theme') as Theme | null;
     if (savedTheme && savedTheme !== theme) {
       setTheme(savedTheme);
       if (savedTheme === 'dark') {
@@ -36,7 +36,7 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   const toggleTheme = () => {
     const nextTheme = theme === 'light' ? 'dark' : 'light';
     setTheme(nextTheme);
-    localStorage.setItem('ltts_theme', nextTheme);
+    localStorage.setItem('chatpid_theme', nextTheme);
     if (nextTheme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
