@@ -4,7 +4,6 @@ __pycache__/
 .env
 .ruff_cache/
 .pytest_cache/
-uv.lock
 
 # Build artifacts
 build/

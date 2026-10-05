@@ -12,7 +12,7 @@ https://vishal7pandey.atlassian.net/wiki/spaces/CPID/pages/16711696. Result file
 
 **Python 3.12+ required.** `pyproject.toml` pins `requires-python = ">=3.12"` and `pydexpi>=1.2`.
 - pydexpi 1.2.0 requires Python >=3.12 (1.1.0 has a different API: `NXGraphLoader.dexpi_to_graph` instead of `GraphLoader.parse_dexpi_to_graph`, and no `GraphAbstractor`).
-- Install with `uv sync --all-extras` (the `dev` extra holds pytest and ruff). `uv.lock` is git-ignored, so uv regenerates it locally.
+- Install with `uv sync --all-extras` (the `dev` extra holds pytest and ruff). `uv.lock` is committed (CPID-23) and CI installs with `uv sync --frozen`; after changing dependencies run `uv lock` and commit the result.
 - If `uv sync` fails with a pydexpi resolution error, ensure a 3.12+ interpreter is available (`uv python list`).
 - Run the tests with `uv run python -m pytest -q` (the venv launcher executables such as `pytest.exe` can be broken on Windows; `python -m` always works).
 
