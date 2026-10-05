@@ -312,6 +312,20 @@ def get_graph(
     )
 
 
+# The upload is always written under this fixed name; the client's filename is only validated, never used
+# as a path (CPID-20).
+UPLOAD_TMP_NAME = "upload.xml"
+
+
+def _is_plain_xml_name(filename: str) -> bool:
+    """True only for a bare `*.xml` file name: no path separators, drive/stream colon, NUL or `..`."""
+    return (
+        filename.lower().endswith(".xml")
+        and ".." not in filename
+        and not any(ch in filename for ch in "/\\:\x00")
+    )
+
+
 class IngestResponse(BaseModel):
     document_id: str
     levels: dict  # level -> {"nodes": int, "edges": int}
@@ -329,21 +343,24 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
         raise HTTPException(
             status_code=400, detail="File must be a .xml (DEXPI/Proteus) file"
         )
+    if not _is_plain_xml_name(file.filename):
+        raise HTTPException(status_code=400, detail="Invalid upload file name")
 
     _, driver = _ensure_agent()
     document_id = str(uuid.uuid4())[:8]
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_path = Path(tmpdir) / file.filename
+        tmp_path = Path(tmpdir) / UPLOAD_TMP_NAME
         content = await file.read()
         tmp_path.write_bytes(content)
 
         try:
-            model = load_dexpi_model(tmpdir, file.filename)
-        except Exception as exc:
+            model = load_dexpi_model(tmpdir, UPLOAD_TMP_NAME)
+        except Exception:
+            # Parser text can carry filesystem paths; the client only gets a generic message.
             raise HTTPException(
-                status_code=400, detail=f"Failed to parse DEXPI file: {exc}"
-            )
+                status_code=400, detail="Failed to parse DEXPI file"
+            ) from None
 
         graphs = build_graph_abstractions(model)
         levels_info = {}
@@ -359,15 +376,6 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
 
 
 PID_SEARCH_DIRS = ("data/dexpi_real", "data/raw")
-
-
-def _is_plain_xml_name(filename: str) -> bool:
-    """True only for a bare `*.xml` file name: no path separators, drive/stream colon, NUL or `..`."""
-    return (
-        filename.lower().endswith(".xml")
-        and ".." not in filename
-        and not any(ch in filename for ch in "/\\:\x00")
-    )
 
 
 def _find_pid_dir(filename: str) -> str | None:

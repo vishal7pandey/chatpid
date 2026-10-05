@@ -440,7 +440,8 @@ def test_ingest_loads_all_three_levels_under_one_new_document_id(
         "process": {"nodes": 2, "edges": 1},
         "conceptual": {"nodes": 1, "edges": 0},
     }
-    assert ingest_fakes["loaded"][0][1] == "plant.xml"
+    # CPID-20: the client's filename is never used as a path; the upload is stored under a fixed name
+    assert ingest_fakes["loaded"][0][1] == api.UPLOAD_TMP_NAME
     assert ingest_fakes["uploaded_bytes"] == b"<Proteus/>"
     assert ingest_fakes["graphs_loaded"] == [
         (driver, 3, "complete", body["document_id"]),
