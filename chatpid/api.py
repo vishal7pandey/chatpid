@@ -11,6 +11,7 @@ Run:
 from __future__ import annotations
 
 import logging
+import os
 import tempfile
 import time
 import uuid
@@ -382,13 +383,16 @@ PID_SEARCH_DIRS = ("data/dexpi_real", "data/raw")
 def _find_pid_dir(filename: str) -> str | None:
     """Return the allowed directory that really contains `filename`, or None.
 
-    The resolved file (symlinks followed) must lie inside the resolved allowed
-    directory, so a symlink pointing outside is not served.
+    The resolved path (symlinks followed) must lie inside the resolved allowed
+    directory BEFORE the filesystem is probed, so neither a traversal nor a
+    symlink pointing outside is stat'ed or served (CPID-34, CPID-35).
     """
     for d in PID_SEARCH_DIRS:
-        base = Path(d).resolve()
-        candidate = (base / filename).resolve()
-        if candidate.is_file() and candidate.is_relative_to(base):
+        base = os.path.realpath(d)
+        candidate = os.path.realpath(os.path.join(base, filename))
+        if not candidate.startswith(base + os.sep):
+            continue
+        if os.path.isfile(candidate):
             return d
     return None
 
