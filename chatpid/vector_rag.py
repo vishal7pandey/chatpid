@@ -23,6 +23,7 @@ def _get_embedder():
     global _embedder
     if _embedder is None:
         from langchain_huggingface import HuggingFaceEmbeddings
+
         settings = get_settings()
         _embedder = HuggingFaceEmbeddings(model_name=settings.embedding_model)
     return _embedder
@@ -115,11 +116,6 @@ def vector_rag(
         level: graph level to filter by
     """
     query_vector = embed_text(query)
-    embedding_prop = (
-        "global_semantic_embedding"
-        if index == "global_semantic_index"
-        else "local_semantic_embedding"
-    )
 
     cypher = """
     CALL db.index.vector.queryNodes($index, $top_k, $query_vector)
@@ -138,7 +134,9 @@ def vector_rag(
         return [
             {
                 "tag": r["tag"],
-                "label": [l for l in (r["labels"] or []) if l != "Node"][0] if r["labels"] else "",
+                "label": next(
+                    (lbl for lbl in (r["labels"] or []) if lbl != "Node"), ""
+                ),
                 "global_semantic": r["global_semantic"],
                 "local_semantic": r["local_semantic"],
                 "score": r["score"],
@@ -162,7 +160,11 @@ def vector_rag_text(
     lines = [f"VectorRAG results (top {len(results)}, index={index}):"]
     for i, r in enumerate(results, 1):
         lines.append(f"\n[{i}] {r['tag']} ({r['label']}) — score: {r['score']:.4f}")
-        sem = r["global_semantic"] if index == "global_semantic_index" else r["local_semantic"]
+        sem = (
+            r["global_semantic"]
+            if index == "global_semantic_index"
+            else r["local_semantic"]
+        )
         if sem:
             lines.append(f"    {sem[:200]}")
     return "\n".join(lines)

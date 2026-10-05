@@ -59,7 +59,9 @@ def run_direct_benchmark(
 
     # Get ContextRAG output once (same graph for all questions)
     graph_context = context_rag(driver, level=level, mode="graph")
-    print(f"ContextRAG output: {len(graph_context)} chars (~{len(graph_context)//4} tokens)")
+    print(
+        f"ContextRAG output: {len(graph_context)} chars (~{len(graph_context) // 4} tokens)"
+    )
 
     llm = get_llm(temperature=0)
 
@@ -109,7 +111,9 @@ def run_direct_benchmark(
                 }
                 results.append(entry)
                 print(f"  Answer: {answer[:120]}...")
-                print(f"  Tokens: {total_tokens} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s")
+                print(
+                    f"  Tokens: {total_tokens} | Cost: ${cost:.6f} | Time: {elapsed:.1f}s"
+                )
             except Exception as exc:
                 entry = {
                     "id": q["id"],
@@ -120,14 +124,22 @@ def run_direct_benchmark(
                     "model": chat_model,
                     "level": level,
                     "mode": "direct",
-                    "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
+                    "tokens": {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                    },
                     "cost_usd": 0.0,
                     "latency_seconds": 0.0,
                     "error": str(exc),
                 }
                 results.append(entry)
                 print(f"  ERROR: {exc!s:.200}")
-                if "rate_limit" in str(exc).lower() or "429" in str(exc) or "413" in str(exc):
+                if (
+                    "rate_limit" in str(exc).lower()
+                    or "429" in str(exc)
+                    or "413" in str(exc)
+                ):
                     print("  Rate limit hit — stopping. Partial results saved.")
                     break
 
@@ -149,7 +161,9 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None)
     parser.add_argument("--delay", type=float, default=5.0)
     parser.add_argument("--model", default=None, help="Override chat model from .env")
-    parser.add_argument("--resume", default=None, help="Resume from previous results JSON")
+    parser.add_argument(
+        "--resume", default=None, help="Resume from previous results JSON"
+    )
     args = parser.parse_args()
 
     previous_results = []
@@ -159,14 +173,21 @@ def main() -> None:
         if resume_path.exists():
             previous_results = json.loads(resume_path.read_text(encoding="utf-8"))
             skip_ids = [
-                r["id"] for r in previous_results if not r.get("agent_answer", "").startswith("ERROR")
+                r["id"]
+                for r in previous_results
+                if not r.get("agent_answer", "").startswith("ERROR")
             ]
-            print(f"Resuming: {len(skip_ids)} completed, {19 - len(skip_ids)} remaining")
+            print(
+                f"Resuming: {len(skip_ids)} completed, {19 - len(skip_ids)} remaining"
+            )
 
     print(f"Direct benchmark: level={args.level}, delay={args.delay}s")
     new_results = run_direct_benchmark(
-        level=args.level, limit=args.limit, delay=args.delay,
-        skip_ids=skip_ids, model=args.model,
+        level=args.level,
+        limit=args.limit,
+        delay=args.delay,
+        skip_ids=skip_ids,
+        model=args.model,
     )
 
     all_results = previous_results + new_results
@@ -179,18 +200,20 @@ def main() -> None:
     valid = [r for r in merged if not r.get("agent_answer", "").startswith("ERROR")]
     total_cost = sum(r["cost_usd"] for r in valid)
     total_tokens = sum(r["tokens"]["total_tokens"] for r in valid)
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"DIRECT BENCHMARK SUMMARY ({len(valid)}/{len(merged)} questions completed)")
     print(f"  Total cost: ${total_cost:.4f}")
     print(f"  Total tokens: {total_tokens:,}")
     if valid:
-        print(f"  Avg cost/question: ${total_cost/len(valid):.6f}")
-        print(f"  Avg tokens/question: {total_tokens/len(valid):,.0f}")
+        print(f"  Avg cost/question: ${total_cost / len(valid):.6f}")
+        print(f"  Avg tokens/question: {total_tokens / len(valid):,.0f}")
 
     RESULTS_DIR.mkdir(exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"direct_benchmark_{args.level}_{timestamp}.json"
-    outpath.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\n  Results saved to: {outpath}")
 
 

@@ -11,7 +11,12 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from chatpid.ingest import build_graph_abstractions, get_driver, load_dexpi_model, load_graph
+from chatpid.ingest import (
+    build_graph_abstractions,
+    get_driver,
+    load_dexpi_model,
+    load_graph,
+)
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 VALID_LEVELS = ("complete", "process", "conceptual")
@@ -29,7 +34,9 @@ def _derive_document_id(filename: str) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--file", default="C01V04-VER.EX01.xml", help="XML filename in data/raw/")
+    parser.add_argument(
+        "--file", default="C01V04-VER.EX01.xml", help="XML filename in data/raw/"
+    )
     parser.add_argument(
         "--levels",
         default="conceptual",
@@ -68,7 +75,7 @@ def main() -> None:
         driver.close()
 
     print(f"Done. document_id={document_id}")
-    print(f'Try: uv run python scripts/ask.py "Describe the process flow."')
+    print('Try: uv run python scripts/ask.py "Describe the process flow."')
 
 
 if __name__ == "__main__":

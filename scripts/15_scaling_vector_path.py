@@ -67,7 +67,9 @@ def retrieve_context(
     if tool == "contextrag":
         ctx = context_rag(driver, level=level, mode="graph")
     elif tool == "vectorrag":
-        ctx = vector_rag_text(driver, question, index="global_semantic_index", top_k=5, level=level)
+        ctx = vector_rag_text(
+            driver, question, index="global_semantic_index", top_k=5, level=level
+        )
     elif tool == "pathrag":
         ctx = path_rag_text(driver, question, level=level, max_depth=3, max_breadth=2)
     else:
@@ -92,7 +94,9 @@ def run_benchmark(
         try:
             # Step 1: Retrieve context
             t0 = time.time()
-            context, ctx_tokens = retrieve_context(driver, tool, q["question"], level_name)
+            context, ctx_tokens = retrieve_context(
+                driver, tool, q["question"], level_name
+            )
             retrieve_time = time.time() - t0
 
             # Step 2: Generate answer
@@ -102,7 +106,10 @@ def run_benchmark(
                 graph_size=graph_label,
                 context=context,
             )
-            messages = [SystemMessage(content="You are ChatP&ID."), HumanMessage(content=prompt)]
+            messages = [
+                SystemMessage(content="You are ChatP&ID."),
+                HumanMessage(content=prompt),
+            ]
             t1 = time.time()
             response = llm.invoke(messages)
             answer_time = time.time() - t1
@@ -114,39 +121,51 @@ def run_benchmark(
             tt = usage.get("total_tokens", 0)
             cost = estimate_cost("gpt-4o-mini", pt, ct)
 
-            results.append({
-                "id": q["id"],
-                "category": q["category"],
-                "question": q["question"],
-                "reference_answer": q["reference_answer"],
-                "agent_answer": answer,
-                "tool": tool,
-                "level": level_name,
-                "graph_size": graph_label,
-                "context_tokens": ctx_tokens,
-                "tokens": {"prompt_tokens": pt, "completion_tokens": ct, "total_tokens": tt},
-                "cost_usd": round(cost, 6),
-                "latency_seconds": round(answer_time, 2),
-                "retrieve_seconds": round(retrieve_time, 2),
-            })
+            results.append(
+                {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": answer,
+                    "tool": tool,
+                    "level": level_name,
+                    "graph_size": graph_label,
+                    "context_tokens": ctx_tokens,
+                    "tokens": {
+                        "prompt_tokens": pt,
+                        "completion_tokens": ct,
+                        "total_tokens": tt,
+                    },
+                    "cost_usd": round(cost, 6),
+                    "latency_seconds": round(answer_time, 2),
+                    "retrieve_seconds": round(retrieve_time, 2),
+                }
+            )
             print(f"{tt} tok, ${cost:.6f}, {answer_time:.1f}s")
         except Exception as exc:
-            results.append({
-                "id": q["id"],
-                "category": q["category"],
-                "question": q["question"],
-                "reference_answer": q["reference_answer"],
-                "agent_answer": f"ERROR: {exc!s:.200}",
-                "tool": tool,
-                "level": level_name,
-                "graph_size": graph_label,
-                "context_tokens": 0,
-                "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-                "cost_usd": 0.0,
-                "latency_seconds": 0.0,
-                "retrieve_seconds": 0.0,
-                "error": str(exc),
-            })
+            results.append(
+                {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": f"ERROR: {exc!s:.200}",
+                    "tool": tool,
+                    "level": level_name,
+                    "graph_size": graph_label,
+                    "context_tokens": 0,
+                    "tokens": {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                    },
+                    "cost_usd": 0.0,
+                    "latency_seconds": 0.0,
+                    "retrieve_seconds": 0.0,
+                    "error": str(exc),
+                }
+            )
             print(f"ERROR: {exc!s:.100}")
 
         if delay > 0:
@@ -157,10 +176,12 @@ def run_benchmark(
 
 def print_comparison_table(all_results: dict) -> None:
     """Print a comparison table across tools and graph sizes."""
-    print(f"\n{'='*90}")
+    print(f"\n{'=' * 90}")
     print("SCALING COMPARISON: VectorRAG vs PathRAG vs ContextRAG")
-    print(f"{'='*90}")
-    print(f"{'Tool':<14} {'Graph':<6} {'Total Cost':>12} {'Cost/Q':>10} {'Tokens/Q':>10} {'Latency/Q':>10} {'Ctx Tokens':>12}")
+    print(f"{'=' * 90}")
+    print(
+        f"{'Tool':<14} {'Graph':<6} {'Total Cost':>12} {'Cost/Q':>10} {'Tokens/Q':>10} {'Latency/Q':>10} {'Ctx Tokens':>12}"
+    )
     print("-" * 90)
 
     for tool in TOOLS:
@@ -179,20 +200,26 @@ def print_comparison_table(all_results: dict) -> None:
             errors = sum(1 for r in results if r.get("error"))
             err_str = f" ({errors} err)" if errors else ""
             print(
-                f"{tool:<14} {label:<6} ${total_cost:>10.4f} ${total_cost/n:>8.6f} "
-                f"{total_tokens/n:>9,.0f} {avg_latency:>8.1f}s {avg_ctx:>10,.0f}{err_str}"
+                f"{tool:<14} {label:<6} ${total_cost:>10.4f} ${total_cost / n:>8.6f} "
+                f"{total_tokens / n:>9,.0f} {avg_latency:>8.1f}s {avg_ctx:>10,.0f}{err_str}"
             )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--limit", type=int, default=None, help="Run only first N questions")
-    parser.add_argument("--delay", type=float, default=1.0, help="Delay between questions (s)")
+    parser.add_argument(
+        "--limit", type=int, default=None, help="Run only first N questions"
+    )
+    parser.add_argument(
+        "--delay", type=float, default=1.0, help="Delay between questions (s)"
+    )
     parser.add_argument("--tool", choices=TOOLS, help="Run only one tool")
-    parser.add_argument("--level", help="Run only one graph level (e.g. dense_3x_conceptual)")
+    parser.add_argument(
+        "--level", help="Run only one graph level (e.g. dense_3x_conceptual)"
+    )
     args = parser.parse_args()
 
-    questions = BENCHMARK_QUESTIONS[:args.limit] if args.limit else BENCHMARK_QUESTIONS
+    questions = BENCHMARK_QUESTIONS[: args.limit] if args.limit else BENCHMARK_QUESTIONS
     tools = [args.tool] if args.tool else TOOLS
     levels = [(l, n) for l, n in LEVELS if not args.level or n == args.level]
 
@@ -202,16 +229,20 @@ def main() -> None:
     try:
         for tool in tools:
             for label, level_name in levels:
-                print(f"\n{'='*60}")
+                print(f"\n{'=' * 60}")
                 print(f"Tool: {tool} | Graph: {label} ({level_name})")
-                print(f"{'='*60}")
-                results = run_benchmark(driver, tool, level_name, label, questions, args.delay)
+                print(f"{'=' * 60}")
+                results = run_benchmark(
+                    driver, tool, level_name, label, questions, args.delay
+                )
                 all_results[f"{tool}_{label}"] = results
 
                 n = len(results)
                 total_cost = sum(r["cost_usd"] for r in results)
                 total_tokens = sum(r["tokens"]["total_tokens"] for r in results)
-                print(f"\n  Summary: {n} Qs, ${total_cost:.4f}, {total_tokens:,} tokens")
+                print(
+                    f"\n  Summary: {n} Qs, ${total_cost:.4f}, {total_tokens:,} tokens"
+                )
     finally:
         driver.close()
 
@@ -221,7 +252,9 @@ def main() -> None:
     RESULTS_DIR.mkdir(exist_ok=True)
     timestamp = time.strftime("%Y%m%d_%H%M%S")
     outpath = RESULTS_DIR / f"scaling_vector_path_{timestamp}.json"
-    outpath.write_text(json.dumps(all_results, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(all_results, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\nResults saved to: {outpath}")
 
 

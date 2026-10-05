@@ -15,12 +15,17 @@ Usage:
 from __future__ import annotations
 
 import argparse
+from pathlib import Path
 
 import networkx as nx
 
-from chatpid.ingest import build_graph_abstractions, get_driver, load_dexpi_model, load_graph
+from chatpid.ingest import (
+    build_graph_abstractions,
+    get_driver,
+    load_dexpi_model,
+    load_graph,
+)
 
-from pathlib import Path
 DATA_DIR = Path(__file__).resolve().parent.parent / "data" / "raw"
 
 
@@ -41,9 +46,9 @@ def duplicate_graph(graph: nx.DiGraph, copies: int) -> nx.DiGraph:
             new_id = f"{node_id}{suffix}"
             new_attrs = dict(attrs)
             # Make tags unique
-            if "tag" in new_attrs and new_attrs["tag"]:
+            if new_attrs.get("tag"):
                 new_attrs["tag"] = f"{new_attrs['tag']}{suffix}"
-            if "proteusId" in new_attrs and new_attrs["proteusId"]:
+            if new_attrs.get("proteusId"):
                 new_attrs["proteusId"] = f"{new_attrs['proteusId']}{suffix}"
             combined.add_node(new_id, **new_attrs)
             node_mapping[node_id] = new_id
@@ -59,8 +64,12 @@ def duplicate_graph(graph: nx.DiGraph, copies: int) -> nx.DiGraph:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--copies", type=int, default=3, help="Number of copies")
-    parser.add_argument("--source", default="C01V04-VER.EX01.xml", help="Source XML file")
-    parser.add_argument("--level", default="conceptual", help="Graph level to duplicate and load")
+    parser.add_argument(
+        "--source", default="C01V04-VER.EX01.xml", help="Source XML file"
+    )
+    parser.add_argument(
+        "--level", default="conceptual", help="Graph level to duplicate and load"
+    )
     args = parser.parse_args()
 
     print(f"Loading {args.source} ...")
@@ -70,11 +79,15 @@ def main() -> None:
     graphs = build_graph_abstractions(model)
 
     original = getattr(graphs, args.level)
-    print(f"Original ({args.level}): {original.number_of_nodes()} nodes, {original.number_of_edges()} edges")
+    print(
+        f"Original ({args.level}): {original.number_of_nodes()} nodes, {original.number_of_edges()} edges"
+    )
 
     print(f"Duplicating {args.copies}x ...")
     dense = duplicate_graph(original, args.copies)
-    print(f"Dense ({args.level}): {dense.number_of_nodes()} nodes, {dense.number_of_edges()} edges")
+    print(
+        f"Dense ({args.level}): {dense.number_of_nodes()} nodes, {dense.number_of_edges()} edges"
+    )
 
     # Load to Neo4j with a special level name to avoid clobbering the original
     level_name = f"dense_{args.copies}x_{args.level}"
@@ -87,7 +100,9 @@ def main() -> None:
         driver.close()
 
     print(f"Done. The dense graph is in Neo4j as level='{level_name}'.")
-    print(f"Test with: uv run python scripts/ask.py --level {level_name} \"Describe the process flow.\"")
+    print(
+        f'Test with: uv run python scripts/ask.py --level {level_name} "Describe the process flow."'
+    )
 
 
 if __name__ == "__main__":

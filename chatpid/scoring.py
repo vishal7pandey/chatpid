@@ -65,20 +65,27 @@ def llm_judge_score(question: str, reference_answer: str, agent_answer: str) -> 
     except json.JSONDecodeError:
         # Fallback: try to extract JSON from the response
         import re
-        match = re.search(r'\{.*\}', response, re.DOTALL)
+
+        match = re.search(r"\{.*\}", response, re.DOTALL)
         if match:
             try:
                 scores = json.loads(match.group())
             except json.JSONDecodeError:
                 scores = {
-                    "completeness": 0, "coherence": 0, "correctness": 0,
-                    "relatedness": 0, "verdict": "incorrect",
+                    "completeness": 0,
+                    "coherence": 0,
+                    "correctness": 0,
+                    "relatedness": 0,
+                    "verdict": "incorrect",
                     "explanation": f"Failed to parse judge response: {response[:200]}",
                 }
         else:
             scores = {
-                "completeness": 0, "coherence": 0, "correctness": 0,
-                "relatedness": 0, "verdict": "incorrect",
+                "completeness": 0,
+                "coherence": 0,
+                "correctness": 0,
+                "relatedness": 0,
+                "verdict": "incorrect",
                 "explanation": f"Failed to parse judge response: {response[:200]}",
             }
 
@@ -95,6 +102,7 @@ def _get_semantic_model():
     global _semantic_model
     if _semantic_model is None:
         from sentence_transformers import SentenceTransformer
+
         _semantic_model = SentenceTransformer("all-MiniLM-L6-v2")
     return _semantic_model
 
@@ -121,6 +129,7 @@ def semantic_similarity(reference_answer: str, agent_answer: str) -> float:
 
 # --- Combined scoring ---
 
+
 def score_result(entry: dict) -> dict:
     """Score a single benchmark result entry.
 
@@ -135,8 +144,11 @@ def score_result(entry: dict) -> dict:
         return {
             **entry,
             "llm_judge": {
-                "completeness": 0, "coherence": 0, "correctness": 0,
-                "relatedness": 0, "verdict": "incorrect",
+                "completeness": 0,
+                "coherence": 0,
+                "correctness": 0,
+                "relatedness": 0,
+                "verdict": "incorrect",
                 "explanation": "Agent returned an error",
             },
             "semantic_similarity": 0.0,
@@ -156,7 +168,7 @@ def score_results(results: list[dict]) -> list[dict]:
     """Score a list of benchmark result entries."""
     scored = []
     for i, entry in enumerate(results):
-        print(f"  Scoring Q{entry.get('id', i+1)}...", end=" ", flush=True)
+        print(f"  Scoring Q{entry.get('id', i + 1)}...", end=" ", flush=True)
         scored_entry = score_result(entry)
         scored.append(scored_entry)
         verdict = scored_entry["llm_judge"].get("verdict", "?")
@@ -189,13 +201,13 @@ def print_score_summary(scored: list[dict]) -> None:
     sims = [s.get("semantic_similarity", 0) for s in scored]
     avg_sim = sum(sims) / n
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"EVAL SUMMARY ({n} questions)")
-    print(f"  LLM Judge Verdicts:")
-    print(f"    Correct:           {correct}/{n} ({correct/n*100:.0f}%)")
-    print(f"    Partially Correct: {partial}/{n} ({partial/n*100:.0f}%)")
-    print(f"    Incorrect:          {incorrect}/{n} ({incorrect/n*100:.0f}%)")
-    print(f"  LLM Judge Dimensions (avg 1-5):")
+    print("  LLM Judge Verdicts:")
+    print(f"    Correct:           {correct}/{n} ({correct / n * 100:.0f}%)")
+    print(f"    Partially Correct: {partial}/{n} ({partial / n * 100:.0f}%)")
+    print(f"    Incorrect:          {incorrect}/{n} ({incorrect / n * 100:.0f}%)")
+    print("  LLM Judge Dimensions (avg 1-5):")
     for dim in dims:
         print(f"    {dim:20s}: {avg_dims[dim]:.2f}")
     print(f"  Semantic Similarity: {avg_sim:.4f} (avg cosine)")
@@ -210,14 +222,18 @@ def print_score_summary(scored: list[dict]) -> None:
         categories[cat]["correct"] += 1 if s["llm_judge"]["verdict"] == "correct" else 0
         categories[cat]["sim_sum"] += s.get("semantic_similarity", 0)
 
-    print(f"\n  Per-category:")
+    print("\n  Per-category:")
     for cat, stats in sorted(categories.items()):
         acc = stats["correct"] / stats["count"] * 100
         avg_cat_sim = stats["sim_sum"] / stats["count"]
-        print(f"    {cat:25s}: {stats['correct']}/{stats['count']} ({acc:.0f}%), sim={avg_cat_sim:.3f}")
+        print(
+            f"    {cat:25s}: {stats['correct']}/{stats['count']} ({acc:.0f}%), sim={avg_cat_sim:.3f}"
+        )
 
     # Disagreements (high semantic similarity but incorrect verdict, or vice versa)
-    print(f"\n  Disagreements (sim > 0.7 but verdict != correct, or sim < 0.3 but verdict == correct):")
+    print(
+        "\n  Disagreements (sim > 0.7 but verdict != correct, or sim < 0.3 but verdict == correct):"
+    )
     disagreements = []
     for s in scored:
         sim = s.get("semantic_similarity", 0)
@@ -226,9 +242,11 @@ def print_score_summary(scored: list[dict]) -> None:
             disagreements.append(s)
     if disagreements:
         for d in disagreements:
-            print(f"    Q{d.get('id', '?')}: sim={d.get('semantic_similarity', 0):.3f}, verdict={d['llm_judge']['verdict']}")
+            print(
+                f"    Q{d.get('id', '?')}: sim={d.get('semantic_similarity', 0):.3f}, verdict={d['llm_judge']['verdict']}"
+            )
     else:
-        print(f"    (none)")
+        print("    (none)")
 
 
 def save_scored_results(scored: list[dict], filepath: str | Path) -> None:

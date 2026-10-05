@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import MagicMock
 
 from chatpid.path_rag import (
-    PathResult,
     _text_similarity,
     _tokenize,
     find_starting_nodes,
@@ -36,12 +35,26 @@ def test_find_starting_nodes_returns_top_k_by_score():
     driver = MagicMock()
     session = driver.session.return_value.__enter__.return_value
     session.run.return_value = [
-        {"tag": "T4750", "labels": ["Node", "Tank"], "props": {"level": "conceptual", "label": "Tank"}},
-        {"tag": "P4711", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "label": "Pump"}},
-        {"tag": "C1", "labels": ["Node", "Valve"], "props": {"level": "conceptual", "label": "Valve"}},
+        {
+            "tag": "T4750",
+            "labels": ["Node", "Tank"],
+            "props": {"level": "conceptual", "label": "Tank"},
+        },
+        {
+            "tag": "P4711",
+            "labels": ["Node", "Pump"],
+            "props": {"level": "conceptual", "label": "Pump"},
+        },
+        {
+            "tag": "C1",
+            "labels": ["Node", "Valve"],
+            "props": {"level": "conceptual", "label": "Valve"},
+        },
     ]
 
-    results = find_starting_nodes(driver, "tank T4750", level="conceptual", max_breadth=2)
+    results = find_starting_nodes(
+        driver, "tank T4750", level="conceptual", max_breadth=2
+    )
     assert len(results) == 2
     assert results[0]["tag"] == "T4750"  # highest score for "tank T4750"
     assert results[0]["_score"] > results[1]["_score"]
@@ -75,20 +88,43 @@ def test_path_rag_prefers_flow_direction():
         if "UNWIND" not in cypher and "labels(n)" in cypher:
             # find_starting_nodes query
             return [
-                {"tag": "A", "labels": ["Node", "Tank"], "props": {"level": "conceptual", "label": "Tank"}},
-                {"tag": "B", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "label": "Pump"}},
+                {
+                    "tag": "A",
+                    "labels": ["Node", "Tank"],
+                    "props": {"level": "conceptual", "label": "Tank"},
+                },
+                {
+                    "tag": "B",
+                    "labels": ["Node", "Pump"],
+                    "props": {"level": "conceptual", "label": "Pump"},
+                },
             ]
         if tag == "A":
             return [
-                {"tag": "B", "labels": ["Node", "Pump"], "props": {"level": "conceptual", "label": "Pump"},
-                 "rel_type": "PIPE", "direction": "out"},
+                {
+                    "tag": "B",
+                    "labels": ["Node", "Pump"],
+                    "props": {"level": "conceptual", "label": "Pump"},
+                    "rel_type": "PIPE",
+                    "direction": "out",
+                },
             ]
         if tag == "B":
             return [
-                {"tag": "C", "labels": ["Node", "Valve"], "props": {"level": "conceptual", "label": "Valve"},
-                 "rel_type": "PIPE", "direction": "out"},
-                {"tag": "D", "labels": ["Node", "Heater"], "props": {"level": "conceptual", "label": "Heater"},
-                 "rel_type": "PIPE", "direction": "in"},
+                {
+                    "tag": "C",
+                    "labels": ["Node", "Valve"],
+                    "props": {"level": "conceptual", "label": "Valve"},
+                    "rel_type": "PIPE",
+                    "direction": "out",
+                },
+                {
+                    "tag": "D",
+                    "labels": ["Node", "Heater"],
+                    "props": {"level": "conceptual", "label": "Heater"},
+                    "rel_type": "PIPE",
+                    "direction": "in",
+                },
             ]
         return []
 

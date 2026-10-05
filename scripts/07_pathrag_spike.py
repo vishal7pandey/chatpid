@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from chatpid.cypher_rag import get_graph_schema
 from chatpid.ingest import get_driver
-from chatpid.path_rag import find_starting_nodes, get_neighbors, path_rag, path_rag_text
+from chatpid.path_rag import find_starting_nodes, get_neighbors, path_rag_text
 
 
 def main() -> None:
@@ -58,10 +58,10 @@ def main() -> None:
     ]
 
     for query, level in path_queries:
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"Query: {query}")
         print(f"Level: {level}, max_depth=5, max_breadth=2")
-        print(f"{'='*60}")
+        print(f"{'=' * 60}")
         text = path_rag_text(driver, query, level=level, max_depth=5, max_breadth=2)
         print(text)
 
@@ -75,7 +75,9 @@ def main() -> None:
         neighbors = get_neighbors(driver, tag, level="conceptual")
         for n in neighbors:
             arrow = "-->" if n["direction"] == "out" else "<--"
-            print(f"  {tag} {arrow} [{n['tag']}] ({n.get('label', '')}) via {n['rel_type']}")
+            print(
+                f"  {tag} {arrow} [{n['tag']}] ({n.get('label', '')}) via {n['rel_type']}"
+            )
 
     driver.close()
     print("\nDone.")

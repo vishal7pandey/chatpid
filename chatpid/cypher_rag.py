@@ -25,6 +25,7 @@ from chatpid.llm import get_llm
 
 # --- Graph schema introspection ---
 
+
 def get_graph_schema(driver: Driver, level: str = "conceptual") -> str:
     """Return a textual summary of node labels, relationship types, and
     property keys present at `level`, for injection into the Cypher prompt.
@@ -34,7 +35,8 @@ def get_graph_schema(driver: Driver, level: str = "conceptual") -> str:
     """
     with driver.session() as session:
         # Node labels and their property keys
-        node_result = session.run("""
+        node_result = session.run(
+            """
             MATCH (n {level: $level})
             UNWIND labels(n) AS label
             WITH label, collect(DISTINCT keys(n)) AS allKeys
@@ -42,39 +44,53 @@ def get_graph_schema(driver: Driver, level: str = "conceptual") -> str:
             UNWIND keyList AS key
             RETURN label, collect(DISTINCT key) AS properties
             ORDER BY label
-        """, level=level)
+        """,
+            level=level,
+        )
 
         nodes_schema = []
         for record in node_result:
             label = record["label"]
             if label == "Node":
                 continue
-            props = [p for p in record["properties"] if p not in ("level", "element_id")]
-            nodes_schema.append(f"  (:{label}) - properties: {', '.join(sorted(props))}")
+            props = [
+                p for p in record["properties"] if p not in ("level", "element_id")
+            ]
+            nodes_schema.append(
+                f"  (:{label}) - properties: {', '.join(sorted(props))}"
+            )
 
         # Relationship types and their property keys
-        rel_result = session.run("""
+        rel_result = session.run(
+            """
             MATCH ()-[r {level: $level}]->()
             RETURN DISTINCT type(r) AS relType, keys(r) AS properties
             ORDER BY relType
-        """, level=level)
+        """,
+            level=level,
+        )
 
         rels_schema = []
         for record in rel_result:
             rel_type = record["relType"]
             props = [p for p in record["properties"] if p not in ("level",)]
             if props:
-                rels_schema.append(f"  -[:{rel_type}]-> (properties: {', '.join(sorted(props))})")
+                rels_schema.append(
+                    f"  -[:{rel_type}]-> (properties: {', '.join(sorted(props))})"
+                )
             else:
                 rels_schema.append(f"  -[:{rel_type}]->")
 
         # Sample node tags per label (helps the LLM write better queries)
-        tag_result = session.run("""
+        tag_result = session.run(
+            """
             MATCH (n {level: $level})
             WHERE n.tag IS NOT NULL
             RETURN labels(n) AS labels, collect(DISTINCT n.tag)[..5] AS sampleTags
             ORDER BY labels
-        """, level=level)
+        """,
+            level=level,
+        )
 
         tags_info = []
         for record in tag_result:
@@ -88,13 +104,13 @@ def get_graph_schema(driver: Driver, level: str = "conceptual") -> str:
     schema_text = f"""Graph Schema (level: {level})
 
 Node labels and properties:
-{chr(10).join(nodes_schema) if nodes_schema else '  (none)'}
+{chr(10).join(nodes_schema) if nodes_schema else "  (none)"}
 
 Relationship types:
-{chr(10).join(rels_schema) if rels_schema else '  (none)'}
+{chr(10).join(rels_schema) if rels_schema else "  (none)"}
 
 Sample node tags by label:
-{chr(10).join(tags_info) if tags_info else '  (none)'}
+{chr(10).join(tags_info) if tags_info else "  (none)"}
 
 All nodes have a `tag` property (equipment identifier) and a `level` property
 (always "{level}" for this schema). Use `level: "{level}"` in your MATCH
@@ -128,14 +144,17 @@ Write ONLY the Cypher query (no explanation, no markdown fences):
 def _get_label_list(driver: Driver, level: str = "conceptual") -> list[str]:
     """Return just the node label names at `level`, for retry hints."""
     with driver.session() as session:
-        result = session.run("""
+        result = session.run(
+            """
             MATCH (n {level: $level})
             UNWIND labels(n) AS label
             WITH label
             WHERE label <> 'Node'
             RETURN DISTINCT label
             ORDER BY label
-        """, level=level)
+        """,
+            level=level,
+        )
         return [record["label"] for record in result]
 
 
@@ -171,21 +190,21 @@ import re
 _WRITE_PATTERNS: list[re.Pattern] = [
     re.compile(p, re.IGNORECASE)
     for p in [
-        r'\bSET\b',
-        r'\bCREATE\b',
-        r'\bDELETE\b',
-        r'\bDETACH\s+DELETE\b',
-        r'\bMERGE\b',
-        r'\bDROP\b',
-        r'\bREMOVE\b',
-        r'\bFOREACH\b',
-        r'\bLOAD\s+CSV\b',
-        r'\+=',
-        r'\bCALL\s+DB\b',
-        r'\bCALL\s+db\.index\b',
-        r'\bCALL\s+dbms\b',
-        r'\bCALL\s+apoc\b',
-        r'\bSHORTESTPATH\b',
+        r"\bSET\b",
+        r"\bCREATE\b",
+        r"\bDELETE\b",
+        r"\bDETACH\s+DELETE\b",
+        r"\bMERGE\b",
+        r"\bDROP\b",
+        r"\bREMOVE\b",
+        r"\bFOREACH\b",
+        r"\bLOAD\s+CSV\b",
+        r"\+=",
+        r"\bCALL\s+DB\b",
+        r"\bCALL\s+db\.index\b",
+        r"\bCALL\s+dbms\b",
+        r"\bCALL\s+apoc\b",
+        r"\bSHORTESTPATH\b",
     ]
 ]
 
@@ -198,7 +217,7 @@ def _validate_read_only(cypher: str) -> None:
     regardless of whitespace or case tricks.
     """
     # Normalize: collapse multiple spaces/newlines to single space
-    normalized = re.sub(r'\s+', ' ', cypher).strip()
+    normalized = re.sub(r"\s+", " ", cypher).strip()
     for pattern in _WRITE_PATTERNS:
         if pattern.search(normalized):
             raise ValueError(
@@ -236,7 +255,9 @@ the specific tags/equipment names your answer is grounded in.
 """
 
 
-def synthesize_answer(question: str, cypher: str, results: list[dict], context: str = "") -> str:
+def synthesize_answer(
+    question: str, cypher: str, results: list[dict], context: str = ""
+) -> str:
     """Use the LLM to synthesize an answer from Cypher query results.
 
     If `context` is provided (ContextRAG fallback), it's included so the LLM
@@ -249,7 +270,7 @@ def synthesize_answer(question: str, cypher: str, results: list[dict], context: 
         lines = []
         for i, row in enumerate(results):
             parts = [f"{k}: {v}" for k, v in row.items()]
-            lines.append(f"Row {i+1}: {', '.join(parts)}")
+            lines.append(f"Row {i + 1}: {', '.join(parts)}")
         results_text = "\n".join(lines)
 
     prompt = ANSWER_PROMPT.format(
@@ -263,7 +284,10 @@ def synthesize_answer(question: str, cypher: str, results: list[dict], context: 
 
 # --- Full CypherRAG pipeline ---
 
-def _retry_with_schema(driver: Driver, query: str, level: str, error_or_reason: str) -> str:
+
+def _retry_with_schema(
+    driver: Driver, query: str, level: str, error_or_reason: str
+) -> str:
     """Regenerate Cypher with explicit label list injected as a hint."""
     labels = _get_label_list(driver, level)
     schema = get_graph_schema(driver, level)
@@ -273,7 +297,7 @@ The previous Cypher query {error_or_reason}.
 Graph schema (level: {level}):
 {schema}
 
-IMPORTANT: The exact node labels in this graph are: {', '.join(labels)}
+IMPORTANT: The exact node labels in this graph are: {", ".join(labels)}
 Do NOT use generic labels like "Valve" or "Equipment" — use the exact labels above.
 
 Original question: {query}
@@ -304,18 +328,33 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
     except Exception as exc:
         # Retry on syntax error: feed error + schema back to LLM
         try:
-            cypher = _retry_with_schema(driver, query, level, f"failed with error: {exc}")
+            cypher = _retry_with_schema(
+                driver, query, level, f"failed with error: {exc}"
+            )
             results = execute_cypher(driver, cypher)
         except Exception:
             # Both attempts failed — fall back to ContextRAG
             ctx = context_rag(driver, level=level, mode="graph")
-            answer = synthesize_answer(query, "(CypherRAG failed — using ContextRAG fallback)", [], context=ctx)
-            return {"answer": answer, "cypher": cypher, "results": [], "fallback": True, "context_rag": ctx}
+            answer = synthesize_answer(
+                query, "(CypherRAG failed — using ContextRAG fallback)", [], context=ctx
+            )
+            return {
+                "answer": answer,
+                "cypher": cypher,
+                "results": [],
+                "fallback": True,
+                "context_rag": ctx,
+            }
 
     # Step 3: If 0 results, retry once with explicit label hints
     if not results:
         try:
-            cypher = _retry_with_schema(driver, query, level, "returned 0 results — the label names were likely wrong")
+            cypher = _retry_with_schema(
+                driver,
+                query,
+                level,
+                "returned 0 results — the label names were likely wrong",
+            )
             results = execute_cypher(driver, cypher)
         except Exception:
             results = []
@@ -323,8 +362,19 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
     # Step 4: If still 0 results after retry, fall back to ContextRAG
     if not results:
         ctx = context_rag(driver, level=level, mode="graph")
-        answer = synthesize_answer(query, "(CypherRAG returned no results — using ContextRAG fallback)", [], context=ctx)
-        return {"answer": answer, "cypher": cypher, "results": [], "fallback": True, "context_rag": ctx}
+        answer = synthesize_answer(
+            query,
+            "(CypherRAG returned no results — using ContextRAG fallback)",
+            [],
+            context=ctx,
+        )
+        return {
+            "answer": answer,
+            "cypher": cypher,
+            "results": [],
+            "fallback": True,
+            "context_rag": ctx,
+        }
 
     # Step 5: Synthesize answer from results
     answer = synthesize_answer(query, cypher, results)

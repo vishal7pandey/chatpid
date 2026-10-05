@@ -207,4 +207,6 @@ BENCHMARK_QUESTIONS = [
     },
 ]
 
-assert len(BENCHMARK_QUESTIONS) == 19, f"Expected 19 questions, got {len(BENCHMARK_QUESTIONS)}"
+assert len(BENCHMARK_QUESTIONS) == 19, (
+    f"Expected 19 questions, got {len(BENCHMARK_QUESTIONS)}"
+)

@@ -22,12 +22,21 @@ import networkx as nx
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dir", default="data/synthetic",
-                        help="Directory containing persisted GraphML files (default: data/synthetic)")
-    parser.add_argument("--clear", action="store_true",
-                        help="Clear existing Neo4j data before ingesting")
-    parser.add_argument("--levels", default="complete,process,conceptual",
-                        help="Comma-separated subset of complete,process,conceptual")
+    parser.add_argument(
+        "--dir",
+        default="data/synthetic",
+        help="Directory containing persisted GraphML files (default: data/synthetic)",
+    )
+    parser.add_argument(
+        "--clear",
+        action="store_true",
+        help="Clear existing Neo4j data before ingesting",
+    )
+    parser.add_argument(
+        "--levels",
+        default="complete,process,conceptual",
+        help="Comma-separated subset of complete,process,conceptual",
+    )
     args = parser.parse_args()
 
     persist_dir = Path(args.dir)
@@ -41,7 +50,7 @@ def main() -> None:
     if meta_path.exists():
         with open(meta_path) as f:
             meta = json.load(f)
-        print(f"Synthetic P&ID metadata:")
+        print("Synthetic P&ID metadata:")
         print(f"  Seed: {meta.get('seed')}")
         print(f"  Node counts: {meta.get('node_counts')}")
         print(f"  Edge counts: {meta.get('edge_counts')}")
@@ -61,7 +70,9 @@ def main() -> None:
         # Convert to MultiDiGraph (GraphML saves as DiGraph)
         g = nx.MultiDiGraph(g)
         graphs[level] = g
-        print(f"Loaded {level}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges")
+        print(
+            f"Loaded {level}: {g.number_of_nodes()} nodes, {g.number_of_edges()} edges"
+        )
 
     if not graphs:
         print("No graphs loaded. Nothing to ingest.")
