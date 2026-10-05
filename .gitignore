@@ -19,3 +19,8 @@ dist/
 # DEXPI reference sample is (c) DEXPI e.V. - fetched on demand, not committed
 data/raw/*.xml
 !data/raw/.gitkeep
+
+# Generated benchmark/experiment outputs (timestamped, regenerable). Record results in Confluence/Jira,
+# not in git. Reference inputs (data/dexpi*, data/synthetic/) are intentionally still tracked.
+data/*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]_[0-9][0-9][0-9][0-9][0-9][0-9]*.json
+data/*_latest.json
