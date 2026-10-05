@@ -33,7 +33,7 @@ Only bare `*.xml` names that really live inside `data/dexpi_real/` or `data/raw/
 ## Blast radius
 
 - Only `.xml` files whose content the pyDEXPI loader can parse render as SVG, but the loader reads and parses any readable path; parse errors echoed `{exc}` in the 500 body (information leak, also fixed).
-- Same class, not fixed here: `POST /ingest` builds `Path(tmpdir) / file.filename` from the upload filename (`chatpid/api.py`, `ingest_document`), so a crafted multipart filename can write outside the temp dir. Filed as a separate Jira bug.
+- Same class, not fixed here: `POST /ingest` builds `Path(tmpdir) / file.filename` from the upload filename (`chatpid/api.py`, `ingest_document`), so a crafted multipart filename can write outside the temp dir. Filed as CPID-20.
 - `GET /pid/files` only lists basenames of `*.xml` inside the two dirs; unaffected.
 - Repo is public; no deployment known. Exposure since the endpoint was added.
 
