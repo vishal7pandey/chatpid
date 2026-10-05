@@ -19,7 +19,9 @@ jobs:
           python-version: "3.12"
       - uses: astral-sh/setup-uv@v5
       # pytest lives in the [dev] optional extra here, which a plain `uv sync` skips (CPID-2).
-      - run: uv sync --all-extras --all-groups
+      # uv.lock is committed (CPID-23): fail on a stale lock, then install exactly what it pins.
+      - run: uv lock --check
+      - run: uv sync --frozen --all-extras --all-groups
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run pytest -q
