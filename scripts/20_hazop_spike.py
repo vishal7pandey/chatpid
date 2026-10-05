@@ -86,7 +86,7 @@ def main() -> None:
     llm = get_llm(temperature=0)
 
     print("=" * 70)
-    print("SCRUM-377: AI-Assisted HAZOP Analysis Spike")
+    print("AI-Assisted HAZOP Analysis Spike")
     print("=" * 70)
 
     # Step 1: Get full graph context

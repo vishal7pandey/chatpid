@@ -211,7 +211,7 @@ class Neo4jKnowledgeStore:
 
 async def main() -> None:
     print("=" * 70)
-    print("SCRUM-412: Platform Integration Test")
+    print("Platform Integration Test")
     print("Can chatpid's Neo4j graph satisfy platform's KnowledgeStore protocol?")
     print("=" * 70)
 
