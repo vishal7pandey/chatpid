@@ -2,7 +2,7 @@ id: CPID-16
 type: feature
 title: Add tests for the untested modules - api, ingest, agent, vector_rag, semantic_enrichment
 slug: tests-untested-modules
-status: in-review
+status: done
 risk: low
 jira: CPID-16
 branch: feature/cpid-16-tests-untested-modules

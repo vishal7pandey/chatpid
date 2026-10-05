@@ -2,7 +2,7 @@ id: CPID-5
 type: feature
 title: Refresh AGENTS.md - replace the stale Sprint-4 table with a pointer to the CPID board
 slug: refresh-agents-md
-status: in-review
+status: done
 risk: low
 jira: CPID-5
 branch: feature/cpid-5-refresh-agents-md
