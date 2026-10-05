@@ -1,4 +1,4 @@
-"""Score model benchmark results (SCRUM-373).
+"""Score model benchmark results.
 
 Takes the dict-of-lists format from 17_model_benchmark.py and scores each
 combo with the LLM-as-judge + semantic similarity.

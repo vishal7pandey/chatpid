@@ -1,4 +1,4 @@
-"""SCRUM-356: Eyeball the DEXPI reference P&ID's three graph levels by hand.
+"""Eyeball the DEXPI reference P&ID's three graph levels by hand.
 
 Loads C01V04-VER.EX01.xml, builds complete/process/conceptual graphs, and
 prints node/edge counts, sample node attributes, and sample edges so we can

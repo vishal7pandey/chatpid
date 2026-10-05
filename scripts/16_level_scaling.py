@@ -1,11 +1,11 @@
-"""SCRUM-374: Level comparison at scale — complete vs process vs conceptual on 1x/3x/5x graphs.
+"""Level comparison at scale — complete vs process vs conceptual on 1x/3x/5x graphs.
 
-Repeats SCRUM-360's conceptual-vs-process-vs-complete comparison on dense graphs
+Repeats the conceptual-vs-process-vs-complete comparison on dense graphs
 to test whether "conceptual graph wins on cost" generalizes past the paper's
 one small benchmark diagram.
 
 Uses ContextRAG (direct LLM pipeline, no ReAct agent) for fair comparison with
-the original SCRUM-360 results.
+the original results.
 
 Usage:
     uv run python scripts/16_level_scaling.py

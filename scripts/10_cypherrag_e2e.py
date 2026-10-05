@@ -1,4 +1,4 @@
-"""SCRUM-364: CypherRAG end-to-end test — LLM generates Cypher from natural language.
+"""CypherRAG end-to-end test — LLM generates Cypher from natural language.
 
 Tests the full CypherRAG pipeline (question → LLM generates Cypher → execute → LLM answers)
 on the 19 benchmark questions. This is the first time we test LLM-generated Cypher

@@ -212,7 +212,7 @@ def print_summary(results: list[dict], level: str = "") -> None:
             f"{stats['tokens']:,} tokens"
         )
 
-    # Tool diversity (SCRUM-409)
+    # Tool diversity
     tool_counts: dict[str, int] = {}
     for r in results:
         for t in r.get("tools_used", []):

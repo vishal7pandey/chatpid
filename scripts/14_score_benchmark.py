@@ -4,7 +4,7 @@ Usage:
   uv run python scripts/14_score_benchmark.py data/direct_benchmark_conceptual_20260816_200408.json
   uv run python scripts/14_score_benchmark.py --latest
 
-SCRUM-371: Mirrors the paper's Section 4.3 methodology.
+Mirrors the paper's Section 4.3 methodology.
 """
 
 import argparse

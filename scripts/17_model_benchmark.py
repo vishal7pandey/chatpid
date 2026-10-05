@@ -1,4 +1,4 @@
-"""SCRUM-373: Model x Tool accuracy/cost benchmark.
+"""Model x Tool accuracy/cost benchmark.
 
 Replicates the paper's Table 3 shape (model x tool grid) using all models
 we have API keys for. Tests which model is the best cost/accuracy sweet

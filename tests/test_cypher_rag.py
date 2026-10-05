@@ -38,14 +38,14 @@ def test_execute_cypher_rejects_merge():
         raise AssertionError("expected ValueError for MERGE")
 
 
-# --- SCRUM-513: Cypher injection regression test suite ---
+# --- Cypher injection regression test suite ---
 
 class TestCypherInjectionRejection:
-    """Regression tests for SCRUM-485 write-guard fix.
+    """Regression tests for the write-guard fix.
 
     Each test asserts that a specific write operation or bypass attempt
     is rejected by _validate_read_only(). These codify the manual
-    verification that was done during SCRUM-485 but never committed.
+    verification that was done during that fix but never committed.
     """
 
     @pytest.mark.parametrize("query", [
