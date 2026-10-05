@@ -1,0 +1,17 @@
+id: CPID-16
+type: feature
+title: Add tests for the untested modules - api, ingest, agent, vector_rag, semantic_enrichment
+slug: tests-untested-modules
+status: in-review
+risk: low
+jira: CPID-16
+branch: feature/cpid-16-tests-untested-modules
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: https://github.com/vishal7pandey/chatpid/pull/8
