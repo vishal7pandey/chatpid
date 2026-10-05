@@ -1,4 +1,4 @@
-"""SCRUM-376: Multi-agent supervisor spike.
+"""Multi-agent supervisor spike.
 
 Instead of a single ReAct agent sequentially picking one tool, a supervisor
 coordinates 4 specialized tool-agents in parallel, then aggregates their
@@ -11,7 +11,7 @@ Architecture:
   2. Supervisor: An LLM sees the question + all 4 tool outputs and synthesizes
      a single answer, citing which tool provided which information.
 
-Compared against the single-agent baseline (SCRUM-372 results).
+Compared against the single-agent baseline results.
 
 Usage:
     uv run python scripts/19_supervisor_spike.py

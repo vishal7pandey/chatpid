@@ -31,7 +31,7 @@ def cost(model, input_tokens, output_tokens):
 print("\n=== Remaining work items ===")
 work = []
 
-# 1. SCRUM-360: Level comparison (direct benchmark, 3 levels x 19 Qs = 57 Qs)
+# 1. Level comparison (direct benchmark, 3 levels x 19 Qs = 57 Qs)
 #    ~2.7K input + ~0.8K output per Q
 work.append({
     "name": "SCRUM-360: Level comparison (57 Qs direct)",
@@ -40,7 +40,7 @@ work.append({
     "output_per_call": 800,
 })
 
-# 2. SCRUM-361: Semantic enrichment (all 3 levels, ~75 nodes x 2 calls = 150 calls)
+# 2. Semantic enrichment (all 3 levels, ~75 nodes x 2 calls = 150 calls)
 #    Global: ~2.5K input (node + flowsheet repr) + ~300 output
 #    Local: ~1.5K input (node + neighbors) + ~300 output
 work.append({
@@ -50,7 +50,7 @@ work.append({
     "output_per_call": 300,
 })
 
-# 3. SCRUM-362: VectorRAG testing (20 queries to eyeball top-k)
+# 3. VectorRAG testing (20 queries to eyeball top-k)
 work.append({
     "name": "SCRUM-362: VectorRAG top-k testing (20 Qs)",
     "calls": 20,

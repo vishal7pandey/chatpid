@@ -1,6 +1,6 @@
 """Compare ContextRAG accuracy/cost across all 3 graph abstraction levels.
 
-SCRUM-360: The paper's headline claim is "conceptual graph wins on cost and
+The paper's headline claim is "conceptual graph wins on cost and
 often accuracy." That was measured on exactly one small P&ID. This script runs
 the same 19 questions against complete/process/conceptual levels using the
 direct LLM pipeline (no ReAct agent overhead) and prints a comparison table.

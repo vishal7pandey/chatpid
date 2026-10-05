@@ -1,6 +1,6 @@
 """Minimal FastAPI wrapper for ChatP&ID — exposes the agent and graph over HTTP.
 
-SCRUM-391: Thin wrapper around agent.py/ingest.py. Two endpoints:
+Thin wrapper around agent.py/ingest.py. Two endpoints:
   POST /ask  — takes a question, calls the agent, returns answer + tool usage
   GET  /graph — returns node/edge data for graph visualization
 

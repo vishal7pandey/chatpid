@@ -1,4 +1,4 @@
-"""SCRUM-362: Embed node semantics, create vector indexes, and eyeball VectorRAG top-k.
+"""Embed node semantics, create vector indexes, and eyeball VectorRAG top-k.
 
 1. Embeds global_semantic and local_semantic for all nodes at a given level
 2. Creates Neo4j vector indexes
