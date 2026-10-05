@@ -358,6 +358,32 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
     return IngestResponse(document_id=document_id, levels=levels_info)
 
 
+PID_SEARCH_DIRS = ("data/dexpi_real", "data/raw")
+
+
+def _is_plain_xml_name(filename: str) -> bool:
+    """True only for a bare `*.xml` file name: no path separators, drive/stream colon, NUL or `..`."""
+    return (
+        filename.lower().endswith(".xml")
+        and ".." not in filename
+        and not any(ch in filename for ch in "/\\:\x00")
+    )
+
+
+def _find_pid_dir(filename: str) -> str | None:
+    """Return the allowed directory that really contains `filename`, or None.
+
+    The resolved file (symlinks followed) must lie inside the resolved allowed
+    directory, so a symlink pointing outside is not served.
+    """
+    for d in PID_SEARCH_DIRS:
+        base = Path(d).resolve()
+        candidate = (base / filename).resolve()
+        if candidate.is_file() and candidate.is_relative_to(base):
+            return d
+    return None
+
+
 @app.get("/pid/svg")
 def get_pid_svg(filename: str = "") -> Any:
     """Render a DEXPI P&ID diagram to SVG.
@@ -370,30 +396,22 @@ def get_pid_svg(filename: str = "") -> Any:
     primitives (polylines, polygons, ellipses, arcs, text) to SVG elements
     with proper coordinate conversion (DEXPI Y-up → SVG Y-down).
     """
-    import os
-
     from fastapi import Response
 
-    search_dirs = ["data/dexpi_real", "data/raw"]
-    found_path = None
-    for d in search_dirs:
-        candidate = os.path.join(d, filename)
-        if os.path.isfile(candidate):
-            found_path = d
-            break
+    if not _is_plain_xml_name(filename):
+        raise HTTPException(status_code=400, detail="Invalid P&ID file name")
 
-    if not found_path:
-        raise HTTPException(
-            status_code=404,
-            detail=f"File '{filename}' not found in data/dexpi_real/ or data/raw/",
-        )
+    found_path = _find_pid_dir(filename)
+    if found_path is None:
+        raise HTTPException(status_code=404, detail="P&ID file not found")
 
     try:
         model = ProteusSerializer().load(found_path, filename)
         drawer = DrawDiagram(model.diagram, padding=5.0, pretty=True)
         svg_content = drawer.draw_svg()
-    except Exception as exc:
-        raise HTTPException(status_code=500, detail=f"SVG rendering failed: {exc}")
+    except Exception:
+        # Exception text can carry filesystem paths, so the client only gets a generic message.
+        raise HTTPException(status_code=500, detail="SVG rendering failed") from None
 
     return Response(content=svg_content, media_type="image/svg+xml")
 
