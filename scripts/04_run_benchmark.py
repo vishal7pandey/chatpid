@@ -5,8 +5,7 @@ Usage:
     uv run python scripts/04_run_benchmark.py --level conceptual --limit 5
     uv run python scripts/04_run_benchmark.py --resume data/benchmark_results_<level>_<timestamp>.json
 
-SCRUM-358: hand-run the 19-question benchmark
-SCRUM-359: track $ and tokens per question from the first run
+Hand-run the 19-question benchmark and track $ and tokens per question from the first run.
 """
 
 from __future__ import annotations

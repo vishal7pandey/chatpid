@@ -1,8 +1,7 @@
 """PathRAG: locate-and-trace path exploration retrieval (Algorithm 3, Section 3.3.3).
 
 The paper's PathRAG uses VectorRAG (semantic embedding search) to find starting
-nodes and select the next hop. Since we don't have embeddings yet (SCRUM-361/362
-pending), this implementation uses text-based similarity (tag/label/property
+nodes and select the next hop. Since we don't have embeddings yet, this implementation uses text-based similarity (tag/label/property
 matching) as a stand-in for VectorRAG. The path traversal logic — the core
 algorithm — is identical. When embeddings are ready, swapping in VectorRAG for
 the locate/next-hop steps is a one-function change.

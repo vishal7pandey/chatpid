@@ -1,4 +1,4 @@
-"""SCRUM-361: Run semantic enrichment on all nodes at a given level.
+"""Run semantic enrichment on all nodes at a given level.
 
 Generates global + local semantic descriptions for every node using the LLM,
 then writes them back to Neo4j as `global_semantic` and `local_semantic` properties.

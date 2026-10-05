@@ -1,4 +1,4 @@
-"""SCRUM-357: Scaling benchmark — run the 19 questions on 1x, 3x, and 5x graph sizes.
+"""Scaling benchmark — run the 19 questions on 1x, 3x, and 5x graph sizes.
 
 Tests the paper's biggest caveat (Section 6: "the scaling problem is real").
 Uses the direct LLM pipeline (no ReAct agent) for cost efficiency.

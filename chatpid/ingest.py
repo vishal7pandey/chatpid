@@ -2,7 +2,7 @@
 
 Flattened from the old ingestion/{load_dexpi,build_graphs,load_to_neo4j}.py.
 The pyDEXPI wrapper calls and the Neo4j loader logic are the only parts of the
-scaffold worth preserving as-is (per SCRUM-355); everything else in the project
+scaffold worth preserving as-is; everything else in the project
 is flat scripts built on top of this.
 
 Mirrors Section 3.2.1 of the ChatP&ID paper. pyDEXPI ships the condensation

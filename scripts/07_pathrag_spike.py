@@ -1,11 +1,11 @@
-"""SCRUM-363: PathRAG spike — hand-trace paths in the graph.
+"""PathRAG spike — hand-trace paths in the graph.
 
 Tests PathRAG on the paper's canonical path-exploration questions:
   - "Trace the flow path from tank T4750 to pump P4712"
   - "How to control process stream temperature"
   - "Isolate tank T4750 from all upstream equipment"
 
-Also tests CypherRAG's schema introspection (SCRUM-364).
+Also tests CypherRAG's schema introspection.
 
 Usage:
     uv run python scripts/07_pathrag_spike.py

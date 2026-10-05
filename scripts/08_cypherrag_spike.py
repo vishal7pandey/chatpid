@@ -1,4 +1,4 @@
-"""SCRUM-364: CypherRAG spike — test Cypher execution on 3 canonical patterns.
+"""CypherRAG spike — test Cypher execution on 3 canonical patterns.
 
 Tests the three most common Cypher query patterns for P&ID questions:
   1. Single-node attribute lookup (graph_query_single)

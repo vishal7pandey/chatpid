@@ -1,4 +1,4 @@
-"""SCRUM-398: Scaling benchmark for VectorRAG and PathRAG on dense 3x/5x graphs.
+"""Scaling benchmark for VectorRAG and PathRAG on dense 3x/5x graphs.
 
 Tests how VectorRAG and PathRAG scale with graph size, compared to ContextRAG.
 Uses the direct LLM pipeline (no ReAct agent) for cost efficiency and
