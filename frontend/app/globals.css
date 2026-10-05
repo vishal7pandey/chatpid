@@ -2,14 +2,14 @@
 
 /* ============================================================
    Semantic Design Token System
-   Ported from ade's design-token system (ADEP brand palette).
+   Ported from ade's design-token system.
 
    All color references in components should use var(--token-name).
    No hex literals in components. This enables dark mode to work
    by simply swapping token values via the .dark class.
 
    Token naming convention:
-     --brand-*      Brand colors (ADEP palette)
+     --brand-*      Brand colors
      --surface-*    Background surfaces
      --text-*       Text colors
      --border-*     Border colors
@@ -18,12 +18,12 @@
    ============================================================ */
 
 @theme {
-  --color-adep-blue: #00205C;
-  --color-mobility-blue: #0071CE;
-  --color-s-green: #4DB848;
-  --color-tech-yellow: #F2E500;
+  --color-brand-navy: #00205C;
+  --color-brand-blue: #0071CE;
+  --color-brand-green: #4DB848;
+  --color-brand-yellow: #F2E500;
   --color-neutral-dark: #101820;
-  --color-electric-blue: #00B5E2;
+  --color-brand-cyan: #00B5E2;
   --color-purple: #A27CC9;
   --color-periwinkle: #C5B4E3;
   --color-neutral-light: #E1E1E1;
