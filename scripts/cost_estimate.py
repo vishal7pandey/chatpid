@@ -44,7 +44,7 @@ work = []
 #    ~2.7K input + ~0.8K output per Q
 work.append(
     {
-        "name": "SCRUM-360: Level comparison (57 Qs direct)",
+        "name": "Level comparison (57 Qs direct)",
         "calls": 57,
         "input_per_call": 2700,
         "output_per_call": 800,
@@ -56,7 +56,7 @@ work.append(
 #    Local: ~1.5K input (node + neighbors) + ~300 output
 work.append(
     {
-        "name": "SCRUM-361: Semantic enrichment (150 calls)",
+        "name": "Semantic enrichment (150 calls)",
         "calls": 150,
         "input_per_call": 2000,
         "output_per_call": 300,
@@ -66,7 +66,7 @@ work.append(
 # 3. VectorRAG testing (20 queries to eyeball top-k)
 work.append(
     {
-        "name": "SCRUM-362: VectorRAG top-k testing (20 Qs)",
+        "name": "VectorRAG top-k testing (20 Qs)",
         "calls": 20,
         "input_per_call": 2700,
         "output_per_call": 800,
