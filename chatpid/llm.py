@@ -13,9 +13,13 @@ For multi-model benchmarks, pass provider= and model= overrides to get_llm().
 
 from __future__ import annotations
 
+import logging
+
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from chatpid.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 
 def get_llm(

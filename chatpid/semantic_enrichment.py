@@ -13,10 +13,13 @@ The descriptions are written back onto the Neo4j nodes as properties
 
 from __future__ import annotations
 
+import logging
 import time
 from dataclasses import dataclass
 
 from neo4j import Driver
+
+logger = logging.getLogger(__name__)
 
 from chatpid.context_rag import context_rag
 from chatpid.llm import get_llm

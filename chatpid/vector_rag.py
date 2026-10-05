@@ -11,9 +11,13 @@ locally — no API key needed, runs on CPU. Swap via CHATPID_EMBEDDING_MODEL.
 
 from __future__ import annotations
 
+import logging
+
 from neo4j import Driver
 
 from chatpid.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 # Lazy-loaded embedder (loading the model takes ~3s)
 _embedder = None
