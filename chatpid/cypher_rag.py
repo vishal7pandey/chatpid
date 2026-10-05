@@ -18,10 +18,14 @@ so the graph introspection and execution can be tested independently.
 
 from __future__ import annotations
 
+import logging
+
 from neo4j import READ_ACCESS, Driver
 
 from chatpid.context_rag import context_rag
 from chatpid.llm import get_llm
+
+logger = logging.getLogger(__name__)
 
 # --- Read-only sessions ---
 
@@ -345,6 +349,7 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
         results = execute_cypher(driver, cypher)
     except Exception as exc:
         # Retry on syntax error: feed error + schema back to LLM
+        logger.warning("CypherRAG query failed, retrying with schema hint: %s", exc)
         try:
             cypher = _retry_with_schema(
                 driver, query, level, f"failed with error: {exc}"
@@ -352,6 +357,9 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
             results = execute_cypher(driver, cypher)
         except Exception:
             # Both attempts failed — fall back to ContextRAG
+            logger.warning(
+                "CypherRAG retry also failed, falling back to ContextRAG", exc_info=True
+            )
             ctx = context_rag(driver, level=level, mode="graph")
             answer = synthesize_answer(
                 query, "(CypherRAG failed — using ContextRAG fallback)", [], context=ctx
@@ -375,6 +383,9 @@ def cypher_rag(driver: Driver, query: str, level: str = "conceptual") -> dict:
             )
             results = execute_cypher(driver, cypher)
         except Exception:
+            logger.warning(
+                "CypherRAG retry after an empty result also failed", exc_info=True
+            )
             results = []
 
     # Step 4: If still 0 results after retry, fall back to ContextRAG
