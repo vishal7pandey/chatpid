@@ -11,7 +11,6 @@ Run:
 from __future__ import annotations
 
 import tempfile
-import threading
 import time
 import uuid
 from pathlib import Path
@@ -46,13 +45,8 @@ app.add_middleware(
 _driver = None
 _agent = None
 
-# Per-request state for /graph highlighting — protected by a lock to
-# prevent concurrent /ask requests from overwriting each other.
-_state_lock = threading.Lock()
-_last_question: str = ""
-_last_answer: str = ""
-_last_tools: list[dict] = []
-_last_graph_nodes: list[str] = []  # node IDs touched by last answer
+# No per-request state lives in this module (CPID-14): /ask returns everything the client needs, including
+# the touched node tags in `graph_node_ids`, and the client does its own highlighting.
 
 
 def _ensure_agent():
@@ -184,8 +178,6 @@ class GraphResponse(BaseModel):
 @app.post("/ask", response_model=AskResponse)
 def ask(req: AskRequest) -> AskResponse:
     """Ask the ChatP&ID agent a question."""
-    global _last_question, _last_answer, _last_tools, _last_graph_nodes
-
     agent, _ = _ensure_agent()
 
     # Prefix user question with requested scope if provided
@@ -213,13 +205,6 @@ def ask(req: AskRequest) -> AskResponse:
     tools_used = _extract_tool_usage(messages)
     touched = _extract_touched_nodes(messages)
 
-    # Cache for /graph endpoint (locked to prevent race between concurrent requests)
-    with _state_lock:
-        _last_question = req.question
-        _last_answer = answer
-        _last_tools = tools_used
-        _last_graph_nodes = touched
-
     return AskResponse(
         answer=answer,
         tools_used=tools_used,
@@ -234,8 +219,9 @@ def get_graph(
 ) -> GraphResponse:
     """Return node/edge data for graph visualization.
 
-    If the /ask endpoint was called recently, highlights nodes touched by
-    the last answer. Otherwise returns a level-filtered slice of the graph.
+    Returns a level-filtered slice of the graph; the result depends only on
+    the request parameters. Highlighting is done by the client from the
+    `graph_node_ids` that /ask returned.
     Pass document_id to scope to a specific uploaded document.
     """
     _, driver = _ensure_agent()

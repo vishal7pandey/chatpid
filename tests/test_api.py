@@ -53,11 +53,6 @@ def client(monkeypatch, driver, agent):
     """TestClient whose app already holds the fake driver/agent, so nothing real is built."""
     monkeypatch.setattr(api, "_driver", driver)
     monkeypatch.setattr(api, "_agent", agent)
-    # /ask writes these module globals; setattr first so monkeypatch restores them after the test
-    monkeypatch.setattr(api, "_last_question", "")
-    monkeypatch.setattr(api, "_last_answer", "")
-    monkeypatch.setattr(api, "_last_tools", [])
-    monkeypatch.setattr(api, "_last_graph_nodes", [])
     return TestClient(api.app, raise_server_exceptions=False)
 
 
