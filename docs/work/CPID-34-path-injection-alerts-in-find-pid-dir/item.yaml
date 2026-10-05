@@ -1,0 +1,20 @@
+id: CPID-34
+type: bug
+title: 'Path injection alerts in _find_pid_dir: CodeQL py/path-injection at api.py:390-391
+  (CPID-34, CPID-35)'
+slug: path-injection-alerts-in-find-pid-dir
+status: in-review
+risk: high
+jira: CPID-34
+branch: fix/cpid-34-path-injection-alerts-in-find-pid-dir
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+    delegated: true
+pr: https://github.com/vishal7pandey/chatpid/pull/20

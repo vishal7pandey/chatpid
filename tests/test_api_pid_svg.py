@@ -117,6 +117,51 @@ def test_symlink_pointing_outside_is_rejected(client, pid_dirs):
     _assert_rejected(response, pid_dirs)
 
 
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "../../outside/secret.xml",
+        "../raw/../../outside/secret.xml",
+        "..",
+    ],
+)
+def test_find_pid_dir_never_touches_files_outside_the_base(
+    pid_dirs, monkeypatch, filename
+):
+    """CPID-34/CPID-35 (CodeQL py/path-injection): the name is contained BEFORE any filesystem call.
+
+    Checking containment after `is_file()` still stats a user-controlled path outside the allowed directory
+    (an existence oracle, and the pattern CodeQL flags). The helper must reject the escape first, then probe.
+    """
+    probed: list[str] = []
+    real_is_file = Path.is_file
+    real_isfile = os.path.isfile
+
+    def spy_is_file(self, *args, **kwargs):
+        probed.append(os.path.realpath(self))
+        return real_is_file(self, *args, **kwargs)
+
+    def spy_isfile(path):
+        probed.append(os.path.realpath(path))
+        return real_isfile(path)
+
+    monkeypatch.setattr(Path, "is_file", spy_is_file)
+    monkeypatch.setattr(os.path, "isfile", spy_isfile)
+
+    assert api._find_pid_dir(filename) is None
+
+    allowed = [os.path.realpath(d) for d in api.PID_SEARCH_DIRS]
+    for path in probed:
+        assert any(path.startswith(base + os.sep) for base in allowed), (
+            f"probed outside the base: {path}"
+        )
+
+
+def test_find_pid_dir_still_finds_legitimate_files(pid_dirs):
+    assert api._find_pid_dir("good.xml") == "data/dexpi_real"
+    assert api._find_pid_dir("nope.xml") is None
+
+
 def test_valid_file_name_is_served(client, pid_dirs):
     response = client.get("/pid/svg", params={"filename": "good.xml"})
     assert response.status_code == 200
