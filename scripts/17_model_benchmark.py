@@ -73,7 +73,9 @@ def retrieve_context(driver, tool: str, question: str) -> tuple[str, int]:
     if tool == "contextrag":
         ctx = context_rag(driver, level=LEVEL, mode="graph")
     elif tool == "vectorrag":
-        ctx = vector_rag_text(driver, question, index="global_semantic_index", top_k=5, level=LEVEL)
+        ctx = vector_rag_text(
+            driver, question, index="global_semantic_index", top_k=5, level=LEVEL
+        )
     elif tool == "pathrag":
         ctx = path_rag_text(driver, question, level=LEVEL, max_depth=3, max_breadth=2)
     elif tool == "cypherrag":
@@ -106,9 +108,14 @@ def run_benchmark(
 
             # Step 2: Generate answer with the target model
             prompt = ANSWER_PROMPT.format(
-                question=q["question"], tool_name=tool, context=context,
+                question=q["question"],
+                tool_name=tool,
+                context=context,
             )
-            messages = [SystemMessage(content="You are ChatP&ID."), HumanMessage(content=prompt)]
+            messages = [
+                SystemMessage(content="You are ChatP&ID."),
+                HumanMessage(content=prompt),
+            ]
             t1 = time.time()
             response = llm.invoke(messages)
             answer_time = time.time() - t1
@@ -120,28 +127,51 @@ def run_benchmark(
             tt = usage.get("total_tokens", 0)
             cost = estimate_cost(model, pt, ct)
 
-            results.append({
-                "id": q["id"], "category": q["category"],
-                "question": q["question"], "reference_answer": q["reference_answer"],
-                "agent_answer": answer,
-                "model": model_label, "provider": provider, "tool": tool,
-                "tokens": {"prompt_tokens": pt, "completion_tokens": ct, "total_tokens": tt},
-                "cost_usd": round(cost, 6),
-                "latency_seconds": round(answer_time, 2),
-                "retrieve_seconds": round(retrieve_time, 2),
-                "context_tokens": ctx_tokens,
-            })
+            results.append(
+                {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": answer,
+                    "model": model_label,
+                    "provider": provider,
+                    "tool": tool,
+                    "tokens": {
+                        "prompt_tokens": pt,
+                        "completion_tokens": ct,
+                        "total_tokens": tt,
+                    },
+                    "cost_usd": round(cost, 6),
+                    "latency_seconds": round(answer_time, 2),
+                    "retrieve_seconds": round(retrieve_time, 2),
+                    "context_tokens": ctx_tokens,
+                }
+            )
             print(f"{tt} tok, ${cost:.6f}, {answer_time:.1f}s")
         except Exception as exc:
-            results.append({
-                "id": q["id"], "category": q["category"],
-                "question": q["question"], "reference_answer": q["reference_answer"],
-                "agent_answer": f"ERROR: {exc!s:.200}",
-                "model": model_label, "provider": provider, "tool": tool,
-                "tokens": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-                "cost_usd": 0.0, "latency_seconds": 0.0, "retrieve_seconds": 0.0,
-                "context_tokens": 0, "error": str(exc),
-            })
+            results.append(
+                {
+                    "id": q["id"],
+                    "category": q["category"],
+                    "question": q["question"],
+                    "reference_answer": q["reference_answer"],
+                    "agent_answer": f"ERROR: {exc!s:.200}",
+                    "model": model_label,
+                    "provider": provider,
+                    "tool": tool,
+                    "tokens": {
+                        "prompt_tokens": 0,
+                        "completion_tokens": 0,
+                        "total_tokens": 0,
+                    },
+                    "cost_usd": 0.0,
+                    "latency_seconds": 0.0,
+                    "retrieve_seconds": 0.0,
+                    "context_tokens": 0,
+                    "error": str(exc),
+                }
+            )
             print(f"ERROR: {exc!s:.80}")
 
         if delay > 0:
@@ -152,10 +182,12 @@ def run_benchmark(
 
 def print_grid(all_results: dict) -> None:
     """Print the model x tool comparison grid."""
-    print(f"\n{'='*100}")
+    print(f"\n{'=' * 100}")
     print("MODEL x TOOL BENCHMARK GRID")
-    print(f"{'='*100}")
-    print(f"{'Model':<20} {'Tool':<14} {'Cost/Q':>10} {'Tokens/Q':>10} {'Latency/Q':>10} {'Errors':>7}")
+    print(f"{'=' * 100}")
+    print(
+        f"{'Model':<20} {'Tool':<14} {'Cost/Q':>10} {'Tokens/Q':>10} {'Latency/Q':>10} {'Errors':>7}"
+    )
     print("-" * 100)
 
     for model_label, _, _ in MODELS:
@@ -171,7 +203,7 @@ def print_grid(all_results: dict) -> None:
             errors = sum(1 for r in results if r.get("error"))
             print(
                 f"{model_label:<20} {tool:<14} "
-                f"${total_cost/n:>8.6f} {total_tokens/n:>9,.0f} "
+                f"${total_cost / n:>8.6f} {total_tokens / n:>9,.0f} "
                 f"{avg_latency:>8.1f}s {errors:>5}/{n}"
             )
         print()
@@ -185,7 +217,7 @@ def main() -> None:
     parser.add_argument("--tool", choices=TOOLS, help="Run only one tool")
     args = parser.parse_args()
 
-    questions = BENCHMARK_QUESTIONS[:args.limit] if args.limit else BENCHMARK_QUESTIONS
+    questions = BENCHMARK_QUESTIONS[: args.limit] if args.limit else BENCHMARK_QUESTIONS
     models = [m for m in MODELS if not args.model or m[0] == args.model]
     tools = [args.tool] if args.tool else TOOLS
 
@@ -199,21 +231,32 @@ def main() -> None:
     try:
         for model_label, provider, model in models:
             for tool in tools:
-                print(f"\n{'='*60}")
+                print(f"\n{'=' * 60}")
                 print(f"Model: {model_label} ({provider}) | Tool: {tool}")
-                print(f"{'='*60}")
+                print(f"{'=' * 60}")
                 results = run_benchmark(
-                    driver, model_label, provider, model, tool, questions, args.delay,
+                    driver,
+                    model_label,
+                    provider,
+                    model,
+                    tool,
+                    questions,
+                    args.delay,
                 )
                 all_results[f"{model_label}_{tool}"] = results
 
                 # Incremental save after each combo
-                outpath.write_text(json.dumps(all_results, indent=2, ensure_ascii=False), encoding="utf-8")
+                outpath.write_text(
+                    json.dumps(all_results, indent=2, ensure_ascii=False),
+                    encoding="utf-8",
+                )
 
                 n = len(results)
                 total_cost = sum(r["cost_usd"] for r in results)
                 total_tokens = sum(r["tokens"]["total_tokens"] for r in results)
-                print(f"\n  Summary: {n} Qs, ${total_cost:.4f}, {total_tokens:,} tokens")
+                print(
+                    f"\n  Summary: {n} Qs, ${total_cost:.4f}, {total_tokens:,} tokens"
+                )
     finally:
         driver.close()
 

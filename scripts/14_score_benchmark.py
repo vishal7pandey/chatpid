@@ -9,6 +9,7 @@ Mirrors the paper's Section 4.3 methodology.
 
 import argparse
 import glob
+import json
 import os
 import sys
 import time
@@ -17,7 +18,6 @@ from chatpid.scoring import (
     load_results,
     print_score_summary,
     save_scored_results,
-    score_results,
 )
 
 
@@ -28,12 +28,12 @@ def find_latest_results() -> str | None:
     complete = []
     for f in files:
         try:
-            import json
-            data = json.load(open(f))
-            if isinstance(data, list) and len(data) == 19:
-                complete.append(f)
-        except Exception:
-            pass
+            with open(f) as fh:
+                data = json.load(fh)
+        except (OSError, ValueError):
+            continue
+        if isinstance(data, list) and len(data) == 19:
+            complete.append(f)
     if complete:
         return complete[-1]
     return files[-1] if files else None
@@ -42,8 +42,12 @@ def find_latest_results() -> str | None:
 def main():
     parser = argparse.ArgumentParser(description="Score benchmark results")
     parser.add_argument("filepath", nargs="?", help="Path to benchmark results JSON")
-    parser.add_argument("--latest", action="store_true", help="Use latest 19-question results")
-    parser.add_argument("--delay", type=float, default=1.0, help="Delay between questions (rate limit)")
+    parser.add_argument(
+        "--latest", action="store_true", help="Use latest 19-question results"
+    )
+    parser.add_argument(
+        "--delay", type=float, default=1.0, help="Delay between questions (rate limit)"
+    )
     args = parser.parse_args()
 
     filepath = args.filepath
@@ -65,8 +69,11 @@ def main():
     print(f"\nScoring {len(results)} questions...")
     scored = []
     for i, entry in enumerate(results):
-        print(f"  [{i+1}/{len(results)}] Q{entry.get('id', '?')}: ", end="", flush=True)
+        print(
+            f"  [{i + 1}/{len(results)}] Q{entry.get('id', '?')}: ", end="", flush=True
+        )
         from chatpid.scoring import score_result
+
         scored_entry = score_result(entry)
         scored.append(scored_entry)
         verdict = scored_entry["llm_judge"].get("verdict", "?")

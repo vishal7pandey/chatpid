@@ -19,10 +19,12 @@ The paper uses max_breadth=2, max_depth=3 for the small DEXPI P&ID.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+
 from neo4j import Driver
 
 # --- Text-based similarity (stand-in for VectorRAG) ---
+
 
 def _tokenize(text: str) -> set[str]:
     """Simple tokenization for text matching."""
@@ -52,9 +54,11 @@ def _node_text(node: dict) -> str:
 
 # --- PathRAG core ---
 
+
 @dataclass
 class PathResult:
     """One explored path through the graph."""
+
     path: list[str]  # list of node tags
     nodes: list[dict]  # full node properties at each step
     edges: list[dict]  # edge types along the path
@@ -65,6 +69,7 @@ class PathResult:
 @dataclass
 class PathRAGResult:
     """Full PathRAG result across all explored paths."""
+
     paths: list[PathResult]
     best_path: PathResult | None = None
     answer_context: str = ""
@@ -89,7 +94,12 @@ def find_starting_nodes(
         for record in session.run(cypher, level=level):
             props = dict(record["props"])
             # Remove internal metadata and embeddings (not needed for path traversal)
-            for key in ("level", "element_id", "global_semantic_embedding", "local_semantic_embedding"):
+            for key in (
+                "level",
+                "element_id",
+                "global_semantic_embedding",
+                "local_semantic_embedding",
+            ):
                 props.pop(key, None)
             label = [l for l in (record["labels"] or []) if l != "Node"]
             props["label"] = label[0] if label else ""
@@ -125,16 +135,23 @@ def get_neighbors(
         neighbors = []
         for record in session.run(cypher, tag=node_tag, level=level):
             props = dict(record["props"])
-            for key in ("level", "element_id", "global_semantic_embedding", "local_semantic_embedding"):
+            for key in (
+                "level",
+                "element_id",
+                "global_semantic_embedding",
+                "local_semantic_embedding",
+            ):
                 props.pop(key, None)
             label = [l for l in (record["labels"] or []) if l != "Node"]
             props["label"] = label[0] if label else ""
-            neighbors.append({
-                **props,
-                "tag": record["tag"],
-                "rel_type": record["rel_type"],
-                "direction": record["direction"],
-            })
+            neighbors.append(
+                {
+                    **props,
+                    "tag": record["tag"],
+                    "rel_type": record["rel_type"],
+                    "direction": record["direction"],
+                }
+            )
         return neighbors
 
 
@@ -177,7 +194,9 @@ def _format_node_context(node: dict) -> str:
     if label:
         parts.append(f"({label})")
     # Include key engineering properties (exclude embeddings, semantic text, metadata)
-    eng_props = {k: v for k, v in node.items() if k not in _NON_CONTENT_PROPS and v is not None}
+    eng_props = {
+        k: v for k, v in node.items() if k not in _NON_CONTENT_PROPS and v is not None
+    }
     if eng_props:
         prop_str = ", ".join(f"{k}={v}" for k, v in sorted(eng_props.items()))
         parts.append(prop_str)
@@ -207,7 +226,9 @@ def path_rag(
     # Step 1: Find starting nodes
     starting_nodes = find_starting_nodes(driver, query, level, max_breadth)
     if not starting_nodes:
-        return PathRAGResult(paths=[], best_path=None, answer_context="No relevant nodes found.")
+        return PathRAGResult(
+            paths=[], best_path=None, answer_context="No relevant nodes found."
+        )
 
     all_paths: list[PathResult] = []
 
@@ -245,12 +266,14 @@ def path_rag(
             next_node = neighbors[0]
 
             # Record edge
-            path_edges.append({
-                "from": current["tag"],
-                "to": next_node["tag"],
-                "type": next_node["rel_type"],
-                "direction": next_node["direction"],
-            })
+            path_edges.append(
+                {
+                    "from": current["tag"],
+                    "to": next_node["tag"],
+                    "type": next_node["rel_type"],
+                    "direction": next_node["direction"],
+                }
+            )
 
             # Advance
             path_tags.append(next_node["tag"])
@@ -272,14 +295,23 @@ def path_rag(
         all_paths.append(path_result)
 
     # Step 3: Select best path (highest average score)
-    best = max(all_paths, key=lambda p: sum(p.scores) / len(p.scores)) if all_paths else None
+    best = (
+        max(all_paths, key=lambda p: sum(p.scores) / len(p.scores))
+        if all_paths
+        else None
+    )
     best_context = best.context if best else ""
 
     return PathRAGResult(paths=all_paths, best_path=best, answer_context=best_context)
 
 
-def path_rag_text(driver: Driver, query: str, level: str = "conceptual",
-                   max_depth: int = 3, max_breadth: int = 2) -> str:
+def path_rag_text(
+    driver: Driver,
+    query: str,
+    level: str = "conceptual",
+    max_depth: int = 3,
+    max_breadth: int = 2,
+) -> str:
     """Convenience wrapper: return PathRAG result as formatted text for LLM consumption."""
     result = path_rag(driver, query, level, max_depth, max_breadth)
     if not result.paths:
@@ -287,7 +319,9 @@ def path_rag_text(driver: Driver, query: str, level: str = "conceptual",
 
     lines = []
     for i, p in enumerate(result.paths):
-        lines.append(f"--- Path {i+1} (score: {sum(p.scores)/len(p.scores):.3f}) ---")
+        lines.append(
+            f"--- Path {i + 1} (score: {sum(p.scores) / len(p.scores):.3f}) ---"
+        )
         # Path summary
         path_str = " -> ".join(p.path)
         lines.append(f"Path: {path_str}")

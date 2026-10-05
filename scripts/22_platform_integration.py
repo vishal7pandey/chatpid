@@ -14,11 +14,9 @@ Usage:
 from __future__ import annotations
 
 import asyncio
-import json
 import sys
 import time
 from pathlib import Path
-from typing import Any
 
 # Add platform to path
 PLATFORM_SRC = Path(__file__).resolve().parent.parent.parent / "platform" / "src"
@@ -54,6 +52,7 @@ class Neo4jKnowledgeStore:
     def __init__(self, driver=None) -> None:
         if driver is None:
             from chatpid.ingest import get_driver
+
             driver = get_driver()
         self._driver = driver
         self._workspace = "chatpid"
@@ -66,46 +65,71 @@ class Neo4jKnowledgeStore:
         if request.query_type == KnowledgeQueryType.CYPHER:
             # Cypher query — execute directly
             with self._driver.session() as session:
-                result = session.run(request.query if isinstance(request.query, str) else str(request.query))
+                result = session.run(
+                    request.query
+                    if isinstance(request.query, str)
+                    else str(request.query)
+                )
                 for record in result:
                     node = record.get("n") or record.get("node") or record.get("entity")
                     if node:
-                        hits.append(SearchHit(
-                            entity_id=str(node.element_id),
-                            entity_type=list(node.labels)[0] if node.labels else "Unknown",
-                            score=1.0,
-                            properties=dict(node),
-                            source_store="graph",
-                        ))
+                        hits.append(
+                            SearchHit(
+                                entity_id=str(node.element_id),
+                                entity_type=next(iter(node.labels))
+                                if node.labels
+                                else "Unknown",
+                                score=1.0,
+                                properties=dict(node),
+                                source_store="graph",
+                            )
+                        )
 
         elif request.query_type == KnowledgeQueryType.VECTOR:
             # Vector search — use chatpid's VectorRAG
             from chatpid.vector_rag import vector_rag
-            query_text = request.query if isinstance(request.query, str) else str(request.query)
-            results = vector_rag(self._driver, query_text, level="conceptual", top_k=request.max_results)
+
+            query_text = (
+                request.query if isinstance(request.query, str) else str(request.query)
+            )
+            results = vector_rag(
+                self._driver, query_text, level="conceptual", top_k=request.max_results
+            )
             for r in results:
-                hits.append(SearchHit(
-                    entity_id=str(r.get("id", "")),
-                    entity_type=r.get("label", "Unknown"),
-                    score=r.get("score", 0.0),
-                    properties=r,
-                    source_store="vector",
-                ))
+                hits.append(
+                    SearchHit(
+                        entity_id=str(r.get("id", "")),
+                        entity_type=r.get("label", "Unknown"),
+                        score=r.get("score", 0.0),
+                        properties=r,
+                        source_store="vector",
+                    )
+                )
 
         elif request.query_type == KnowledgeQueryType.GRAPH_TRAVERSAL:
             # Graph traversal — use chatpid's PathRAG
             from chatpid.path_rag import path_rag
-            query_text = request.query if isinstance(request.query, str) else str(request.query)
-            results = path_rag(self._driver, query_text, level="conceptual",
-                               max_depth=request.max_depth or 3, max_breadth=3)
+
+            query_text = (
+                request.query if isinstance(request.query, str) else str(request.query)
+            )
+            results = path_rag(
+                self._driver,
+                query_text,
+                level="conceptual",
+                max_depth=request.max_depth or 3,
+                max_breadth=3,
+            )
             for r in results:
-                hits.append(SearchHit(
-                    entity_id=str(r.get("id", "")),
-                    entity_type=r.get("label", "Unknown"),
-                    score=1.0,
-                    properties=r,
-                    source_store="graph",
-                ))
+                hits.append(
+                    SearchHit(
+                        entity_id=str(r.get("id", "")),
+                        entity_type=r.get("label", "Unknown"),
+                        score=1.0,
+                        properties=r,
+                        source_store="graph",
+                    )
+                )
 
         elif request.query_type == KnowledgeQueryType.STRUCTURED:
             # Structured query — fall back to hybrid search
@@ -116,7 +140,7 @@ class Neo4jKnowledgeStore:
             )
 
         return KnowledgeResult(
-            hits=hits[:request.max_results],
+            hits=hits[: request.max_results],
             total=len(hits),
             query=request,
             execution_time_ms=(time.monotonic() - start) * 1000,
@@ -134,28 +158,34 @@ class Neo4jKnowledgeStore:
         from chatpid.vector_rag import vector_rag
 
         # Get vector hits
-        vec_results = vector_rag(self._driver, query_text, level="conceptual", top_k=max_results)
+        vec_results = vector_rag(
+            self._driver, query_text, level="conceptual", top_k=max_results
+        )
         hits = []
         for r in vec_results:
-            hits.append(SearchHit(
-                entity_id=str(r.get("id", "")),
-                entity_type=r.get("label", "Unknown"),
-                score=r.get("score", 0.0),
-                properties=r,
-                source_store="vector",
-            ))
+            hits.append(
+                SearchHit(
+                    entity_id=str(r.get("id", "")),
+                    entity_type=r.get("label", "Unknown"),
+                    score=r.get("score", 0.0),
+                    properties=r,
+                    source_store="vector",
+                )
+            )
 
         # If no vector hits, get graph context
         if not hits:
             graph_text = context_rag(self._driver, level="conceptual", mode="graph")
             # Return a single "hit" representing the full graph context
-            hits.append(SearchHit(
-                entity_id="graph_context",
-                entity_type="GraphContext",
-                score=1.0,
-                properties={"text": graph_text[:5000]},
-                source_store="graph",
-            ))
+            hits.append(
+                SearchHit(
+                    entity_id="graph_context",
+                    entity_type="GraphContext",
+                    score=1.0,
+                    properties={"text": graph_text[:5000]},
+                    source_store="graph",
+                )
+            )
 
         return hits[:max_results]
 
@@ -170,8 +200,12 @@ class Neo4jKnowledgeStore:
     async def get_schema(self, workspace_id: str) -> dict[str, object]:
         """Get the graph schema — node labels and property keys."""
         with self._driver.session() as session:
-            labels = session.run("CALL db.labels() YIELD label RETURN collect(label) as labels").single()["labels"]
-            rel_types = session.run("CALL db.relationshipTypes() YIELD relationshipType RETURN collect(relationshipType) as types").single()["types"]
+            labels = session.run(
+                "CALL db.labels() YIELD label RETURN collect(label) as labels"
+            ).single()["labels"]
+            rel_types = session.run(
+                "CALL db.relationshipTypes() YIELD relationshipType RETURN collect(relationshipType) as types"
+            ).single()["types"]
         return {"node_labels": labels, "relationship_types": rel_types}
 
 
@@ -185,18 +219,22 @@ async def main() -> None:
     print("\n[1] Creating Neo4jKnowledgeStore adapter...")
     store = Neo4jKnowledgeStore()
     schema = await store.get_schema("chatpid")
-    print(f"  Schema: {len(schema['node_labels'])} node labels, "
-          f"{len(schema['relationship_types'])} relationship types")
+    print(
+        f"  Schema: {len(schema['node_labels'])} node labels, "
+        f"{len(schema['relationship_types'])} relationship types"
+    )
 
     # 2. Register platform's GraphRAG capabilities with the store
     print("\n[2] Registering platform's GraphRAG capabilities...")
     registry = CapabilityRegistry()
-    registry.register_many([
-        ContextRAGCapability(store),
-        VectorRAGCapability(store),
-        PathRAGCapability(store),
-        CypherRAGCapability(store),
-    ])
+    registry.register_many(
+        [
+            ContextRAGCapability(store),
+            VectorRAGCapability(store),
+            PathRAGCapability(store),
+            CypherRAGCapability(store),
+        ]
+    )
     await registry.initialize()
     specs = registry.list(type_filter=CapabilityType.TOOL)
     print(f"  Registered {len(specs)} capabilities:")
@@ -208,11 +246,14 @@ async def main() -> None:
 
     print(f"\n[3] Testing ContextRAG with query: '{test_query}'")
     try:
-        result = await registry.execute("context_rag", {
-            "workspace_id": "chatpid",
-            "query": test_query,
-            "max_results": 5,
-        })
+        result = await registry.execute(
+            "context_rag",
+            {
+                "workspace_id": "chatpid",
+                "query": test_query,
+                "max_results": 5,
+            },
+        )
         print(f"  Success: {result.success}")
         if result.success:
             print(f"  Hits: {result.data.get('total', 0)}")
@@ -226,29 +267,37 @@ async def main() -> None:
 
     print(f"\n[4] Testing VectorRAG with query: '{test_query}'")
     try:
-        result = await registry.execute("vector_rag", {
-            "workspace_id": "chatpid",
-            "query": test_query,
-            "max_results": 5,
-        })
+        result = await registry.execute(
+            "vector_rag",
+            {
+                "workspace_id": "chatpid",
+                "query": test_query,
+                "max_results": 5,
+            },
+        )
         print(f"  Success: {result.success}")
         if result.success:
             print(f"  Hits: {result.data.get('total', 0)}")
             for hit in result.data.get("hits", [])[:2]:
-                print(f"    {hit.get('entity_type', '?')}: score={hit.get('score', 0):.3f}")
+                print(
+                    f"    {hit.get('entity_type', '?')}: score={hit.get('score', 0):.3f}"
+                )
         else:
             print(f"  Error: {result.error.message if result.error else 'unknown'}")
         print(f"  Time: {result.execution_time_ms:.1f}ms")
     except Exception as e:
         print(f"  EXCEPTION: {e}")
 
-    print(f"\n[5] Testing PathRAG with query: 'Trace flow from tank T4750'")
+    print("\n[5] Testing PathRAG with query: 'Trace flow from tank T4750'")
     try:
-        result = await registry.execute("path_rag", {
-            "workspace_id": "chatpid",
-            "query": "Trace flow from tank T4750",
-            "max_depth": 3,
-        })
+        result = await registry.execute(
+            "path_rag",
+            {
+                "workspace_id": "chatpid",
+                "query": "Trace flow from tank T4750",
+                "max_depth": 3,
+            },
+        )
         print(f"  Success: {result.success}")
         if result.success:
             print(f"  Hits: {result.data.get('total', 0)}")
@@ -260,10 +309,13 @@ async def main() -> None:
 
     print(f"\n[6] Testing CypherRAG with query: '{test_query}'")
     try:
-        result = await registry.execute("cypher_rag", {
-            "workspace_id": "chatpid",
-            "query": test_query,
-        })
+        result = await registry.execute(
+            "cypher_rag",
+            {
+                "workspace_id": "chatpid",
+                "query": test_query,
+            },
+        )
         print(f"  Success: {result.success}")
         if result.success:
             print(f"  Hits: {result.data.get('total', 0)}")

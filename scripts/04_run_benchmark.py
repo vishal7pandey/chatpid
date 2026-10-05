@@ -63,10 +63,14 @@ def main() -> None:
             return
         previous_results = json.loads(resume_path.read_text(encoding="utf-8"))
         skip_ids = [
-            r["id"] for r in previous_results if not r.get("agent_answer", "").startswith("ERROR")
+            r["id"]
+            for r in previous_results
+            if not r.get("agent_answer", "").startswith("ERROR")
         ]
-        print(f"Resuming from {resume_path.name}: {len(skip_ids)} questions already completed, "
-              f"{19 - len(skip_ids)} remaining")
+        print(
+            f"Resuming from {resume_path.name}: {len(skip_ids)} questions already completed, "
+            f"{19 - len(skip_ids)} remaining"
+        )
 
     print(f"Running benchmark: level={args.level}, delay={args.delay}s")
     new_results = run_benchmark(
@@ -90,7 +94,9 @@ def main() -> None:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
         outpath = RESULTS_DIR / f"benchmark_results_{args.level}_{timestamp}.json"
 
-    outpath.write_text(json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8")
+    outpath.write_text(
+        json.dumps(merged, indent=2, ensure_ascii=False), encoding="utf-8"
+    )
     print(f"\n  Results saved to: {outpath}")
 
 

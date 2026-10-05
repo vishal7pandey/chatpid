@@ -1,0 +1,17 @@
+id: CPID-1
+type: feature
+title: Clean up ruff lint/format debt, then enforce ruff in CI
+slug: ruff-debt
+status: in-review
+risk: medium
+jira: CPID-1
+branch: feature/cpid-1-ruff-debt
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: https://github.com/vishal7pandey/chatpid/pull/6
