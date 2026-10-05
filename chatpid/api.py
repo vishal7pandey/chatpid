@@ -10,6 +10,7 @@ Run:
 
 from __future__ import annotations
 
+import logging
 import tempfile
 import time
 import uuid
@@ -29,6 +30,11 @@ from chatpid.ingest import (
     load_dexpi_model,
     load_graph,
 )
+from chatpid.logging_config import configure_logging
+
+logger = logging.getLogger(__name__)
+
+configure_logging()
 
 app = FastAPI(title="ChatP&ID API", version="0.1.0")
 
@@ -205,6 +211,13 @@ def ask(req: AskRequest) -> AskResponse:
     tools_used = _extract_tool_usage(messages)
     touched = _extract_touched_nodes(messages)
 
+    logger.info(
+        "ask: tools=%s nodes_touched=%d elapsed=%.2fs",
+        [t["name"] for t in tools_used],
+        len(touched),
+        elapsed,
+    )
+
     return AskResponse(
         answer=answer,
         tools_used=tools_used,
@@ -343,7 +356,9 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
         try:
             model = load_dexpi_model(tmpdir, UPLOAD_TMP_NAME)
         except Exception:
-            # Parser text can carry filesystem paths; the client only gets a generic message.
+            # Parser text can carry filesystem paths; the client only gets a generic message,
+            # but the full traceback (including the path) goes to the log.
+            logger.warning("ingest: failed to parse uploaded DEXPI file", exc_info=True)
             raise HTTPException(
                 status_code=400, detail="Failed to parse DEXPI file"
             ) from None

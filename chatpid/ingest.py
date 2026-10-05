@@ -19,6 +19,7 @@ conceptual graph, so default to that unless a task needs finer detail.
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,8 @@ from neo4j import Driver, GraphDatabase
 from pydexpi.loaders import GraphAbstractor, GraphLoader, ProteusSerializer
 
 from chatpid.config import get_settings
+
+logger = logging.getLogger(__name__)
 
 # --- Step 1: DEXPI/Proteus XML -> pyDEXPI model -----------------------------
 

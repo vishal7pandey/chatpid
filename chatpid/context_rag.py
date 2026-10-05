@@ -8,7 +8,11 @@ stripping internal ids/metadata the LLM doesn't need (Section 3.3.1).
 
 from __future__ import annotations
 
+import logging
+
 from neo4j import Driver
+
+logger = logging.getLogger(__name__)
 
 VALID_MODES = ("graph", "topology")
 VALID_LEVELS = ("complete", "process", "conceptual")

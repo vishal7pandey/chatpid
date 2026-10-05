@@ -17,6 +17,8 @@ LLM provider is selected by the LLM_PROVIDER env var (openai|groq|gemini).
 
 from __future__ import annotations
 
+import logging
+
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
 from neo4j import Driver
@@ -26,6 +28,8 @@ from chatpid.cypher_rag import cypher_rag_text
 from chatpid.llm import get_llm
 from chatpid.path_rag import path_rag_text
 from chatpid.vector_rag import vector_rag_text
+
+logger = logging.getLogger(__name__)
 
 SYSTEM_PROMPT = """\
 You are ChatP&ID, an assistant that answers questions about a Piping and \
@@ -72,6 +76,7 @@ def _safe_tool(name: str, fn):
         try:
             return fn(*args, **kwargs)
         except Exception as exc:
+            logger.exception("%s tool failed: %s", name, type(exc).__name__)
             return f"[{name} error] {type(exc).__name__}: {exc!s:.300}"
 
     return wrapper
