@@ -18,10 +18,22 @@ so the graph introspection and execution can be tested independently.
 
 from __future__ import annotations
 
-from neo4j import Driver
+from neo4j import READ_ACCESS, Driver
 
 from chatpid.context_rag import context_rag
 from chatpid.llm import get_llm
+
+# --- Read-only sessions ---
+
+
+def _read_session(driver: Driver):
+    """Open a session that the database itself restricts to reads (CPID-12).
+
+    `_validate_read_only` below is only a regex blocklist on LLM-generated text; this is the real guard.
+    Every session in this module goes through here.
+    """
+    return driver.session(default_access_mode=READ_ACCESS)
+
 
 # --- Graph schema introspection ---
 
@@ -33,7 +45,7 @@ def get_graph_schema(driver: Driver, level: str = "conceptual") -> str:
     Filters by the `level` property on nodes/relationships since all three
     abstraction levels coexist in the same Neo4j database.
     """
-    with driver.session() as session:
+    with _read_session(driver) as session:
         # Node labels and their property keys
         node_result = session.run(
             """
@@ -143,7 +155,7 @@ Write ONLY the Cypher query (no explanation, no markdown fences):
 
 def _get_label_list(driver: Driver, level: str = "conceptual") -> list[str]:
     """Return just the node label names at `level`, for retry hints."""
-    with driver.session() as session:
+    with _read_session(driver) as session:
         result = session.run(
             """
             MATCH (n {level: $level})
@@ -228,13 +240,19 @@ def _validate_read_only(cypher: str) -> None:
 def execute_cypher(driver: Driver, cypher: str) -> list[dict]:
     """Execute a Cypher query and return results as a list of dicts.
 
-    Raises ValueError if the query contains write operations.
+    Two layers keep this read-only: the regex guard (`_validate_read_only`, raises ValueError) and, behind
+    it, a read-access session with a managed read transaction, which the database enforces (raises a
+    Neo4j ClientError for any write that got past the regex).
     """
     _validate_read_only(cypher)
 
-    with driver.session() as session:
-        result = session.run(cypher)
-        return [dict(record) for record in result]
+    def _run(tx) -> list[dict]:
+        # Rows must be consumed inside the transaction function
+        return [dict(record) for record in tx.run(cypher)]
+
+    # Layer 1: a READ_ACCESS session + execute_read, so the database rejects writes the regex missed.
+    with _read_session(driver) as session:
+        return session.execute_read(_run)
 
 
 # --- Answer synthesis ---

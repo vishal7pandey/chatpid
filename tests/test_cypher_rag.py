@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from chatpid.cypher_rag import _validate_read_only, execute_cypher, get_graph_schema
+from tests.fakes import FakeDriver
 
 
 def test_execute_cypher_rejects_create():
@@ -154,9 +155,9 @@ class TestCypherInjectionLegitimateQueries:
 
     def test_legitimate_match_return_passes(self):
         """A simple MATCH/RETURN query must execute without error."""
-        driver = MagicMock()
-        session = driver.session.return_value.__enter__.return_value
-        session.run.return_value = [{"tag": "T4750"}]
+        # CPID-12: the query now runs through session.execute_read, which a MagicMock cannot emulate,
+        # so the recording fake driver stands in for Neo4j here. The assertion is unchanged.
+        driver = FakeDriver(lambda query, params: [{"tag": "T4750"}])
         result = execute_cypher(driver, "MATCH (n {tag: 'T4750'}) RETURN n.tag AS tag")
         assert result == [{"tag": "T4750"}]
 
