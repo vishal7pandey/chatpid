@@ -1,0 +1,17 @@
+id: CPID-13
+type: bug
+title: Path traversal in GET /pid/svg - the filename from the query string is joined without containment
+slug: pid-svg-path-traversal
+status: in-review
+risk: high
+jira: CPID-13
+branch: fix/cpid-13-pid-svg-path-traversal
+created: '2026-10-05'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-05'
+pr: https://github.com/vishal7pandey/chatpid/pull/7
