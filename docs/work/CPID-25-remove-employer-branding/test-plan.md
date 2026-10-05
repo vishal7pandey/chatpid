@@ -1,4 +1,4 @@
-# CPID-25 — Test plan: Remove employer branding
+﻿# CPID-25 — Test plan: Remove employer branding
 
 Status: draft · Risk: low · Jira: CPID-25
 
@@ -26,4 +26,11 @@ AC5 needs a browser: `pnpm build && pnpm start` in `frontend/`, open the app, to
 
 ## Audit (after implementation)
 
-To be filled after implementation.
+Results on the branch (2026-10-05):
+
+- AC1: before the change the search listed 6 hits in 3 files (globals.css 3, layout.tsx 1, ThemeContext.tsx 2). After: no output, exit status 1, 0 hits. It would fail if any mention remained, since it is case-insensitive over all tracked files.
+- AC2: `git grep -n "chatpid_theme" frontend` lists layout.tsx:12, ThemeContext.tsx:25 and ThemeContext.tsx:39; no other `_theme'` key exists.
+- AC3: the diff of the `@theme` block changes five variable names and no hex value; no file in `frontend/` referenced any of the old names.
+- AC4: `pnpm install --frozen-lockfile` ok; `pnpm build` exit 0 (compiled, TypeScript passed, 3 static pages). `pnpm lint` exits 1 with 3 errors and 6 warnings, all `react-hooks/set-state-in-effect` and similar rules in code this change did not touch beyond a string literal (ThemeContext.tsx:27 and others). Main has the identical result (3 errors, 6 warnings, checked on a clean checkout of main), so this is pre-existing lint debt, not introduced here; fixing them would be out of scope (behaviour must stay identical). Recorded for the owner.
+- Backend guard: 237 passed, 3 skipped; `ruff check` and `ruff format --check` clean.
+- AC5: not run in a browser (the agent has no browser). Reasoned from the diff: the only change to the theme code is the key string, applied identically in the inline script and the provider, so persistence and first paint behave as before. Manual check left for the owner.
