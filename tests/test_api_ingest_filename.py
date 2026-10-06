@@ -7,6 +7,7 @@ so a write that escapes it is visible as a file left outside the sandbox.
 
 from __future__ import annotations
 
+import os
 import tempfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -169,6 +170,94 @@ def test_ticket_exploit_dotdot_name_writes_nothing_above_the_temp_dir(
     assert not (tmp_path / "x.xml").exists()
     assert not (sandbox / "x.xml").exists()
     assert not (sandbox / "tmp" / "x.xml").exists()
+
+
+# --- CPID-41: where can the upload bytes land? (Sonar pythonsecurity:S2083 at the write_bytes sink) ---------
+
+HOSTILE_NAMES = [
+    "../x.xml",
+    "../../x.xml",
+    "..\\..\\x.xml",
+    "/etc/x.xml",
+    "C:/Windows/x.xml",
+    "C:\\Windows\\x.xml",
+    "\\\\server\\share\\x.xml",
+    "%2e%2e%2fx.xml",
+    "..%2fx.xml",
+    "..%5cx.xml",
+    "%252e%252e%252fx.xml",
+    "x.xml\x00.txt",
+    "plant.xml",
+]
+
+
+@pytest.fixture
+def write_targets(monkeypatch) -> list[Path]:
+    """Record the target of every Path.write_bytes (the sink Sonar flags) while still performing it."""
+    targets: list[Path] = []
+    original = Path.write_bytes
+
+    def spy(self, data):
+        targets.append(self)
+        return original(self, data)
+
+    monkeypatch.setattr(Path, "write_bytes", spy)
+    return targets
+
+
+@pytest.mark.parametrize("name", HOSTILE_NAMES)
+def test_upload_bytes_only_ever_land_in_the_fixed_file_of_the_endpoint_temp_dir(
+    client, sandbox, seen, write_targets, tmp_path, name
+):
+    _post(client, name, b"PWNED")
+
+    for target in write_targets:
+        assert target.name == api.UPLOAD_TMP_NAME
+        assert target.parent.parent == sandbox / "tmp"
+        # realpath-contained in the endpoint's temp dir, the shape Sonar and CodeQL recognise
+        base = os.path.realpath(target.parent)
+        assert os.path.realpath(target).startswith(base + os.sep)
+    assert len(write_targets) == len(seen["loads"])
+    assert _files_left_behind(tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        b"../../x.xml",
+        b"/etc/passwd",
+        b"C:\\Windows\\win.ini",
+        b"\x00\x00../..\x00",
+        b"<?xml version='1.0'?><!DOCTYPE a [<!ENTITY e SYSTEM 'file:///etc/passwd'>]><a>&e;</a>",
+    ],
+)
+def test_hostile_upload_content_is_data_never_a_path(
+    client, sandbox, seen, write_targets, tmp_path, content
+):
+    assert _post(client, "plant.xml", content).status_code == 200
+
+    assert [t.name for t in write_targets] == [api.UPLOAD_TMP_NAME]
+    assert seen["loads"][0][2] == content
+    assert _files_left_behind(tmp_path) == []
+
+
+@pytest.mark.parametrize(
+    "bad_name", ["../escape.xml", "../../escape.xml", "sub/../../escape.xml"]
+)
+def test_write_is_contained_in_the_temp_dir_at_the_point_of_use(
+    client, sandbox, seen, write_targets, tmp_path, monkeypatch, bad_name
+):
+    """Defence in depth: even if the fixed name were ever changed to something escaping, nothing is written."""
+    monkeypatch.setattr(api, "UPLOAD_TMP_NAME", bad_name)
+
+    response = _post(client, "plant.xml", b"PWNED")
+
+    assert response.status_code == 500
+    assert write_targets == []
+    assert seen["loads"] == []
+    assert seen["graphs_loaded"] == 0
+    assert _files_left_behind(tmp_path) == []
+    assert str(tmp_path) not in response.text
 
 
 def test_parse_failure_body_does_not_leak_paths_or_exception_text(

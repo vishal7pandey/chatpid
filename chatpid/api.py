@@ -331,7 +331,10 @@ class IngestResponse(BaseModel):
     levels: dict  # level -> {"nodes": int, "edges": int}
 
 
-@app.post("/ingest", response_model=IngestResponse)
+@app.post(
+    "/ingest",
+    responses={500: {"description": "The upload could not be stored"}},
+)
 async def ingest_document(file: UploadFile) -> IngestResponse:
     """Ingest a DEXPI/Proteus XML file into the knowledge graph.
 
@@ -350,9 +353,15 @@ async def ingest_document(file: UploadFile) -> IngestResponse:
     document_id = str(uuid.uuid4())[:8]
 
     with tempfile.TemporaryDirectory() as tmpdir:
-        tmp_path = Path(tmpdir) / UPLOAD_TMP_NAME
+        # Contain the write in the temp dir right where it happens (CPID-41): the name is a constant today,
+        # and this keeps it true if that ever changes.
+        tmp_base = os.path.realpath(tmpdir)
+        tmp_path = os.path.realpath(os.path.join(tmp_base, UPLOAD_TMP_NAME))
+        if not tmp_path.startswith(tmp_base + os.sep):
+            logger.error("ingest: upload target escapes the temp dir")
+            raise HTTPException(status_code=500, detail="Upload could not be stored")
         content = await file.read()
-        tmp_path.write_bytes(content)
+        Path(tmp_path).write_bytes(content)
 
         try:
             model = load_dexpi_model(tmpdir, UPLOAD_TMP_NAME)
