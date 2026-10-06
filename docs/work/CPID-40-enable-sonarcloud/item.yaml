@@ -1,0 +1,19 @@
+id: CPID-40
+type: feature
+title: Enable SonarCloud
+slug: enable-sonarcloud
+status: implementing
+risk: low
+jira: CPID-40
+branch: feature/cpid-40-enable-sonarcloud
+created: '2026-10-06'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+pr: null

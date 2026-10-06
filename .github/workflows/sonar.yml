@@ -52,10 +52,14 @@ jobs:
         if: steps.guard.outputs.enabled == 'true'
       - name: Install dependencies
         if: steps.guard.outputs.enabled == 'true'
-        run: uv sync --all-extras --all-groups
-      - name: Tests with coverage (adapt to your project)
+        # Same install as ci.yml (CPID-23): exactly what uv.lock pins, with the [dev] extra (pytest, ruff).
+        run: uv sync --frozen --all-extras --all-groups
+      - name: Backend tests with coverage
         if: steps.guard.outputs.enabled == 'true'
-        run: uv run --with pytest-cov python -m pytest -q --cov --cov-report=xml:coverage.xml
+        # Same test command as ci.yml (`uv run pytest -q`) plus coverage. pytest-cov is not a project
+        # dependency, so it is added for this run only (--with) and the lock stays untouched (--frozen).
+        # Writes coverage.xml, the path sonar.python.coverage.reportPaths expects.
+        run: uv run --frozen --with pytest-cov pytest -q --cov=chatpid --cov-report=xml:coverage.xml
       - name: SonarCloud scan
         if: steps.guard.outputs.enabled == 'true'
         uses: SonarSource/sonarqube-scan-action@v8
