@@ -85,6 +85,8 @@ SonarCloud API. The frontend (`frontend/`, Next.js) has no CI yet (CPID-38).
 - Coverage is measured on the `chatpid` package (`--cov=chatpid`), not on `scripts/` or `tests/`.
 - Frontend sources stay in the default scan scope; `node_modules` is already excluded and `.next` is
   git-ignored so it is absent from the CI checkout.
+- Binary pickles under `data/` (`**/*.pkl`) are excluded: the first scan tried to read them as UTF-8 text and
+  logged one encoding warning per file. This is the only exclusion the scan needed.
 
 ## Risks and dependencies
 
