@@ -333,7 +333,6 @@ class IngestResponse(BaseModel):
 
 @app.post(
     "/ingest",
-    response_model=IngestResponse,
     responses={500: {"description": "The upload could not be stored"}},
 )
 async def ingest_document(file: UploadFile) -> IngestResponse:
