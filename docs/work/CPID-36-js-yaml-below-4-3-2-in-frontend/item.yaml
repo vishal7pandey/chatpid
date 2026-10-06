@@ -2,7 +2,7 @@ id: CPID-36
 type: bug
 title: 'js-yaml below 4.3.2 in frontend lockfile: Dependabot alert 8 (CPID-36)'
 slug: js-yaml-below-4-3-2-in-frontend
-status: in-review
+status: merged
 risk: medium
 jira: CPID-36
 branch: fix/cpid-36-js-yaml-below-4-3-2-in-frontend
@@ -16,4 +16,4 @@ approvals:
     by: Vishal Pandey (delegated to agent)
     at: '2026-10-05'
     delegated: true
-pr: null
+pr: '21'

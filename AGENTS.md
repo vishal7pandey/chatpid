@@ -73,7 +73,7 @@ plan, committed with the code. Follow it for any non-trivial change.
   Other skills are `factory-*` in the same directory.
 * **Work items:** `docs/work/<id>-<slug>/` — `item.yaml` (state), `spec.md`, `plan.md`,
   `test-plan.md`, `notes.md`. See `docs/work/README.md`.
-* **Policies:** `.factory/policies/` — `autonomy`, `git`, `testing`, `security`, `production`.
+* **Policies:** `.factory/policies/` — `autonomy`, `git`, `testing`, `security`, `production`, `findings`.
   Read `autonomy.md` before acting; it says what you may do alone.
 * **Config:** `.factory/factory.yaml` (stack, autonomy mode, tracker).
 
@@ -86,6 +86,9 @@ plan, committed with the code. Follow it for any non-trivial change.
 
 Never run `factory approve` and never write the `approvals:` entries in `item.yaml` yourself.
 Approval is recorded by a human. If a gate is not yet passed, say what you need approved and stop.
+The one exception is an explicit, recorded delegation from the owner naming the gate; then record it
+only as `factory approve <id> spec|plan --delegated "<owner>"`, never under the owner's own name
+(`.factory/policies/autonomy.md`, Delegated approval). Production is never delegated.
 
 ### Checks
 

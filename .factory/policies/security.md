@@ -14,6 +14,17 @@
 * A new dependency needs a human yes (see `autonomy.md`): state name, purpose, licence, maintainer health.
 * Run the ecosystem audit (`pip-audit` / `npm audit`) when dependencies change; report findings.
 
+## Repository protections
+
+* A GitHub-hosted project keeps four settings on: secret scanning with push protection, Dependabot
+  alerts, Dependabot security updates, and CodeQL default setup. `factory harden` enables them (it
+  skips what is already on; `--dry-run` prints the exact `gh api` calls, which is also the manual
+  fallback) and `factory doctor` reports each as ok / off / unknown, failing when one is off on a
+  public repo.
+* Turning a protection off, or dismissing what it finds, is a security exception: ask a human first.
+* Optional SonarCloud scan: the guarded `sonar.yml` stays inert until the owner sets `SONAR_TOKEN`
+  (never an agent); steps and `factory doctor` lines are in the factory repo's `docs/sonarcloud.md`.
+
 ## Code
 
 * Validate and bound all input at trust boundaries (HTTP, files, CLI, queues). Allow-list, don't block-list.

@@ -2,7 +2,7 @@ id: CPID-12
 type: bug
 title: CypherRAG is not truly read-only - sessions are read-write and protection is a regex blocklist
 slug: cypherrag-read-only
-status: in-review
+status: merged
 risk: high
 jira: CPID-12
 branch: fix/cpid-12-cypherrag-read-only
@@ -14,4 +14,4 @@ approvals:
   plan:
     by: Vishal Pandey (delegated to agent)
     at: '2026-10-05'
-pr: null
+pr: '14'

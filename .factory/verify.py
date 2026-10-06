@@ -34,6 +34,20 @@ _DIR_ID_RE = re.compile(r"^((?:[FB]|[A-Z][A-Z0-9]+)-\d+)-")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 _BRANCH_RE = re.compile(r"^(?:feature|fix)/((?:[fb]|[a-z][a-z0-9]+)-\d+)-", re.IGNORECASE)
 
+# A delegated approval (FACT-19): `by: "<who> (delegated to agent)"`, plus `delegated: true`.
+DELEGATED_SUFFIX = " (delegated to agent)"
+
+
+def is_delegated(record: object) -> bool:
+    """True for an approval record written with `--delegated` or by hand in the same wording."""
+    if not isinstance(record, dict):
+        return False
+    by = record.get("by")
+    return record.get("delegated") is True or (
+        isinstance(by, str) and by.endswith(DELEGATED_SUFFIX)
+    )
+
+
 # Order in which item.yaml keys are written (docs/ARCHITECTURE.md section 3.2).
 ITEM_KEYS = [
     "id",
@@ -182,6 +196,12 @@ def validate_item(item: dict, dirname: str) -> list[str]:
                 and _DATE_RE.match(rec["at"])
             ):
                 problems.append(f"approvals.{kind} must be {{by: <name>, at: YYYY-MM-DD}}")
+            elif "delegated" in rec and not isinstance(rec["delegated"], bool):
+                problems.append(f"approvals.{kind}.delegated must be true or false")
+            elif rec.get("delegated") is True and not rec["by"].endswith(DELEGATED_SUFFIX):
+                problems.append(
+                    f"approvals.{kind} is delegated but 'by' does not end with '{DELEGATED_SUFFIX}'"
+                )
     return problems
 
 
@@ -204,8 +224,36 @@ def _check_approvals_and_docs(item: dict, item_dir: Path, config: dict) -> list[
     return problems
 
 
-def check_project(root: Path | str, branch: str | None = None) -> list[str]:
-    """Run rules 1-3. Returns problems as '<id>: <reason>' (main() prefixes 'FAIL ')."""
+DOCS_ONLY_PREFIX = "docs/work/"
+
+
+def only_work_docs(changed: list[str] | None) -> bool:
+    """True when a changed-files list is given and every path is under docs/work/ (empty = True)."""
+    if changed is None:
+        return False
+    return all(
+        p.strip().replace("\\", "/").removeprefix("./").startswith(DOCS_ONLY_PREFIX)
+        for p in changed
+    )
+
+
+def read_changed_files(path: Path | str | None) -> list[str] | None:
+    """Lines of a changed-files list, or None when no list was given or it cannot be read."""
+    if not path:
+        return None
+    try:
+        text = Path(path).read_text(encoding="utf-8-sig")
+    except OSError:
+        return None
+    return [ln for ln in text.splitlines() if ln.strip()]
+
+
+def check_project(
+    root: Path | str, branch: str | None = None, changed_files: list[str] | None = None
+) -> list[str]:
+    """Run rules 1-3. Returns problems as '<id>: <reason>' (main() prefixes 'FAIL ').
+
+    `changed_files` (the branch's diff) relaxes rule 3's status check for docs-only branches."""
     root = Path(root)
     problems: list[str] = []
     try:
@@ -240,12 +288,56 @@ def check_project(root: Path | str, branch: str | None = None) -> list[str]:
         item = items.get(bid)
         if item is None:
             problems.append(f"{bid}: branch '{branch}' has no valid work item in docs/work/")
-        elif STATUSES.index(item["status"]) < STATUSES.index("implementing"):
+        elif STATUSES.index(item["status"]) < STATUSES.index("implementing") and not only_work_docs(
+            changed_files
+        ):
             problems.append(
                 f"{bid}: branch '{branch}' carries code but status is {item['status']} "
                 "(must be implementing or later)"
             )
     return problems
+
+
+# --- warnings (never fail the gate) ------------------------------------------------------------
+
+_HTML_COMMENT_RE = re.compile(r"<!--.*?-->", re.DOTALL)
+
+
+def audit_is_placeholder(text: str) -> bool:
+    """True when `test-plan.md` has an `## Audit` section that is empty apart from comments."""
+    lines = text.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.startswith("## Audit")), None)
+    if start is None:
+        return False
+    end = next((i for i in range(start + 1, len(lines)) if lines[i].startswith("## ")), len(lines))
+    body = "\n".join(lines[start + 1 : end])
+    return not _HTML_COMMENT_RE.sub("", body).strip()
+
+
+def warn_project(root: Path | str) -> list[str]:
+    """Warnings as '<id>: <reason>' (run() prefixes 'WARN '). They never change the exit code.
+
+    An item at `in-review` or later whose test-plan Audit is still the template placeholder."""
+    root = Path(root)
+    out: list[str] = []
+    work = root / "docs" / "work"
+    item_files = sorted(work.glob("*/item.yaml")) if work.is_dir() else []
+    for path in item_files:
+        try:
+            item = load_item(path)
+            if validate_item(item, path.parent.name):
+                continue
+            if STATUSES.index(item["status"]) < STATUSES.index("in-review"):
+                continue
+            text = (path.parent / "test-plan.md").read_text(encoding="utf-8-sig")
+        except (ValueError, OSError, UnicodeDecodeError):
+            continue
+        if audit_is_placeholder(text):
+            out.append(
+                f"{item['id']}: status is {item['status']} but the Audit section of "
+                "test-plan.md is still the template placeholder"
+            )
+    return out
 
 
 # --- CLI ---------------------------------------------------------------------------------------
@@ -275,17 +367,25 @@ def add_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument(
         "--changed-files-from",
         metavar="FILE",
-        help="reserved for future use; accepted and ignored in V1",
+        help="file listing the branch's changed paths, one per line; a branch that only changes "
+        "docs/work/ may sit at any status",
     )
 
 
 def run(args: argparse.Namespace) -> int:
     root = Path(args.root)
     branch = args.branch if args.branch else current_branch(root)
-    problems = check_project(root, branch)
+    problems = check_project(root, branch, read_changed_files(args.changed_files_from))
+    warnings = warn_project(root)
+    for w in warnings:
+        print(f"WARN {w}")
     for p in problems:
         print(f"FAIL {p}")
-    print("verify: OK" if not problems else f"verify: {len(problems)} problem(s)")
+    if problems:
+        print(f"verify: {len(problems)} problem(s)")
+    else:
+        suffix = f" ({len(warnings)} warning(s))" if warnings else ""
+        print(f"verify: OK{suffix}")
     return 1 if problems else 0
 
 
