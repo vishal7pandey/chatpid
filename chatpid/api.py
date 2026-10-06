@@ -331,7 +331,11 @@ class IngestResponse(BaseModel):
     levels: dict  # level -> {"nodes": int, "edges": int}
 
 
-@app.post("/ingest", response_model=IngestResponse)
+@app.post(
+    "/ingest",
+    response_model=IngestResponse,
+    responses={500: {"description": "The upload could not be stored"}},
+)
 async def ingest_document(file: UploadFile) -> IngestResponse:
     """Ingest a DEXPI/Proteus XML file into the knowledge graph.
 
