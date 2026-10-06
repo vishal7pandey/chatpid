@@ -2,7 +2,7 @@ id: CPID-23
 type: feature
 title: Commit uv.lock and make CI install with uv sync --frozen
 slug: commit-uv-lock
-status: in-review
+status: merged
 risk: low
 jira: CPID-23
 branch: feature/cpid-23-commit-uv-lock
@@ -14,4 +14,4 @@ approvals:
   plan:
     by: Vishal Pandey (delegated to agent)
     at: '2026-10-05'
-pr: null
+pr: '11'

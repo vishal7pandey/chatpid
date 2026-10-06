@@ -1,0 +1,19 @@
+id: CPID-39
+type: feature
+title: Sync the factory kit
+slug: sync-the-factory-kit
+status: in-review
+risk: low
+jira: CPID-39
+branch: feature/cpid-39-sync-the-factory-kit
+created: '2026-10-06'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+pr: null

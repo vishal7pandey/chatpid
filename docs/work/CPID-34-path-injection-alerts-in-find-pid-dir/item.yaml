@@ -3,7 +3,7 @@ type: bug
 title: 'Path injection alerts in _find_pid_dir: CodeQL py/path-injection at api.py:390-391
   (CPID-34, CPID-35)'
 slug: path-injection-alerts-in-find-pid-dir
-status: in-review
+status: merged
 risk: high
 jira: CPID-34
 branch: fix/cpid-34-path-injection-alerts-in-find-pid-dir

@@ -13,11 +13,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v10.2.0
       # pytest lives in the [dev] optional extra here, which a plain `uv sync` skips (CPID-2).
       # uv.lock is committed (CPID-23): fail on a stale lock, then install exactly what it pins.
       - run: uv lock --check
