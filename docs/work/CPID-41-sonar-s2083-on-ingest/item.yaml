@@ -1,0 +1,19 @@
+id: CPID-41
+type: bug
+title: Sonar S2083 on ingest
+slug: sonar-s2083-on-ingest
+status: in-review
+risk: high
+jira: CPID-41
+branch: fix/cpid-41-sonar-s2083-on-ingest
+created: '2026-10-06'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-06'
+    delegated: true
+pr: null
