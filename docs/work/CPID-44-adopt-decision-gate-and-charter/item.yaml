@@ -1,0 +1,19 @@
+id: CPID-44
+type: feature
+title: Adopt decision gate and charter
+slug: adopt-decision-gate-and-charter
+status: implementing
+risk: low
+jira: CPID-44
+branch: feature/cpid-44-adopt-decision-gate-and-charter
+created: '2026-10-07'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+pr: null
