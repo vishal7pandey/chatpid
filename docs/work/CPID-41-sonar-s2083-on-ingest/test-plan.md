@@ -27,3 +27,7 @@ After merge and the SonarCloud scan on main: `GET https://sonarcloud.io/api/issu
 ## Audit (after implementation)
 
 Mutation audit (2026-10-06): (1) old code (no guard at the sink): the 3 `test_write_is_contained_in_the_temp_dir_at_the_point_of_use` cases fail (`assert 200 == 500`); the 13 hostile-name and 5 hostile-content cases pass on old and new code, which shows the endpoint was already safe for client input. (2) Fix kept but the `startswith` check replaced by `if False:`: the same 3 cases fail, so the check itself is pinned. (3) Fix restored: tests/test_api_ingest_filename.py 51 passed; full suite 262 passed, 3 skipped; ruff check and format clean. AC3 is checked after merge.
+
+## Follow-up (PR 26)
+
+PR 25 closed Sonar issue `AaESHd3k4FTZ_gsvTVdz` but the push scan reported the same rule as a new issue `AaESVCox-B_YsUej5pDi` at the moved line (api.py:364), same flow. PR 26 puts `write_bytes` inside the true branch of the single inline `os.path.realpath` + `startswith(base + os.sep)` check; the PR scan then showed 0 issues. Tests unchanged (262 passed, 3 skipped); the 3 contained-write cases still fail when the check is neutralised (audit unchanged).
