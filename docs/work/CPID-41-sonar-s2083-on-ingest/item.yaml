@@ -2,7 +2,7 @@ id: CPID-41
 type: bug
 title: Sonar S2083 on ingest
 slug: sonar-s2083-on-ingest
-status: in-review
+status: merged
 risk: high
 jira: CPID-41
 branch: fix/cpid-41-sonar-s2083-on-ingest
