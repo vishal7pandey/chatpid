@@ -1,0 +1,19 @@
+id: CPID-43
+type: bug
+title: Frontend transitive advisories
+slug: frontend-transitive-advisories
+status: in-review
+risk: low
+jira: CPID-43
+branch: fix/cpid-43-frontend-transitive-advisories
+created: '2026-10-07'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+pr: https://github.com/vishal7pandey/chatpid/pull/33
