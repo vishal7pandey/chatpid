@@ -1,0 +1,19 @@
+id: CPID-42
+type: feature
+title: 'Apply the dependency loop: dependabot config and triage'
+slug: apply-the-dependency-loop-dependabot
+status: merged
+risk: low
+jira: CPID-42
+branch: feature/cpid-42-apply-the-dependency-loop-dependabot
+created: '2026-10-07'
+approvals:
+  spec:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+  plan:
+    by: Vishal Pandey (delegated to agent)
+    at: '2026-10-07'
+    delegated: true
+pr: https://github.com/vishal7pandey/chatpid/pull/27
