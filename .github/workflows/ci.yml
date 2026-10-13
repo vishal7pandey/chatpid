@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
-      - uses: astral-sh/setup-uv@v10.2.0
+      - uses: astral-sh/setup-uv@v10.3.0
       # pytest lives in the [dev] optional extra here, which a plain `uv sync` skips (CPID-2).
       # uv.lock is committed (CPID-23): fail on a stale lock, then install exactly what it pins.
       - run: uv lock --check
